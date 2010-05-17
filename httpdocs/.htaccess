@@ -1,0 +1,7 @@
+Options +FollowSymLinks
+RewriteEngine On
+RewriteRule ^plugins/.*$ - [PT]
+RewriteRule ^css/.*$ - [PT]
+RewriteRule ^images/.*$ - [PT]
+RewriteRule ^js/.*$ - [PT]
+RewriteRule (.*) index.php
