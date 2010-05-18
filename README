@@ -1,5 +1,7 @@
 WALLEYE - An MVC style PHP framework
 
+Please note: this is a WORK IN PROGRESS and is not production quality out of the box.
+
 uses
 sql_core by Justin Vincent http://www.justinvincent.com/docs/ezsql/ez_sql_help.htm
 PQP by the Particle Tree Team http://particletree.com/features/php-quick-profiler/
