@@ -1,8 +1,9 @@
 <?php
 
-require('../config/config.php');
+require('../includes/config.php');
+require('../includes/core/walleye.php');
 
-$app = Walleye::withOptions($WalleyeConfigOptions);
-$app->start();
+$app = Walleye::withOptions($wConfigOptions);
+$app->run();
 
 ?>
