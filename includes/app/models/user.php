@@ -9,6 +9,8 @@ namespace models;
 class User extends wModel
 {
 
+const ID_OF_UNKNOWN_USER = 0;
+
     private $uid;
     private $userName;
     private $regDate;

@@ -14,7 +14,6 @@ require($wConfigOptions['BASE'] . 'includes/core/wcontroller.class.php');
  */
 class Walleye {
 
-    const ID_OF_UNKNOWN_USER = 0;
     const USER_SESSION = 'user';
 
     private static $instance;
