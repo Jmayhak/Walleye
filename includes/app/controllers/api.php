@@ -5,7 +5,7 @@ namespace controllers;
 /**
  * 
  */
-class Api_controller extends wController {
+class Api_controller extends wController implements iController {
 
     /**
      * creates new instance of self and parent
@@ -23,6 +23,11 @@ class Api_controller extends wController {
                 break;
         }
     }
+
+public function __toString() {
+	
+}
+
 }
 
 ?>

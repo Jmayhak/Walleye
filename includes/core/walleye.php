@@ -1,25 +1,25 @@
 <?php
 
-if($wConfigOptions['PRODUCTION']) ini_set('zend.ze1_compatibility_mode', 0);
-if($wConfigOptions['PRODUCTION']) ini_set('display_errors','0');
-
-require($wConfigOptions['BASE'] . 'includes/config/config.php');
-require($wConfigOptions['BASE'] . 'includes/config/routes.php');
-require($wConfigOptions['BASE'] . 'includes/core/libraries/db/wdb.php');
+require($wConfigOptions['BASE'] . 'includes/core/libraries/ez_sql/ez_sql_core.php');
+require($wConfigOptions['BASE'] . 'includes/core/libraries/ez_sql/ez_sql_mysql.php');
+require($wConfigOptions['BASE'] . 'includes/core/libraries/db/wdb.class.php');
 require($wConfigOptions['BASE'] . 'includes/core/wmodel.class.php');
 require($wConfigOptions['BASE'] . 'includes/core/wcontroller.class.php');
+require($wConfigOptions['BASE'] . 'includes/core/libraries/pqp/pqp.php');
 
 /**
  *
  */
 class Walleye {
 
-    const USER_SESSION = 'user';
-
     private static $instance;
+    private static $user;
     private $pqp;
     private $url;
-	private $options = array();
+    private $action = array();
+    private $handler;
+    public $options = array();
+    public $routes = array();
     private $data = array();
 
     /**
@@ -28,23 +28,40 @@ class Walleye {
     private function Walleye() {
         session_start();
         $this->pqp = new PhpQuickProfiler(PhpQuickProfiler::staticGetMicroTime());
-        $this->data = array();
-        $this->options = array();
+        $this->url = $_SERVER["REQUEST_URI"];
+        $this->data = $this->getDataFromUrl($this->url);
+        $this->action = $this->getActionFromUrl($this->url);
     }
 
     /**
-     * The options, handler, action, and data are set
+     * The options are set
      *
-	* @param $options array
-	* @param $url string
-     * $return Walleye
+     * @param $options array
      */
-    public static function withOptions($options) {
-	    $instance = new Walleye();
-	    $this->url = $_SERVER["REQUEST_URI"];
-        $instance->options = $options;
-        $instance->data = $instance->getDataFromURL($this->url);
-        return $instance;
+    public function setOptions($options) {
+        $this->options = $options;
+    }
+
+    /**
+     * The routes are set
+     *
+     * @param $routes array
+     */
+    public function setRoutes($routes) {
+        $this->routes = $routes;
+    }
+
+    /**
+     * Makes sure Walleye is handled as a singleton. This function will give you
+     * an instance (the only instance) of Walleye.
+     *
+     * @return Walleye
+     */
+    public static function getInstance() {
+        if (!self::$instance) {
+            self::$instance = new Walleye();
+        }
+        return self::$instance;
     }
 
     /**
@@ -52,7 +69,7 @@ class Walleye {
      */
     public function run() {
         $this->route();
-        if(!$wConfigOptions['PRODUCTION']) {
+        if (!$this->options['PRODUCTION']) {
             $this->pqp->display(wDb::getInstance());
         }
     }
@@ -63,7 +80,17 @@ class Walleye {
      * @see includes/config/routes.php
      */
     public function route() {
-	    //TODO write a preg match for the wRoutes array that creates a new controller that matches
+        foreach ($this->routes as $route => $handler) {
+            if($route == 'default') {
+                $controller = new wController();
+                $controller->view('index.php', array());
+            }
+            if (preg_match($route, $this->url)) {
+                $this->handler = $handler;
+                $instance = new $handler;
+                $handler->doAction();
+            }
+        }
     }
 
     /**
@@ -78,64 +105,29 @@ class Walleye {
         return false;
     }
 
-	/**
-	 * Returns the currently logged in user via sessions. If a user is not
-	 * set then it sets the user and returns
-	 *
-	 * @see User::withSession()
-	 * @return User
-	 */
-	public function getLoggedUser() {
-	    if(!self::$user) {
-	        self::$user = User::withSession();
-	    }
-	    return self::$user;
-	}
-
-	/**
-	 * Sets the logged in user via Sessions. Use this after changing the session
-	 * of a user after reauthentication to make sure on the next view render the
-	 * user will be allowed access.
-	 *
-	 * @see User::withSession()
-	 */
-	public function setLoggedUser() {
-	    self::$user = User::withSession();
-	}
-	
     /**
+     * Returns the currently logged in user via sessions. If a user is not
+     * set then it sets the user and returns
      *
-     * @return Array
+     * @see User::withSession()
+     * @return User
      */
-    public function getData() {
-        return $this->data;
+    public function getLoggedUser() {
+        if (!self::$user) {
+            self::$user = \models\User::withSession();
+        }
+        return self::$user;
     }
 
     /**
-     * Takes a URL and returns the handler ex. /admin/test/adf?hello=yes would return admin
+     * Sets the logged in user via Sessions. Use this after changing the session
+     * of a user after reauthentication to make sure on the next view render the
+     * user will be allowed access.
      *
-     * @deprecated
-     * @property $URL string
-     * @return string
+     * @see User::withSession()
      */
-    private function getHandlerFromURL($URL) {
-        $withoutData = explode("?", $URL);
-        $pathArray = explode("/", $withoutData[0]);
-        return $pathArray[1];
-    }
-
-    /**
-     * Takes a URL and returns the action ex. /admin/test/adf?hello=yes would return test/adf
-     *
-     * @deprecated
-     * @property $URL string
-     * @return array
-     */
-    private function getActionFromURL($URL) {
-        $withoutData = explode("?", $URL);
-        $pathArray = explode("/", $withoutData[0]);
-        $action = array_slice($pathArray, 2);
-        return $action;
+    public function setLoggedUser() {
+        self::$user = \models\User::withSession();
     }
 
     /**
@@ -143,20 +135,35 @@ class Walleye {
      *
      * @return array
      */
-    private function getDataFromURL() {
-        if($_SERVER['REQUEST_METHOD'] == 'POST') {
+    private function getDataFromUrl() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             return $_POST;
         }
         return $_GET;
     }
 
     /**
-     * Returns Controller object in the form: Handler: '' Action: '' Data: '' View: '' Values: ''
+     * Takes a URL and returns the action ex. /admin/test/adf?hello=yes would return test/adf
+     *
+     * @param $url string
+     * @return array
+     */
+    private function getActionFromUrl($url) {
+        $withoutData = explode("?", $url);
+        $pathArray = explode("/", $withoutData[0]);
+        $action = array_slice($pathArray, 2);
+        return $action;
+    }
+
+    /**
+     * Returns Controller object in the form: Handler: '' Action: '' Data: ''
      *
      * @return string
      */
-    public function toString() {
-        return '';
+    public function __toString() {
+        return "Handler: '" . $this->handler .
+                "Action: '" . $this->action .
+                "Data: '" . $this->data;
     }
 
 }

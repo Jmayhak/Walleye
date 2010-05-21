@@ -5,7 +5,7 @@ namespace controllers;
 /**
  *
  */
-class Admin_controller extends wController {
+class Admin_controller extends wController implements iController {
 
     /**
      * Creates a new instance of self and parent
@@ -23,6 +23,11 @@ class Admin_controller extends wController {
                 break;
         }
     }
+
+public function __toString() {
+	
+}
+
 }
 
 ?>

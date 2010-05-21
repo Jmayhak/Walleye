@@ -1,9 +1,12 @@
 <?php
 
-require('../includes/config.php');
+require('../includes/config/config.php');
+require('../includes/config/routes.php');
 require('../includes/core/walleye.php');
 
-$app = Walleye::withOptions($wConfigOptions);
+$app = Walleye::getInstance();
+$app->setOptions($wConfigOptions);
+$app->setRoutes($wRoutes);
 $app->run();
 
 ?>
