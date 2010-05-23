@@ -27,10 +27,12 @@ class wDb extends ezSQL_mysql {
      * @see config.php
      */
     private function wDb() {
-        $this->database = DB_DATABASE;
-        $this->user = DB_USER;
-        $this->password = DB_PASS;
-        $this->server = DB_SERVER;
+        $walleye = Walleye::getInstance();
+        $dbOptions = $walleye->dbOptions;
+        $this->database = $dbOptions['DB_DATABASE'];
+        $this->user = $dbOptions['DB_USER'];
+        $this->password = $dbOptions['DB_PASS'];
+        $this->server = $dbOptions['DB_SERVER'];
         $this->connect($this->user, $this->password, $this->server);
         $this->select($this->database);
     }
@@ -43,7 +45,7 @@ class wDb extends ezSQL_mysql {
      */
     public static function getInstance() {
         if (!self::$instance) {
-            self::$instance = new Model();
+            self::$instance = new wDb();
         }
         return self::$instance;
     }

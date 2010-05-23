@@ -247,6 +247,20 @@ namespace models;
          */
 
         /**
+         * @return string gives the generic url for logging in a User
+         */
+        public static function getLoginUrl() {
+            return '/user/login';
+        }
+
+        /**
+         * @return string gives the generic url for logging in a User
+         */
+        public static function getLogoutUrl() {
+            return '/user/logout';
+        }
+
+        /**
          * Gives a string formatted as follows: uid: '' userName: '' firstName: '' lastName: '' regDate: ''
          * @return string
          */

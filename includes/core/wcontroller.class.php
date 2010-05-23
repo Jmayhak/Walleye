@@ -20,7 +20,9 @@ class wController {
     /**
      *  Render a template and print the logged in user to PQP
      */
-    public function view($view, $data) {
+    public function view($view, $values) {
+        $walleye = Walleye::getInstance();
+        $views = $walleye->options['VIEWS'];
         require($this->view);
     }
 }

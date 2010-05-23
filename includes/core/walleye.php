@@ -19,6 +19,7 @@ class Walleye {
     private $action = array();
     private $handler;
     public $options = array();
+    public $dbOptions = array();
     public $routes = array();
     private $data = array();
 
@@ -31,24 +32,6 @@ class Walleye {
         $this->url = $_SERVER["REQUEST_URI"];
         $this->data = $this->getDataFromUrl($this->url);
         $this->action = $this->getActionFromUrl($this->url);
-    }
-
-    /**
-     * The options are set
-     *
-     * @param $options array
-     */
-    public function setOptions($options) {
-        $this->options = $options;
-    }
-
-    /**
-     * The routes are set
-     *
-     * @param $routes array
-     */
-    public function setRoutes($routes) {
-        $this->routes = $routes;
     }
 
     /**
@@ -88,7 +71,7 @@ class Walleye {
             if (preg_match($route, $this->url)) {
                 $this->handler = $handler;
                 $instance = new $handler;
-                $handler->doAction();
+                $instance->doAction();
             }
         }
     }
@@ -109,7 +92,7 @@ class Walleye {
      * Returns the currently logged in user via sessions. If a user is not
      * set then it sets the user and returns
      *
-     * @see User::withSession()
+     * @see \models\User::withSession()
      * @return User
      */
     public function getLoggedUser() {

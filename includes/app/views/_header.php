@@ -4,20 +4,25 @@
     <title></title>
     <meta name="keywords" content=""/>
     <meta name="description" content=""/>
-    <link href="<?php echo DEFAULT_STYLESHEET; ?>" rel="stylesheet" type="text/css"/>
+<?php foreach ($values['css'] as $css) { ?>
+    <link href="<?php echo $css['href']; ?>" rel="stylesheet" type="text/css"/>
+<?php } ?>
+<?php foreach ($values['js'] as $js) { ?>
+    <link href="<?php echo $js['href']; ?>" rel="stylesheet" type="text/css"/>
+<?php } ?>
 </head>
 <body>
 <div id="wrapper">
     <div id="header">
         <div id="logo">
-            <h3><a href="/">APP NAME</a></h3>
+            <h3><a href="/"></a></h3>
         </div>
         <div id="menu">
             <ul>
-            <?php if (Controller::getLoggedUser()->getUid()) { ?>
-                <li><a href="<?php echo LOG_OUT_URL_PATH; ?>">Log out</a></li>
+            <?php if (wController::getLoggedUser()->getUid()) { ?>
+                <li><a href="<?php echo \models\User::getLogoutUrl(); ?>">Log out</a></li>
             <?php } else { ?>
-                <li><a href="<?php echo LOG_IN_URL_PATH; ?>">Log in</a></li>
+                <li><a href="<?php echo \models\User::getLoginUrl(); ?>">Log in</a></li>
             <?php } ?>
             </ul>
         </div>

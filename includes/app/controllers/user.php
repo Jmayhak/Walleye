@@ -5,13 +5,13 @@ namespace controllers;
     /**
      *
      */
-    class User extends wController implements iControler {
+    class User extends wController implements iController {
 
         /**
          * A new instance
          */
         function User() {
-            super::__contruct();
+            parent::__contruct();
         }
 
         /**
@@ -43,7 +43,7 @@ namespace controllers;
                 unset($_SESSION[constant('\models\User::' . USER_SESSION)]);
                 $walleye->setLoggedUser();
             }
-            $this->view('index.php', array());
+            $this->view('index.php', array('css'=>array('href' => 'css/default.css')));
         }
 
         /**
