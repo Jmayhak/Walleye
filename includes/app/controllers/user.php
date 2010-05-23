@@ -8,10 +8,10 @@ namespace controllers;
 class User extends wController implements iControler {
 
     /**
-     * A new instance is created of the parent object.
+     * A new instance
      */
-    function User_controller() {
-
+    function User() {
+	    super::__contruct();
     }
 
     /**
@@ -19,9 +19,9 @@ class User extends wController implements iControler {
      */
     public function doAction() {
         $walleye = Walleye::getInstance();
-		        $action = $walleye->action;
+		        $actions = $walleye->actions;
 		        $data = $walleye->data;
-		        switch($action[0]) {
+		        switch($actions[0]) {
 		            case "login":
 		                $this->login();
 		                break;
@@ -69,11 +69,11 @@ class User extends wController implements iControler {
 		                }
 		            }
 		            else {
-		                $values = Array("login_message"=>"Wrong user name and password combination");
+		                $values["login_message"] = "Wrong user name and password combination";
 		            }
 		        }
 		        else {
-		            $values = Array("login_message"=>"Wrong user name or password combination");
+		            $values["login_message"] = "Wrong user name or password combination";
 		        }
 		        $this->view($view, $values);
     }

@@ -5,7 +5,7 @@ namespace models;
 /**
  *
  */
-class Admin extends wModel 
+class Admin extends wModel implements iModel
 {
     
     /**
