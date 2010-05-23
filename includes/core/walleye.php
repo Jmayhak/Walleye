@@ -81,7 +81,7 @@ class Walleye {
      */
     public function route() {
         foreach ($this->routes as $route => $handler) {
-            if($route == 'default') {
+            if ($route == 'default') {
                 $controller = new wController();
                 $controller->view('index.php', array());
             }

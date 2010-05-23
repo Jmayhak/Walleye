@@ -4,12 +4,13 @@
  *
  */
 class wModel {
-	
-	/**
-	 *
-	 */
-	public function wModel() {
-		
-	}
+
+    /**
+     *
+     */
+    public function wModel() {
+
+    }
 }
+
 ?>

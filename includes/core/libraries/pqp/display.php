@@ -17,9 +17,9 @@
 
 function displayPqp($output, $config) {
 
-$cssUrl = PQP_CSS;
+    $cssUrl = PQP_CSS;
 
-echo <<<JAVASCRIPT
+    echo <<<JAVASCRIPT
 <!-- JavaScript -->
 <script type="text/javascript">
 	var PQP_DETAILS = true;
@@ -127,15 +127,15 @@ echo <<<JAVASCRIPT
 </script>
 JAVASCRIPT;
 
-echo '<div id="pqp-container" class="pQp" style="display:none">';
+    echo '<div id="pqp-container" class="pQp" style="display:none">';
 
-$logCount = count($output['logs']['console']);
-$fileCount = count($output['files']);
-$memoryUsed = $output['memoryTotals']['used'];
-$queryCount = $output['queryTotals']['count'];
-$speedTotal = $output['speedTotals']['total'];
+    $logCount = count($output['logs']['console']);
+    $fileCount = count($output['files']);
+    $memoryUsed = $output['memoryTotals']['used'];
+    $queryCount = $output['queryTotals']['count'];
+    $speedTotal = $output['speedTotals']['total'];
 
-echo <<<PQPTABS
+    echo <<<PQPTABS
 <div id="pQp" class="console">
 <table id="pqp-metrics" cellspacing="0">
 <tr>
@@ -163,171 +163,171 @@ echo <<<PQPTABS
 </table>
 PQPTABS;
 
-echo '<div id="pqp-console" class="pqp-box">';
+    echo '<div id="pqp-console" class="pqp-box">';
 
-if($logCount ==  0) {
-	echo '<h3>This panel has no log items.</h3>';
-}
-else {
-	echo '<table class="side" cellspacing="0">
+    if ($logCount == 0) {
+        echo '<h3>This panel has no log items.</h3>';
+    }
+    else {
+        echo '<table class="side" cellspacing="0">
 		<tr>
-			<td class="alt1"><var>'.$output['logs']['logCount'].'</var><h4>Logs</h4></td>
-			<td class="alt2"><var>'.$output['logs']['errorCount'].'</var> <h4>Errors</h4></td>
+			<td class="alt1"><var>' . $output['logs']['logCount'] . '</var><h4>Logs</h4></td>
+			<td class="alt2"><var>' . $output['logs']['errorCount'] . '</var> <h4>Errors</h4></td>
 		</tr>
 		<tr>
-			<td class="alt3"><var>'.$output['logs']['memoryCount'].'</var> <h4>Memory</h4></td>
-			<td class="alt4"><var>'.$output['logs']['speedCount'].'</var> <h4>Speed</h4></td>
+			<td class="alt3"><var>' . $output['logs']['memoryCount'] . '</var> <h4>Memory</h4></td>
+			<td class="alt4"><var>' . $output['logs']['speedCount'] . '</var> <h4>Speed</h4></td>
 		</tr>
 		</table>
 		<table class="main" cellspacing="0">';
 
-		$class = '';
-		foreach($output['logs']['console'] as $log) {
-			echo '<tr class="log-'.$log['type'].'">
-				<td class="type">'.$log['type'].'</td>
-				<td class="'.$class.'">';
-			if($log['type'] == 'log') {
-				echo '<div><pre>'.$log['data'].'</pre></div>';
-			}
-			elseif($log['type'] == 'memory') {
-				echo '<div><pre>'.$log['data'].'</pre> <em>'.$log['dataType'].'</em>: '.$log['name'].' </div>';
-			}
-			elseif($log['type'] == 'speed') {
-				echo '<div><pre>'.$log['data'].'</pre> <em>'.$log['name'].'</em></div>';
-			}
-			elseif($log['type'] == 'error') {
-				echo '<div><em>Line '.$log['line'].'</em> : '.$log['data'].' <pre>'.$log['file'].'</pre></div>';
-			}
+        $class = '';
+        foreach ($output['logs']['console'] as $log) {
+            echo '<tr class="log-' . $log['type'] . '">
+				<td class="type">' . $log['type'] . '</td>
+				<td class="' . $class . '">';
+            if ($log['type'] == 'log') {
+                echo '<div><pre>' . $log['data'] . '</pre></div>';
+            }
+            elseif ($log['type'] == 'memory') {
+                echo '<div><pre>' . $log['data'] . '</pre> <em>' . $log['dataType'] . '</em>: ' . $log['name'] . ' </div>';
+            }
+            elseif ($log['type'] == 'speed') {
+                echo '<div><pre>' . $log['data'] . '</pre> <em>' . $log['name'] . '</em></div>';
+            }
+            elseif ($log['type'] == 'error') {
+                echo '<div><em>Line ' . $log['line'] . '</em> : ' . $log['data'] . ' <pre>' . $log['file'] . '</pre></div>';
+            }
 
-			echo '</td></tr>';
-			if($class == '') $class = 'alt';
-			else $class = '';
-		}
+            echo '</td></tr>';
+            if ($class == '') $class = 'alt';
+            else $class = '';
+        }
 
-		echo '</table>';
-}
+        echo '</table>';
+    }
 
-echo '</div>';
+    echo '</div>';
 
-echo '<div id="pqp-speed" class="pqp-box">';
+    echo '<div id="pqp-speed" class="pqp-box">';
 
-if($output['logs']['speedCount'] ==  0) {
-	echo '<h3>This panel has no log items.</h3>';
-}
-else {
-	echo '<table class="side" cellspacing="0">
-		  <tr><td><var>'.$output['speedTotals']['total'].'</var><h4>Load Time</h4></td></tr>
-		  <tr><td class="alt"><var>'.$output['speedTotals']['allowed'].'</var> <h4>Max Execution Time</h4></td></tr>
+    if ($output['logs']['speedCount'] == 0) {
+        echo '<h3>This panel has no log items.</h3>';
+    }
+    else {
+        echo '<table class="side" cellspacing="0">
+		  <tr><td><var>' . $output['speedTotals']['total'] . '</var><h4>Load Time</h4></td></tr>
+		  <tr><td class="alt"><var>' . $output['speedTotals']['allowed'] . '</var> <h4>Max Execution Time</h4></td></tr>
 		 </table>
 		<table class="main" cellspacing="0">';
 
-		$class = '';
-		foreach($output['logs']['console'] as $log) {
-			if($log['type'] == 'speed') {
-				echo '<tr class="log-'.$log['type'].'">
-				<td class="'.$class.'">';
-				echo '<div><pre>'.$log['data'].'</pre> <em>'.$log['name'].'</em></div>';
-				echo '</td></tr>';
-				if($class == '') $class = 'alt';
-				else $class = '';
-			}
-		}
+        $class = '';
+        foreach ($output['logs']['console'] as $log) {
+            if ($log['type'] == 'speed') {
+                echo '<tr class="log-' . $log['type'] . '">
+				<td class="' . $class . '">';
+                echo '<div><pre>' . $log['data'] . '</pre> <em>' . $log['name'] . '</em></div>';
+                echo '</td></tr>';
+                if ($class == '') $class = 'alt';
+                else $class = '';
+            }
+        }
 
-		echo '</table>';
-}
+        echo '</table>';
+    }
 
-echo '</div>';
+    echo '</div>';
 
-echo '<div id="pqp-queries" class="pqp-box">';
+    echo '<div id="pqp-queries" class="pqp-box">';
 
-if($output['queryTotals']['count'] ==  0) {
-	echo '<h3>This panel has no log items.</h3>';
-}
-else {
-	echo '<table class="side" cellspacing="0">
-		  <tr><td><var>'.$output['queryTotals']['count'].'</var><h4>Total Queries</h4></td></tr>
-		  <tr><td class="alt"><var>'.$output['queryTotals']['time'].'</var> <h4>Total Time</h4></td></tr>
+    if ($output['queryTotals']['count'] == 0) {
+        echo '<h3>This panel has no log items.</h3>';
+    }
+    else {
+        echo '<table class="side" cellspacing="0">
+		  <tr><td><var>' . $output['queryTotals']['count'] . '</var><h4>Total Queries</h4></td></tr>
+		  <tr><td class="alt"><var>' . $output['queryTotals']['time'] . '</var> <h4>Total Time</h4></td></tr>
 		  <tr><td><var>0</var> <h4>Duplicates</h4></td></tr>
 		 </table>
 		<table class="main" cellspacing="0">';
 
-		$class = '';
-		foreach($output['queries'] as $query) {
-			echo '<tr>
-				<td class="'.$class.'">'.$query['sql'];
-			if($query['explain']) {
-					echo '<em>
-						Possible keys: <b>'.$query['explain']['possible_keys'].'</b> &middot;
-						Key Used: <b>'.$query['explain']['key'].'</b> &middot;
-						Type: <b>'.$query['explain']['type'].'</b> &middot;
-						Rows: <b>'.$query['explain']['rows'].'</b> &middot;
-						Speed: <b>'.$query['time'].'</b>
+        $class = '';
+        foreach ($output['queries'] as $query) {
+            echo '<tr>
+				<td class="' . $class . '">' . $query['sql'];
+            if ($query['explain']) {
+                echo '<em>
+						Possible keys: <b>' . $query['explain']['possible_keys'] . '</b> &middot;
+						Key Used: <b>' . $query['explain']['key'] . '</b> &middot;
+						Type: <b>' . $query['explain']['type'] . '</b> &middot;
+						Rows: <b>' . $query['explain']['rows'] . '</b> &middot;
+						Speed: <b>' . $query['time'] . '</b>
 					</em>';
-			}
-			echo '</td></tr>';
-			if($class == '') $class = 'alt';
-			else $class = '';
-		}
+            }
+            echo '</td></tr>';
+            if ($class == '') $class = 'alt';
+            else $class = '';
+        }
 
-		echo '</table>';
-}
+        echo '</table>';
+    }
 
-echo '</div>';
+    echo '</div>';
 
-echo '<div id="pqp-memory" class="pqp-box">';
+    echo '<div id="pqp-memory" class="pqp-box">';
 
-if($output['logs']['memoryCount'] ==  0) {
-	echo '<h3>This panel has no log items.</h3>';
-}
-else {
-	echo '<table class="side" cellspacing="0">
-		  <tr><td><var>'.$output['memoryTotals']['used'].'</var><h4>Used Memory</h4></td></tr>
-		  <tr><td class="alt"><var>'.$output['memoryTotals']['total'].'</var> <h4>Total Available</h4></td></tr>
+    if ($output['logs']['memoryCount'] == 0) {
+        echo '<h3>This panel has no log items.</h3>';
+    }
+    else {
+        echo '<table class="side" cellspacing="0">
+		  <tr><td><var>' . $output['memoryTotals']['used'] . '</var><h4>Used Memory</h4></td></tr>
+		  <tr><td class="alt"><var>' . $output['memoryTotals']['total'] . '</var> <h4>Total Available</h4></td></tr>
 		 </table>
 		<table class="main" cellspacing="0">';
 
-		$class = '';
-		foreach($output['logs']['console'] as $log) {
-			if($log['type'] == 'memory') {
-				echo '<tr class="log-'.$log['type'].'">';
-				echo '<td class="'.$class.'"><b>'.$log['data'].'</b> <em>'.$log['dataType'].'</em>: '.$log['name'].'</td>';
-				echo '</tr>';
-				if($class == '') $class = 'alt';
-				else $class = '';
-			}
-		}
+        $class = '';
+        foreach ($output['logs']['console'] as $log) {
+            if ($log['type'] == 'memory') {
+                echo '<tr class="log-' . $log['type'] . '">';
+                echo '<td class="' . $class . '"><b>' . $log['data'] . '</b> <em>' . $log['dataType'] . '</em>: ' . $log['name'] . '</td>';
+                echo '</tr>';
+                if ($class == '') $class = 'alt';
+                else $class = '';
+            }
+        }
 
-		echo '</table>';
-}
+        echo '</table>';
+    }
 
-echo '</div>';
+    echo '</div>';
 
-echo '<div id="pqp-files" class="pqp-box">';
+    echo '<div id="pqp-files" class="pqp-box">';
 
-if($output['fileTotals']['count'] ==  0) {
-	echo '<h3>This panel has no log items.</h3>';
-}
-else {
-	echo '<table class="side" cellspacing="0">
-		  	<tr><td><var>'.$output['fileTotals']['count'].'</var><h4>Total Files</h4></td></tr>
-			<tr><td class="alt"><var>'.$output['fileTotals']['size'].'</var> <h4>Total Size</h4></td></tr>
-			<tr><td><var>'.$output['fileTotals']['largest'].'</var> <h4>Largest</h4></td></tr>
+    if ($output['fileTotals']['count'] == 0) {
+        echo '<h3>This panel has no log items.</h3>';
+    }
+    else {
+        echo '<table class="side" cellspacing="0">
+		  	<tr><td><var>' . $output['fileTotals']['count'] . '</var><h4>Total Files</h4></td></tr>
+			<tr><td class="alt"><var>' . $output['fileTotals']['size'] . '</var> <h4>Total Size</h4></td></tr>
+			<tr><td><var>' . $output['fileTotals']['largest'] . '</var> <h4>Largest</h4></td></tr>
 		 </table>
 		<table class="main" cellspacing="0">';
 
-		$class ='';
-		foreach($output['files'] as $file) {
-			echo '<tr><td class="'.$class.'"><b>'.$file['size'].'</b> '.$file['name'].'</td></tr>';
-			if($class == '') $class = 'alt';
-			else $class = '';
-		}
+        $class = '';
+        foreach ($output['files'] as $file) {
+            echo '<tr><td class="' . $class . '"><b>' . $file['size'] . '</b> ' . $file['name'] . '</td></tr>';
+            if ($class == '') $class = 'alt';
+            else $class = '';
+        }
 
-		echo '</table>';
-}
+        echo '</table>';
+    }
 
-echo '</div>';
+    echo '</div>';
 
-echo <<<FOOTER
+    echo <<<FOOTER
 	<table id="pqp-footer" cellspacing="0">
 		<tr>
 			<td class="credit">
@@ -343,7 +343,7 @@ echo <<<FOOTER
 	</table>
 FOOTER;
 
-echo '</div></div>';
+    echo '</div></div>';
 
 }
 

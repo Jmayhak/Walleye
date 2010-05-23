@@ -2,24 +2,21 @@
 
 namespace models;
 
-/**
- *
- */
-class Admin extends wModel implements iModel
-{
-    
     /**
      *
      */
-    function Admin() 
-	{
+    class Admin extends wModel implements iModel {
 
+        /**
+         *
+         */
+        function Admin() {
+
+        }
+
+        public function toString() {
+
+        }
     }
 
-    public function toString() 
-	{
-
-    }
-}
-
-?>
+    ?>

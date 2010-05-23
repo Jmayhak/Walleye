@@ -42,11 +42,12 @@ class wDb extends ezSQL_mysql {
      * @return Model
      */
     public static function getInstance() {
-        if(!self::$instance) {
+        if (!self::$instance) {
             self::$instance = new Model();
         }
         return self::$instance;
     }
+
     /**
      * Use this function for inserts and updates
      * Use db_query instead of ezSQL_mysql's query function because this method logs the sql statement in pqp
@@ -73,6 +74,7 @@ class wDb extends ezSQL_mysql {
         $result = parent::get_results($query, ARRAY_A);
         return $result;
     }
+
     /**
      * Use this function to select a single variable
      * @property $query string
@@ -83,6 +85,7 @@ class wDb extends ezSQL_mysql {
         $result = parent::get_var($query);
         return $result;
     }
+
     /**
      * Use this function to select a single row
      * @property $query string
@@ -93,6 +96,7 @@ class wDb extends ezSQL_mysql {
         $result = parent::get_row($query, ARRAY_A);
         return $result;
     }
+
     /**
      * This is used to keep track of all db queries
      * @property $sql string
@@ -101,11 +105,12 @@ class wDb extends ezSQL_mysql {
     function logQuery($sql, $start) {
 
         $query = array(
-                'sql' => $sql,
-                'time' => ($this->getTime() - $start)*1000
+            'sql' => $sql,
+            'time' => ($this->getTime() - $start) * 1000
         );
         array_push($this->queries, $query);
     }
+
     /**
      * @return string as a modified microtime
      */
@@ -117,6 +122,7 @@ class wDb extends ezSQL_mysql {
         $start = $time;
         return $start;
     }
+
     /**
      * Takes the time and makes it readable
      * @property $time
@@ -126,17 +132,18 @@ class wDb extends ezSQL_mysql {
         $ret = $time;
         $formatter = 0;
         $formats = array('ms', 's', 'm');
-        if($time >= 1000 && $time < 60000) {
+        if ($time >= 1000 && $time < 60000) {
             $formatter = 1;
             $ret = ($time / 1000);
         }
-        if($time >= 60000) {
+        if ($time >= 60000) {
             $formatter = 2;
             $ret = ($time / 1000) / 60;
         }
-        $ret = number_format($ret,3,'.','') . ' ' . $formats[$formatter];
+        $ret = number_format($ret, 3, '.', '') . ' ' . $formats[$formatter];
         return $ret;
     }
+
     /**
      * @return string a nice way of seeing the database info for this model
      */
