@@ -81,6 +81,7 @@ namespace models;
             if ($user_id) {
                 try
                 {
+                    //TODO this is where the session key is created in the db. turn into a function and make better
                     $instance = self::withUid($user_id);
                     $session = $instance->getFirstName() . $instance->getLastName() . $instance->getRegDate() . $instance->getUid() . $instance->getUserName() . time();
                     $query = $db->query("INSERT INTO Sessions (session_key) VALUES ('" . md5($session) . "')");
