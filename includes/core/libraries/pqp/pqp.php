@@ -25,7 +25,7 @@ class PhpQuickProfiler {
         $this->startTime = $startTime;
         $this->config = $config;
         $walleye = Walleye::getInstance();
-        $base = $walleye->options;
+        $base = $walleye->appOptions;
         require($base['BASE'] . 'includes/core/pqp/console.php');
     }
 
