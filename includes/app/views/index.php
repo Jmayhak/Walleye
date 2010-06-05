@@ -1,7 +1,7 @@
-<?php require($views['BASE_HEADER_VIEW']); ?>
+<?php require(Walleye::BASE_HEADER_VIEW); ?>
 
 <div id="container">
 
 </div>
 
-<?php require($views['BASE_FOOTER_VIEW']); ?>
+<?php require(Walleye::BASE_FOOTER_VIEW); ?>

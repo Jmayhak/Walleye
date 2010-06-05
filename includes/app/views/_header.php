@@ -19,10 +19,10 @@
         </div>
         <div id="menu">
             <ul>
-            <?php if (wController::getLoggedUser()->getUid()) { ?>
-                <li><a href="<?php echo \models\User::getLogoutUrl(); ?>">Log out</a></li>
+            <?php if (mUser::getLoggedUser()->getUid()) { ?>
+                <li><a href="<?php echo mUser::getLogoutUrl(); ?>">Log out</a></li>
             <?php } else { ?>
-                <li><a href="<?php echo \models\User::getLoginUrl(); ?>">Log in</a></li>
+                <li><a href="<?php echo mUser::getLoginUrl(); ?>">Log in</a></li>
             <?php } ?>
             </ul>
         </div>
