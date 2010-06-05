@@ -1,14 +1,10 @@
 <?php
 
 $wRoutes = array(
-    '//login/' => 'user',
-    '//logout/' => 'user',
-    '//css/' => 'static',
-    '//js/' => 'static',
-    '//images/' => 'static',
-    '//plugins/' => 'static',
-    '//.*/' => '',
-    'default' => ''
+    '//login/' => 'cUser',
+    '//logout/' => 'cUser',
+    '//api/' => 'cApi',
+    'default' => 'cSite'
 );
 
 ?>
