@@ -1,58 +1,79 @@
 <?php
 
-require($wConfigOptions['BASE'] . 'includes/core/libraries/ez_sql/ez_sql_core.php');
-require($wConfigOptions['BASE'] . 'includes/core/libraries/ez_sql/ez_sql_mysql.php');
-require($wConfigOptions['BASE'] . 'includes/core/libraries/db/wdb.class.php');
-require($wConfigOptions['BASE'] . 'includes/core/wmodel.class.php');
-require($wConfigOptions['BASE'] . 'includes/core/wcontroller.class.php');
+require($wConfigOptions['BASE'] . 'includes/core/libraries/db/wdb.php');
 require($wConfigOptions['BASE'] . 'includes/core/libraries/pqp/pqp.php');
 
-/**
- *
- */
-class Walleye {
+//TODO implement __autoload() for models and controllers instead of a strict require
 
-    private static $instance;
-    private static $user;
-    private $pqp;
-    private $url;
+//controllers
+require($wConfigOptions['BASE'] . 'includes/app/controllers/api.php');
+require($wConfigOptions['BASE'] . 'includes/app/controllers/site.php');
+require($wConfigOptions['BASE'] . 'includes/app/controllers/user.php');
+
+//models
+require($wConfigOptions['BASE'] . 'includes/app/models/adult.php');
+require($wConfigOptions['BASE'] . 'includes/app/models/task.php');
+require($wConfigOptions['BASE'] . 'includes/app/models/user.php');
+require($wConfigOptions['BASE'] . 'includes/app/models/youthgroup.php');
+
+final class Walleye {
+
+    private static $walleye_instance;
+
     private $action = array();
-    private $handler;
-    public $options = array();
-    public $dbOptions = array();
-    public $routes = array();
     private $data = array();
+    private $url;
+
+    private $pqp;
+    private static $server_base_dir;
+
+    private $appOptions = array();
+    private $dbOptions = array();
+    private $routes = array();
+
+    //views
+    const BASE_INDEX_VIEW = 'index.php';
+    const BASE_HEADER_VIEW = '_header.php';
+    const BASE_FOOTER_VIEW = '_footer.php';
+    const BASE_SIDEBAR_VIEW = 'sidebar.php';
+
+    //static
+    const DEFAULT_STYLESHEET = '/style.css';
+    const PQP_OVERLAY = '/plugins/pqp/overlay.gif';
+    const PQP_CSS = '/plugins/pqp/pqp.css';
+    const PQP_SIDE = '/plugins/pqp/side.png';
 
     /**
-     * Constructor for the events application
+     * Starts the session, instantiates the pqp object, the post or get data, and the action given in the url
      */
     private function Walleye() {
         session_start();
         $this->pqp = new PhpQuickProfiler(PhpQuickProfiler::staticGetMicroTime());
+        $this->data = $this->getDataFromUrl($_SERVER["REQUEST_URI"]);
+        $this->action = $this->getActionFromUrl($_SERVER["REQUEST_URI"]);
         $this->url = $_SERVER["REQUEST_URI"];
-        $this->data = $this->getDataFromUrl($this->url);
-        $this->action = $this->getActionFromUrl($this->url);
     }
 
     /**
      * Makes sure Walleye is handled as a singleton. This function will give you
-     * an instance (the only instance) of Walleye.
+     * the instance of Walleye.
      *
      * @return Walleye
      */
     public static function getInstance() {
-        if (!self::$instance) {
-            self::$instance = new Walleye();
+        if (!self::$walleye_instance) {
+            self::$walleye_instance = new Walleye();
         }
-        return self::$instance;
+        return self::$walleye_instance;
     }
 
     /**
-     * Start the application
+     * Should be called directly after retrieving the Walleye object. This function performs the action
+     * given in the url and shows pqp if not in production mode.
      */
     public function run() {
         $this->route();
-        if (!$this->options['PRODUCTION']) {
+        if (!$this->appOptions['PRODUCTION']) {
             $this->pqp->display(wDb::getInstance());
         }
     }
@@ -62,55 +83,26 @@ class Walleye {
      *
      * @see includes/config/routes.php
      */
-    public function route() {
-        foreach ($this->routes as $route => $handler) {
+    private function route() {
+        foreach ($this->routes as $route => $controller) {
             if ($route == 'default') {
-                $controller = new wController();
-                $controller->view('index.php', array());
+                if (class_exists($controller) && in_array(('doAction'), get_class_methods($controller))) {
+                    $instance = new $controller($this->action, $this->data);
+                    $instance->doAction();
+                }
+                break;
             }
-            if (preg_match($route, $this->url)) {
-                $this->handler = $handler;
-                $instance = new $handler;
-                $instance->doAction();
+            else {
+                if (preg_match($route, $this->url) && in_array(('doAction'), get_class_methods($controller))) {
+                    if (class_exists($controller)) {
+                        $instance = new $controller($this->action, $this->data);
+                        $instance->doAction();
+                    }
+                    break;
+                }
             }
         }
-    }
 
-    /**
-     * Checks if the browser is a mobile platform
-     *
-     * @return boolean
-     */
-    public function isMobile() {
-        if (strstr($_SERVER['HTTP_USER_AGENT'], " AppleWebKit/") && strstr($_SERVER['HTTP_USER_AGENT'], " Mobile/")) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns the currently logged in user via sessions. If a user is not
-     * set then it sets the user and returns
-     *
-     * @see \models\User::withSession()
-     * @return User
-     */
-    public function getLoggedUser() {
-        if (!self::$user) {
-            self::$user = \models\User::withSession();
-        }
-        return self::$user;
-    }
-
-    /**
-     * Sets the logged in user via Sessions. Use this after changing the session
-     * of a user after reauthentication to make sure on the next view render the
-     * user will be allowed access.
-     *
-     * @see User::withSession()
-     */
-    public function setLoggedUser() {
-        self::$user = \models\User::withSession();
     }
 
     /**
@@ -139,16 +131,66 @@ class Walleye {
     }
 
     /**
-     * Returns Controller object in the form: Handler: '' Action: '' Data: ''
+     * Sets the application options (production mode? base dir? local?)
+     *
+     * @param array $appOptions
+     */
+    public function setAppOptions($appOptions) {
+        $this->appOptions = $appOptions;
+        if (isset($appOptions['BASE'])) {
+            self::$server_base_dir = $appOptions['BASE'];
+        }
+    }
+
+    /**
+     * Sets the db options. The array must contain server, username, password, and database information.
+     * After Walleye is updated the wDb instance is created and the db options are sent.
+     *
+     * @param array $dbOptions
+     */
+    public function setDbOptions($dbOptions) {
+        $this->dbOptions = $dbOptions;
+        wDb::getInstance($dbOptions);
+    }
+
+    /**
+     * Use this to set the routes for this application. The routes must be in the form regexp => controller
+     *
+     * @param array $routes
+     */
+    public function setRoutes($routes) {
+        $this->routes = $routes;
+    }
+
+    /**
+     * Gives the base directory for this application
+     *
+     * @return string
+     */
+    public static function getServerBaseDir() {
+        return self::$server_base_dir;
+    }
+
+    /**
+     * Checks if the browser is a mobile platform. Currently only checks for iphone.
+     *
+     * @return boolean
+     */
+    private function isMobile() {
+        if (strstr($_SERVER['HTTP_USER_AGENT'], " AppleWebKit/") && strstr($_SERVER['HTTP_USER_AGENT'], " Mobile/")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Still waiting to see if there is a case were printing the Walleye object is necessary or useful
      *
      * @return string
      */
     public function __toString() {
-        return "Handler: '" . $this->handler .
-                "Action: '" . $this->action .
-                "Data: '" . $this->data;
+        return '';
     }
-
 }
 
 ?>
