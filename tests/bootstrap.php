@@ -1,44 +1,24 @@
 <?php
 
-$wConfigOptions = array(
+$wAppOptions = array(
     'BASE' => '',
     'PRODUCTION' => true,
     'LOCAL' => false,
-    //Define the models found in includes/app/models/
-    'MODELS' => array(
-        'USER' => 'models/user.php'
-    ),
-    //Define the controllers found in includes/app/controllers/
-    'CONTROLLERS' => array(
-        'USER' => 'controller/user.php',
-        'API' => 'controller/api.php'
-    ),
-    //Define the views found in includes/app/views/
-    'VIEWS' => array(
-        'BASE_HEADER_VIEW' => 'views/_header.php',
-        'BASE_FOOTER_VIEW' => 'views/_footer.php',
-        'BASE_INDEX_VIEW' => 'views/index.php',
-        'LOGIN_VIEW' => 'views/user/login.php',
-        'MOBILE_VIEW' => 'views/mobile/mobile.php'
-    )
 );
 
 $wRoutes = array(
-    '//login/' => 'user',
-    '//logout/' => 'user',
-    '//css/' => 'static',
-    '//js/' => 'static',
-    '//images/' => 'static',
-    '//plugins/' => 'static',
-    '//.*/' => '',
-    'default' => ''
+    '//login/' => 'cUser',
+    '//logout/' => 'cUser',
+    '//api/' => 'cApi',
+    'default' => 'cSite'
 );
 
 require('../includes/core/walleye.php');
 
 $app = Walleye::getInstance();
-$app->setOptions = $wConfigOptions;
-$app->setRoutes = $wRoutes;
-$app->dbOptions = $wDbConfig;
+$app->setAppOptions($wAppOptions);
+$app->setRoutes($wRoutes);
+$app->setDbOptions($wDbConfig);
+$app->run();
 
 ?>
