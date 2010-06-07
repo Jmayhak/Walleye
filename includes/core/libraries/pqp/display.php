@@ -16,8 +16,6 @@
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 function displayPqp($output, $config) {
-    $walleye = Walleye::getInstance();
-    $static = $walleye->appOptions['STATIC'];
     $cssUrl = '/plugins/pqp/pqp.css';
 
     echo <<<JAVASCRIPT

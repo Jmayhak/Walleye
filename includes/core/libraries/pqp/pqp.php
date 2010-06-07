@@ -24,9 +24,7 @@ class PhpQuickProfiler {
     public function __construct($startTime, $config = '') {
         $this->startTime = $startTime;
         $this->config = $config;
-        $walleye = Walleye::getInstance();
-        $base = $walleye->appOptions;
-        require($base['BASE'] . 'includes/core/pqp/console.php');
+        require('console.php');
     }
 
     /*-------------------------------------------
@@ -214,7 +212,7 @@ class PhpQuickProfiler {
         $this->gatherMemoryData();
         $this->gatherQueryData();
         $this->gatherSpeedData();
-        require(PQP_DISPLAY);
+        require('display.php');
         displayPqp($this->output, $this->config);
     }
 
