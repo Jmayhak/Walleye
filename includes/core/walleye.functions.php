@@ -7,7 +7,7 @@
  * @return void
  */
 function __autoload($class_name) {
-    $class_name = substr($class_name, 1);
+    $class_name = str_replace('_', '.', $class_name);
     if (class_exists(Walleye::getServerBaseDir() . '/includes/app/controllers/' . strtolower($class_name) . '.php')) {
         require(Walleye::getServerBaseDir() . '/includes/app/controllers/' . strtolower($class_name) . '.php');
     }
