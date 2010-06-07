@@ -1,52 +1,114 @@
 <?php
 
-require($wConfigOptions['BASE'] . 'includes/core/libraries/db/wdb.php');
-require($wConfigOptions['BASE'] . 'includes/core/libraries/pqp/pqp.php');
+require('./config/config.php');
+require('./config/routes.php');
+require('./config/database.php');
 
-//TODO implement __autoload() for models and controllers instead of a strict require
+require('./walleye.functions.php');
+require('./walleye.database.php');
+require('./walleye.model.php');
+require('./walleye.controller.php');
+require('./walleye.user.php');
+require('./libraries/pqp/pqp.php');
 
-//controllers
-require($wConfigOptions['BASE'] . 'includes/app/controllers/api.php');
-require($wConfigOptions['BASE'] . 'includes/app/controllers/site.php');
-require($wConfigOptions['BASE'] . 'includes/app/controllers/user.php');
+/**
+ * walleye.php
+ *
+ * The base exception handler for Walleye
+ *
+ * @author Jonathan Mayhak <Jmayhak@gmail.com>
+ * @version 0.5
+ * @package Walleye
+ */
+class Walleye_exception extends Exception {
+    public function __construct() {
+        parent::__construct();
+    }
+}
 
-//models
-require($wConfigOptions['BASE'] . 'includes/app/models/adult.php');
-require($wConfigOptions['BASE'] . 'includes/app/models/task.php');
-require($wConfigOptions['BASE'] . 'includes/app/models/user.php');
-require($wConfigOptions['BASE'] . 'includes/app/models/youthgroup.php');
-
+/**
+ * walleye.php
+ *
+ * Handles the basic routing of URLs to their proper controller.
+ *
+ * @final
+ * @author Jonathan Mayhak <Jmayhak@gmail.com>
+ * @version 0.5
+ * @package Walleye
+ */
 final class Walleye {
 
+    /**
+     * The singleton instance of Walleye
+     * @var Walleye
+     * @access private
+     */
     private static $walleye_instance;
 
+    /**
+     * The action to be performed based on the url
+     * @var array
+     * @access private
+     */
     private $action = array();
+
+    /**
+     * Either the GET or POST data
+     * @var array
+     * @access private
+     */
     private $data = array();
+
+    /**
+     * The full url
+     * @var string
+     * @access private
+     */
     private $url;
 
+    /**
+     * The instance of PQP used for logging
+     * @var PhpQuickProfiler
+     * @access private
+     */
     private $pqp;
+
+    /**
+     * The base directory address given in the config array
+     * @see core/config/config.php
+     * @var string
+     * @access private
+     */
     private static $server_base_dir;
 
+    /**
+     * All of the application options given in the config array
+     * @see core/config/config.php
+     * @var string
+     * @access private
+     */
     private $appOptions = array();
+
+    /**
+     * All of the database config options given in the database config array
+     * @see core/config/database.php
+     * @var string
+     * @access private
+     */
     private $dbOptions = array();
+
+    /**
+     * All of the application routes in the routes array
+     * @see core/config/routes.php
+     * @var string
+     * @access private
+     */
     private $routes = array();
-
-    //views
-    const BASE_INDEX_VIEW = 'index.php';
-    const BASE_HEADER_VIEW = '_header.php';
-    const BASE_FOOTER_VIEW = '_footer.php';
-    const BASE_SIDEBAR_VIEW = 'sidebar.php';
-
-    //static
-    const DEFAULT_STYLESHEET = '/style.css';
-    const PQP_OVERLAY = '/plugins/pqp/overlay.gif';
-    const PQP_CSS = '/plugins/pqp/pqp.css';
-    const PQP_SIDE = '/plugins/pqp/side.png';
 
     /**
      * Starts the session, instantiates the pqp object, the post or get data, and the action given in the url
      */
-    private function Walleye() {
+    private function __construct() {
         session_start();
         $this->pqp = new PhpQuickProfiler(PhpQuickProfiler::staticGetMicroTime());
         $this->data = $this->getDataFromUrl($_SERVER["REQUEST_URI"]);
@@ -70,11 +132,13 @@ final class Walleye {
     /**
      * Should be called directly after retrieving the Walleye object. This function performs the action
      * given in the url and shows pqp if not in production mode.
+     *
+     * @return void
      */
     public function run() {
         $this->route();
         if (!$this->appOptions['PRODUCTION']) {
-            $this->pqp->display(wDb::getInstance());
+            $this->pqp->display(Walleye_database::getInstance());
         }
     }
 
@@ -82,6 +146,7 @@ final class Walleye {
      * The specific controller is selected based on the controller given in the URL.
      *
      * @see includes/config/routes.php
+     * @return void
      */
     private function route() {
         foreach ($this->routes as $route => $controller) {
@@ -134,6 +199,7 @@ final class Walleye {
      * Sets the application options (production mode? base dir? local?)
      *
      * @param array $appOptions
+     * @return void
      */
     public function setAppOptions($appOptions) {
         $this->appOptions = $appOptions;
@@ -144,19 +210,21 @@ final class Walleye {
 
     /**
      * Sets the db options. The array must contain server, username, password, and database information.
-     * After Walleye is updated the wDb instance is created and the db options are sent.
+     * After Walleye is updated the Walleye_database instance is created and the db options are sent.
      *
      * @param array $dbOptions
+     * @return void
      */
     public function setDbOptions($dbOptions) {
         $this->dbOptions = $dbOptions;
-        wDb::getInstance($dbOptions);
+        Walleye_database::getInstance($dbOptions);
     }
 
     /**
      * Use this to set the routes for this application. The routes must be in the form regexp => controller
      *
      * @param array $routes
+     * @return void
      */
     public function setRoutes($routes) {
         $this->routes = $routes;
