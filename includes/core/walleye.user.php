@@ -144,7 +144,7 @@ class Walleye_user extends Walleye_model {
             try
             {
                 $instance = self::withId($user['id']);
-                $session = md5($instance->getFirstName() . $instance->getLastName() . $instance->getRegDate() . $instance->getUid() . $instance->getUserName() . time());
+                $session = md5($instance->firstname . $instance->lastname . $instance->regDate . $instance->id . $instance->username . time());
                 $insert_session_stmt = $db->prepare('INSERT INTO Sessions (session_key) VALUES (:session))');
                 $insert_session_stmt->execute(array(':session' => $session));
                 $session_id = $db->lastInsertId();
@@ -223,20 +223,6 @@ class Walleye_user extends Walleye_model {
     }
 
     /**
-     * Returns the currently logged in user via sessions. If a user is not
-     * set then it sets the user to nothing with an id of 0
-     *
-     * @see Walleye_user::withSession()
-     * @return User
-     */
-    public static function getLoggedUser() {
-        if (!self::$current_logged_user) {
-            self::$current_logged_user = Walleye_user::withSession();
-        }
-        return self::$current_logged_user;
-    }
-
-    /**
      * Use this function to create a new user in the database. This function assumes you've already checked
      * if the username is unique. It will return null if the username is not unique
      *
@@ -269,6 +255,19 @@ class Walleye_user extends Walleye_model {
         $update_user_stmt = $db->prepare('UPDATE Users SET (firstName = :firstName, lastName = :lastName) WHERE (id = :id)');
         $result = $update_user_stmt->execute(array(':firstName' => $this->firstName, ':lastName' => $this->lastName, ':id' => $this->id));
         return $result;
+    }
+
+    /**
+     * Returns the currently logged in user via sessions.
+     *
+     * @see Walleye_user::withSession()
+     * @return Walleye_user|null
+     */
+    public static function getLoggedUser() {
+        if (!self::$current_logged_user) {
+            self::$current_logged_user = Walleye_user::withSession();
+        }
+        return self::$current_logged_user;
     }
 
     /**
