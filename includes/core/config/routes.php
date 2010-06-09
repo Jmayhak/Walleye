@@ -1,10 +1,8 @@
 <?php
 
 $wRoutes = array(
-    '//login/' => 'EFNEP.controllers.user',
-    '//logout/' => 'EFNEP.controllers.user',
-    '//api/' => 'EFNEP.controllers.api',
-    'default' => 'EFNEP.controllers.site'
+    '/user/' => 'Myapp_controllers_user',
+    'default' => 'Myapp_controllers_site'
 );
 
 ?>
