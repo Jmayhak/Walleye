@@ -4,19 +4,25 @@
 
  Title : PHP Quick Profiler Console Class
  Author : Created by Ryan Campbell
- URL : http://particletree.com/features/php-quick-profiler/
+ URL : http://particletree.com
 
- Last Updated : April 22, 2009
+ Last Updated : April 26, 2009
 
  Description : This class serves as a wrapper around a global
- php variable, debugger_logs, that we have created.
+ php variable, pqp_logs, that we have created.
 
 - - - - - - - - - - - - - - - - - - - - - */
-$GLOBALS['debugger_logs']['logCount'] = 0;
-$GLOBALS['debugger_logs']['memoryCount'] = 0;
-$GLOBALS['debugger_logs']['speedCount'] = 0;
-$GLOBALS['debugger_logs']['errorCount'] = 0;
+
 class Console {
+
+    public static function init() {
+        $GLOBALS['pqp_logs'] = array(
+            'console' => array(),
+            'logCount' => 0,
+            'memoryCount' => 0,
+            'errorCount' => 0,
+            'speedCount' => 0);
+    }
 
     /*-----------------------------------
           LOG A VARIABLE TO CONSOLE
@@ -27,8 +33,7 @@ class Console {
             "data" => $data,
             "type" => 'log'
         );
-        $GLOBALS['debugger_logs']['console'][] = $logItem;
-        $GLOBALS['debugger_logs']['logCount'] += 1;
+        self::addToConsoleAndIncrement('logCount', $logItem);
     }
 
     /*---------------------------------------------------
@@ -44,8 +49,7 @@ class Console {
             "name" => $name,
             "dataType" => gettype($object)
         );
-        $GLOBALS['debugger_logs']['console'][] = $logItem;
-        $GLOBALS['debugger_logs']['memoryCount'] += 1;
+        self::addToConsoleAndIncrement('memoryCount', $logItem);
     }
 
     /*-----------------------------------
@@ -59,8 +63,7 @@ class Console {
             "file" => $exception->getFile(),
             "line" => $exception->getLine()
         );
-        $GLOBALS['debugger_logs']['console'][] = $logItem;
-        $GLOBALS['debugger_logs']['errorCount'] += 1;
+        self::addToConsoleAndIncrement('errorCount', $logItem);
     }
 
     /*------------------------------------
@@ -69,25 +72,28 @@ class Console {
 
     public static function logSpeed($name = 'Point in Time') {
         $logItem = array(
-            "data" => PhpQuickProfiler::staticGetMicroTime(),
+            "data" => PhpQuickProfiler::getMicroTime(),
             "type" => 'speed',
             "name" => $name
         );
-        $GLOBALS['debugger_logs']['console'][] = $logItem;
-        $GLOBALS['debugger_logs']['speedCount'] += 1;
+        self::addToConsoleAndIncrement('speedCount', $logItem);
     }
 
     /*-----------------------------------
-          SET DEFAULTS & RETURN LOGS
+            RETURN  & MODIFY LOGS
      ------------------------------------*/
 
-    public static function getLogs() {
-        if (!$GLOBALS['debugger_logs']['memoryCount']) $GLOBALS['debugger_logs']['memoryCount'] = 0;
-        if (!$GLOBALS['debugger_logs']['logCount']) $GLOBALS['debugger_logs']['logCount'] = 0;
-        if (!$GLOBALS['debugger_logs']['speedCount']) $GLOBALS['debugger_logs']['speedCount'] = 0;
-        if (!$GLOBALS['debugger_logs']['errorCount']) $GLOBALS['debugger_logs']['errorCount'] = 0;
-        return $GLOBALS['debugger_logs'];
+    public static function addToConsoleAndIncrement($log, $item) {
+        if (!isset($GLOBALS['pqp_logs'])) self::init();
+        $GLOBALS['pqp_logs']['console'][] = $item;
+        $GLOBALS['pqp_logs'][$log] += 1;
     }
+
+    public function getLogs() {
+        if (!isset($GLOBALS['pqp_logs'])) self::init();
+        return $GLOBALS['pqp_logs'];
+    }
+
 }
 
 ?>

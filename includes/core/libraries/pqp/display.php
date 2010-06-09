@@ -4,7 +4,7 @@
 
  Title : HTML Output for Php Quick Profiler
  Author : Created by Ryan Campbell
- URL : http://particletree.com/features/php-quick-profiler/
+ URL : http://particletree.com
 
  Last Updated : April 22, 2009
 
@@ -16,6 +16,7 @@
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 function displayPqp($output, $config) {
+
     $cssUrl = '/plugins/pqp/pqp.css';
 
     echo <<<JAVASCRIPT

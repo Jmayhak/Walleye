@@ -4,7 +4,7 @@
 
  Title : PHP Quick Profiler Class
  Author : Created by Ryan Campbell
- URL : http://particletree.com/features/php-quick-profiler/
+ URL : http://particletree.com
 
  Last Updated : April 22, 2009
 
@@ -19,12 +19,11 @@ class PhpQuickProfiler {
 
     public $output = array();
     public $config = '';
-    private $db = '';
 
-    public function __construct($startTime, $config = '') {
+    public function __construct($startTime, $config = '/PHP-Quick-Profiler/') {
         $this->startTime = $startTime;
         $this->config = $config;
-        require('console.php');
+        require_once('console.php');
     }
 
     /*-------------------------------------------
@@ -84,8 +83,7 @@ class PhpQuickProfiler {
 
     public function gatherMemoryData() {
         $memoryTotals = array();
-        //too old of a php install
-        //$memoryTotals['used'] = $this->getReadableFileSize(memory_get_peak_usage());
+        $memoryTotals['used'] = $this->getReadableFileSize(memory_get_usage());
         $memoryTotals['total'] = ini_get("memory_limit");
         $this->output['memoryTotals'] = $memoryTotals;
     }
@@ -148,13 +146,7 @@ class PhpQuickProfiler {
           HELPER FUNCTIONS TO FORMAT DATA
      -------------------------------------------*/
 
-    function getMicroTime() {
-        $time = microtime();
-        $time = explode(' ', $time);
-        return $time[1] + $time[0];
-    }
-
-    public static function staticGetMicroTime() {
+    static function getMicroTime() {
         $time = microtime();
         $time = explode(' ', $time);
         return $time[1] + $time[0];
@@ -204,15 +196,14 @@ class PhpQuickProfiler {
           DISPLAY TO THE SCREEN -- CALL WHEN CODE TERMINATING
      -----------------------------------------------------------*/
 
-    public function display($db = '', $master_db = '') {
+    public function display($db = '') {
         $this->db = $db;
-        $this->master_db = $master_db;
         $this->gatherConsoleData();
         $this->gatherFileData();
         $this->gatherMemoryData();
         $this->gatherQueryData();
         $this->gatherSpeedData();
-        require('display.php');
+        require_once('display.php');
         displayPqp($this->output, $this->config);
     }
 
