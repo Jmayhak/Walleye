@@ -1,15 +1,15 @@
 <?php
 
-require('./config/config.php');
-require('./config/routes.php');
-require('./config/database.php');
+require('config/config.php');
+require('config/routes.php');
+require('config/database.php');
 
-require('./walleye.functions.php');
-require('./walleye.database.php');
-require('./walleye.model.php');
-require('./walleye.controller.php');
-require('./walleye.user.php');
-require('./libraries/pqp/pqp.php');
+require('walleye.functions.php');
+require('walleye.database.php');
+require('walleye.model.php');
+require('walleye.controller.php');
+require('walleye.user.php');
+require('libraries/pqp/pqp.php');
 
 /**
  * walleye.php
@@ -43,14 +43,7 @@ final class Walleye {
      * @var Walleye
      * @access private
      */
-    private static $walleye_instance;
-
-    /**
-     * The action to be performed based on the url
-     * @var array
-     * @access private
-     */
-    private $action = array();
+    private static $me;
 
     /**
      * Either the GET or POST data
@@ -110,9 +103,8 @@ final class Walleye {
      */
     private function __construct() {
         session_start();
-        $this->pqp = new PhpQuickProfiler(PhpQuickProfiler::staticGetMicroTime());
+        $this->pqp = new PhpQuickProfiler(PhpQuickProfiler::getMicroTime());
         $this->data = $this->getDataFromUrl($_SERVER["REQUEST_URI"]);
-        $this->action = $this->getActionFromUrl($_SERVER["REQUEST_URI"]);
         $this->url = $_SERVER["REQUEST_URI"];
     }
 
@@ -123,10 +115,10 @@ final class Walleye {
      * @return Walleye
      */
     public static function getInstance() {
-        if (!self::$walleye_instance) {
-            self::$walleye_instance = new Walleye();
+        if (!self::$me) {
+            self::$me = new Walleye();
         }
-        return self::$walleye_instance;
+        return self::$me;
     }
 
     /**
@@ -140,27 +132,30 @@ final class Walleye {
         if (!$this->appOptions['PRODUCTION']) {
             $this->pqp->display(Walleye_database::getInstance());
         }
+        require(Walleye::getServerBaseDir() . 'includes/app/views/_footer.php');
+        exit();
     }
 
     /**
      * The specific controller is selected based on the controller given in the URL.
      *
-     * @see includes/config/routes.php
+     * @see includes/core/config/routes.php
      * @return void
      */
     private function route() {
         foreach ($this->routes as $route => $controller) {
             if ($route == 'default') {
                 if (class_exists($controller) && in_array(('doAction'), get_class_methods($controller))) {
-                    $instance = new $controller($this->action, $this->data);
+                    $instance = new $controller($this->url, $this->data);
                     $instance->doAction();
                 }
                 break;
             }
             else {
-                if (preg_match($route, $this->url) && in_array(('doAction'), get_class_methods($controller))) {
+                if (preg_match($route, $this->url)) {
                     if (class_exists($controller)) {
-                        $instance = new $controller($this->action, $this->data);
+                        Console::log('class: ' . $controller);
+                        $instance = new $controller($this->url, $this->data);
                         $instance->doAction();
                     }
                     break;
@@ -180,19 +175,6 @@ final class Walleye {
             return $_POST;
         }
         return $_GET;
-    }
-
-    /**
-     * Takes a URL and returns the action ex. /admin/test/adf?hello=yes would return test/adf
-     *
-     * @param $url string
-     * @return array
-     */
-    private function getActionFromUrl($url) {
-        $withoutData = explode("?", $url);
-        $pathArray = explode("/", $withoutData[0]);
-        $action = array_slice($pathArray, 2);
-        return $action;
     }
 
     /**
