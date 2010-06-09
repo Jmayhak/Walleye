@@ -27,7 +27,7 @@ class Walleye_database extends PDO {
      * @var array
      * @access private
      */
-    private $dbOptions;
+    private $dbOptions = array();
 
     /**
      * The total amount of queries performed
@@ -61,13 +61,13 @@ class Walleye_database extends PDO {
      * @param array $dbOptions
      * @return Walleye_database|null
      */
-    private function __construct($dbOptions = array()) {
+    public function __construct($dbOptions = array()) {
         if (!empty($dbOptions)) {
-            $this->dbOptions = $dbOptions;
-            $database = $dbOptions['DB_DATABASE'];
-            $user = $dbOptions['DB_USER'];
-            $password = $dbOptions['DB_PASS'];
-            $server = $dbOptions['DB_SERVER'];
+            $this->dbOptions = array_merge($this->dbOptions, $dbOptions);
+            $database = isset($dbOptions['DB_DATABASE']) ? $dbOptions['DB_DATABASE'] : $this->dbOptions['DB_DATABASE'];
+            $user = isset($dbOptions['DB_USER']) ? $dbOptions['DB_USER'] : $this->dbOptions['DB_USER'];
+            $password = isset($dbOptions['DB_PASS']) ? $dbOptions['DB_PASS'] : $this->dbOptions['DB_PASS'];
+            $server = isset($dbOptions['DB_SERVER']) ? $dbOptions['DB_SERVER'] : $this->dbOptions['DB_SERVER'];
             try {
                 parent::__construct("mysql:host=$server;dbname=$database", $user, $password);
             }
