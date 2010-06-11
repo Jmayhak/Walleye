@@ -61,40 +61,24 @@ class Walleye_database extends PDO {
      * @param array $dbOptions
      * @return Walleye_database|null
      */
-    public function __construct($dbOptions = array()) {
-        if (!empty($dbOptions)) {
-            $this->dbOptions = array_merge($this->dbOptions, $dbOptions);
-            $database = isset($dbOptions['DB_DATABASE']) ? $dbOptions['DB_DATABASE'] : $this->dbOptions['DB_DATABASE'];
-            $user = isset($dbOptions['DB_USER']) ? $dbOptions['DB_USER'] : $this->dbOptions['DB_USER'];
-            $password = isset($dbOptions['DB_PASS']) ? $dbOptions['DB_PASS'] : $this->dbOptions['DB_PASS'];
-            $server = isset($dbOptions['DB_SERVER']) ? $dbOptions['DB_SERVER'] : $this->dbOptions['DB_SERVER'];
-            try {
-                parent::__construct("mysql:host=$server;dbname=$database", $user, $password);
-            }
-            catch (PDOException $ex) {
-                Console::logError($ex, $ex->getMessage());
-                return null;
-            }
+    public function __construct() {
+        $dbOptions = array(
+            'DB_SERVER' => '127.0.0.1',
+            'DB_USER' => 'admin',
+            'DB_PASS' => 'teSpe7rabagArUnu',
+            'DB_DATABASE' => 'fbc_development'
+        );
+        $database = isset($dbOptions['DB_DATABASE']) ? $dbOptions['DB_DATABASE'] : $this->dbOptions['DB_DATABASE'];
+        $user = isset($dbOptions['DB_USER']) ? $dbOptions['DB_USER'] : $this->dbOptions['DB_USER'];
+        $password = isset($dbOptions['DB_PASS']) ? $dbOptions['DB_PASS'] : $this->dbOptions['DB_PASS'];
+        $server = isset($dbOptions['DB_SERVER']) ? $dbOptions['DB_SERVER'] : $this->dbOptions['DB_SERVER'];
+        try {
+            parent::__construct("mysql:host=$server;dbname=$database", $user, $password);
         }
-    }
-
-    /**
-     * Makes sure Walleye_database is handled as a singleton. This function will give you
-     * an instance (the only instance) of wDb.
-     *
-     * The database options are SERVER, USERNAME, PASSWORD, and DATABASE. these can all be
-     * changed every time Walleye_database is called. Note: once a database option is changed
-     * it will stay whatever it was changed to during the next Walleye_database call.
-     *
-     * @static
-     * @param array $dbOptions
-     * @return Walleye_database|null
-     */
-    public static function getInstance($dbOptions = array()) {
-        if (!self::$me) {
-            self::$me = new self($dbOptions);
+        catch (PDOException $ex) {
+            Console::logError($ex, $ex->getMessage());
+            return null;
         }
-        return self::$me;
     }
 
     /**
@@ -110,9 +94,7 @@ class Walleye_database extends PDO {
         $this->query = $query;
         $this->logQuery($this->query, $start);
         $this->queryCount += 1;
-        if ($stmt) {
-            $stmt->setFetchMode(PDO::FETCH_ASSOC);
-        }
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
         return $stmt;
     }
 

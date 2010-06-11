@@ -1,8 +1,9 @@
 <?php
 
 $wRoutes = array(
-    '/user/' => 'Myapp_controllers_user',
-    'default' => 'Myapp_controllers_site'
+    '/^(\/user)/' => 'Walleye_user',
+    '/^(\/api)/' => 'Api',
+    'default' => 'Site'
 );
 
 ?>

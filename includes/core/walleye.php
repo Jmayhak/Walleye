@@ -129,10 +129,9 @@ final class Walleye {
      */
     public function run() {
         $this->route();
-        if (!$this->appOptions['PRODUCTION']) {
+        /*if (!$this->appOptions['PRODUCTION']) {
             $this->pqp->display(Walleye_database::getInstance());
-        }
-        require(Walleye::getServerBaseDir() . 'includes/app/views/_footer.php');
+        }*/
         exit();
     }
 
@@ -154,7 +153,6 @@ final class Walleye {
             else {
                 if (preg_match($route, $this->url)) {
                     if (class_exists($controller)) {
-                        Console::log('class: ' . $controller);
                         $instance = new $controller($this->url, $this->data);
                         $instance->doAction();
                     }
@@ -199,7 +197,6 @@ final class Walleye {
      */
     public function setDbOptions($dbOptions) {
         $this->dbOptions = $dbOptions;
-        Walleye_database::getInstance($dbOptions);
     }
 
     /**

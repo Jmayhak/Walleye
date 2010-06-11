@@ -1,9 +1,9 @@
 <?php
 
 $wAppOptions = array(
-    'BASE' => '',
+    'BASE' => '/var/www/vhosts/veschile.com/subdomains/fbc/',
     'PRODUCTION' => false,
-    'LOCAL' => true
+    'LOCAL' => false
 );
 
 ?>

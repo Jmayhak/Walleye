@@ -103,6 +103,10 @@ abstract class Walleye_controller {
         exit();
     }
 
+    final protected function useXmlHeader() {
+        echo header("Content-Type: text/xml"); 
+    }
+
     /**
      *  Render a template. Be sure to include the path from /includes/app/views/
      *
