@@ -1,0 +1,21 @@
+@charset "utf-8";
+/* CSS Document */
+
+body{
+	background: #f8d8a7 url(../../images/orange/body-bg.jpg) repeat-x 0 24px;
+}
+div#logo-container h1{
+	background: url(../../images/orange/logo.png) no-repeat;
+}
+div.head-first{
+	background: url(../../images/orange/top-head-bg.jpg) no-repeat;
+}
+div.head{
+	background: url(../../images/orange/mid-head-bg.jpg) no-repeat;
+}
+div.head-last{
+	background: url(../../images/orange/bot-bg.jpg) no-repeat;
+}
+input.submit{
+	background: url(../../images/orange/submit-but.jpg) no-repeat;
+}

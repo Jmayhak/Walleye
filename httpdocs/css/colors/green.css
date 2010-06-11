@@ -1,0 +1,21 @@
+@charset "utf-8";
+/* CSS Document */
+
+body{
+	background: #c4e5c8 url(../../images/green/body-bg.jpg) repeat-x 0 24px;
+}
+div#logo-container h1{
+	background: url(../../images/green/logo.png) no-repeat;
+}
+div.head-first{
+	background: url(../../images/green/top-head-bg.jpg) no-repeat;
+}
+div.head{
+	background: url(../../images/green/mid-head-bg.jpg) no-repeat;
+}
+div.head-last{
+	background: url(../../images/green/bot-bg.jpg) no-repeat;
+}
+input.submit{
+	background: url(../../images/green/submit-but.jpg) no-repeat;
+}

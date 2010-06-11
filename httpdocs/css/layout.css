@@ -1,0 +1,195 @@
+@charset "utf-8";
+/* CSS Document */
+
+body{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #333;
+}
+/* Style for the colour chooser used for choosing the theme colour scheme */
+div#color-selector{
+	height: 24px;
+	width: 100%;
+	color: #fff;
+	padding: 5px 0 0 0;
+}
+div#color-selector div{
+	width: 800px;
+	margin: 0 auto;
+	font-weight: bold;
+}
+div.sel-grey, a.grey{
+	background: url(../images/temp/grey.jpg) repeat-x;
+}
+div.sel-blue, a.blue{
+	background: url(../images/temp/blue.jpg) repeat-x;
+}
+div.sel-orange, a.orange{
+	background: url(../images/temp/orange.jpg) repeat-x;
+}
+div.sel-green, a.green{
+	background: url(../images/temp/green.jpg) repeat-x;
+}
+div.sel-red, a.red{
+	background: url(../images/temp/red.jpg) repeat-x;
+}
+a.grey, a.blue, a.orange, a.green, a.red{
+	padding: 0 6px;
+	border: 1px solid #ccc;
+	margin: 0 0 0 7px;
+	text-decoration: none;
+}
+a.grey:hover, a.blue:hover, a.orange:hover, a.green:hover, a.red:hover{
+	border: 1px solid #fff;
+}
+
+/* End of styles for colour chooser */
+
+
+div#wrapper{     /*main wrapper container*/
+	width: 501px;
+	margin: 0 auto;
+	text-align: left;
+}
+
+div#logo-container{   /*logo container*/
+	margin: 39px 0 24px 19px;
+	display: block;
+}
+div#logo-container h1{  /*logo - image for replacing the header text are in the grey.css, blue.css,.. etc according to their colour*/
+	height: 36px;
+	width: 406px;
+	text-indent: -9999px;
+}
+div.head-first, div.content, div.head, div.head-last{
+	width: 435px;
+	margin: 0;
+	padding: 0 33px;
+}
+div.head-first, div.head, div.head-last{ /*module headings text styles*/
+	height: 40px;
+	color: #fff;
+	font-family: century gothic, arial;
+	font-size: 18px;
+}
+div.head{
+	padding: 10px 33px 0 33px;
+}
+div.head-first:hover{
+	cursor: pointer;
+}
+div.content{
+	background: url(../images/mid-bg.png) repeat-y;
+}
+div.head-last{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: normal;
+	margin: 0 0 20px 0;
+}
+div.head-last span{
+	float: right;
+	margin: 15px -10px 0 0;
+}
+img.abtme{ /*about me image*/
+	margin: 0 10px 0 0;
+	border: 5px solid #ccc;
+}
+div.left{
+	float: left;
+	width: 132px;
+	overflow: auto;
+}
+div.right{
+	display: block;
+	margin: -9px 0 0 0;
+	width: 300px;
+	float: left;
+	overflow: auto;
+}
+div.right p{
+	margin: -3px 0 0 0;
+}
+div.clear{
+	clear: both;
+}
+h3{
+	font-size: 24px;
+	margin: 0;
+	padding: 0;
+}
+div.portfolio-thumbs img{ /*Thumbnail images for portfolio items*/
+	border: 5px solid #ccc;
+	margin: 0 11px 0 0;
+}
+div.portfolio-thumbs img.no-marg{ /*Thumbnail images for portfolio items without margins*/
+	margin: 0;
+}
+
+div.seperator{ /* Hr line */
+	background: url(../images/seperator.png) no-repeat 0 20px;
+	height: 42px;
+	margin: 0;
+}
+div.twitter, div.contact{
+	background: url(../images/twitter.jpg) no-repeat;
+	padding: 0 0 0 115px;
+	font-style: italic;
+	height: 97px;
+	overflow: auto;
+}
+div.contact{
+	background: url(../images/contact.jpg) no-repeat;
+	font-style: normal;
+}
+p.marg{
+	margin: 0 0 5px 0;
+}
+
+/*Styles for form*/
+label{
+	font-weight: bold;
+	float: left;
+	width: 60px;
+	height: 18px;
+	margin: 0 0 5px 0;
+	padding: 6px 0 0 0;
+}
+label:hover{
+	cursor: pointer;
+}
+input.input-active, input.input-error, input.input-highlight{
+	border: none;
+	padding: 4px 31px 4px 10px;
+	height: 18px;
+	margin: 2px 0;
+	width: 310px;
+}
+input.input-active{
+	background: url(../images/input-bg.jpg) no-repeat;
+	color: #666;
+}
+input.input-error{
+	background: url(../images/input-bg.jpg) no-repeat 0 -36px;
+	color: #cc6666;
+}
+input.input-highlight{
+	background: url(../images/input-bg.jpg) no-repeat 0 -72px;
+	color: #4ba04b;
+}
+textarea{
+	background: #ebebeb;
+	border: 1px solid #999999;
+	-moz-border-radius: 7px; -webkit-border-radius: 7px;
+	width: 312px;
+	padding: 5px;
+}
+input.submit{
+	width: 88px;
+	height: 29px;
+	border: none;
+	margin: 20px 0;
+}
+input.submit:hover{
+	cursor: pointer;
+}
