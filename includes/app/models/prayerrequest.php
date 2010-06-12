@@ -64,7 +64,7 @@ class PrayerRequest extends Walleye_model {
      */
     public static function withId($id) {
         $db = new Walleye_database();
-        $get_prayer_by_id_stmt = $db->query('SELECT * FROM PrayerRequests WHERE id = :id');
+        $get_prayer_by_id_stmt = $db->prepare('SELECT * FROM PrayerRequests WHERE id = :id');
         $get_prayer_by_id_stmt->execute(array(':id' => $id));
         $prayer_request = $get_prayer_by_id_stmt->fetch();
         if (isset($prayer_request['id'])) {
@@ -91,7 +91,7 @@ class PrayerRequest extends Walleye_model {
     public function commit() {
         if ($this->id == 0) $this->id = $this->create();
         $db = new Walleye_database();
-        $set_prayer_by_id = $db->query('UPDATE PrayerRequests SET name = :name, count = :count, email = :email, message = :message WHERE id = :id');
+        $set_prayer_by_id = $db->prepare('UPDATE PrayerRequests SET name = :name, count = :count, email = :email, message = :message WHERE id = :id');
         $set_prayer_by_id->execute(array(
             ':id' => $this->id,
             ':name' => $this->name,
@@ -108,7 +108,7 @@ class PrayerRequest extends Walleye_model {
      */
     private function create() {
         $db = new Walleye_database();
-        $create_prayer_request_stmt = $db->query('INSERT INTO PrayerRequests (name, count, email, message, approved) VALUES (:name, :count, :email, :message, :approved)');
+        $create_prayer_request_stmt = $db->prepare('INSERT INTO PrayerRequests (name, count, email, message, approved) VALUES (:name, :count, :email, :message, :approved)');
         $create_prayer_request_stmt->execute(array(
             ':name' => $this->name,
             ':count' => $this->count,
@@ -124,17 +124,21 @@ class PrayerRequest extends Walleye_model {
      */
     public function approve() {
         $db = new Walleye_database();
-        $update_prayer_request_stmt = $db->query('UPDATE PrayerRequests SET approved = :approved');
-        $update_prayer_request_stmt->execute(array(
-           ':approved' => true 
-        ));
+        $update_prayer_request_stmt = $db->execute('UPDATE PrayerRequests SET approved = true');
     }
 
     /**
-     * @return void
+     * @return boolean
      */
     public function isApproved() {
         return $this->approved;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getDate() {
+        return $this->date;
     }
 
     /**

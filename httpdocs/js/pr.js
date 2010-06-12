@@ -1,5 +1,4 @@
 $(document).ready(function() {
-    getAllPrayerRequests();
     $('#prayer-request-button').click(function() {
         var keyvalue = {
             name : $('#name').val(),
@@ -7,8 +6,9 @@ $(document).ready(function() {
             message : $('#message').val()
         };
         $.post('/api/prayer/insert', keyvalue, function(xml) {
-            //show success via growl
+            // todo show success via growl
             getAllPrayerRequests();
+            $('.head-first').next('.content').toggle('fast');
         });
     });
 });

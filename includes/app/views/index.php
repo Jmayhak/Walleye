@@ -65,8 +65,7 @@
                                value="Enter your email here" onclick="$(this).val('');"/><br/></div>
                     <div>
                         <label for="message">Prayer Request:</label>
-                        <textarea id="message" rows="6" cols="40" onclick="$(this).val('');">Enter Prayer Request
-                            here</textarea></div>
+                        <textarea id="message" rows="6" cols="40" onclick="$(this).val('');">Prayer Request...</textarea></div>
                     <div>
                         <input type="button" id="prayer-request-button" value="" class="submit"/>
                     </div>
@@ -78,11 +77,11 @@
         <div class="clear"></div>
     </div>
     <div id="prayer-requests">
-    <?php if (isset($values['prayer_requests']) && is_array($values['prayer_requests'])) { ?>
+    <?php if (isset($values['prayer_requests'])) { ?>
     <?php foreach ($values['prayer_requests'] as $key => $prayer_request) { ?>
         <div>
             <div class="head">
-            <?php echo "$prayer_request->name $prayer_request->date"; ?>
+            <?php echo "$prayer_request->name " . $prayer_request->getDate(); ?>
             </div>
 
             <div class="content">
@@ -90,7 +89,7 @@
             </div>
         </div>
     <?php }
-    } ?>
+} ?>
     </div>
     <div class="head-last">
         <span>Developed by Jonathan Mayhak</span>

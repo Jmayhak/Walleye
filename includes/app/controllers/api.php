@@ -74,9 +74,7 @@ class Api extends Walleye_controller {
         $values = array();
         $values['prayer_requests'] = array();
         $db = new Walleye_database();
-        $get_all_prayers_stmt = $db->query('SELECT id FROM PrayerRequests');
-        $get_all_prayers_stmt->execute();
-        while ($prayer_request = $get_all_prayers_stmt->fetch()) {
+        foreach ($db->query('SELECT id FROM PrayerRequests') as $prayer_request) {
             array_push($values['prayer_requests'], PrayerRequest::withId($prayer_request['id']));
         }
         $this->view('api/get.php', $values);
