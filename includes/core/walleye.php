@@ -1,9 +1,6 @@
 <?php
 
-require('config/config.php');
-require('config/routes.php');
-require('config/database.php');
-
+require('walleye.config.php');
 require('walleye.functions.php');
 require('walleye.database.php');
 require('walleye.model.php');
@@ -68,11 +65,21 @@ final class Walleye {
 
     /**
      * The base directory address given in the config array
-     * @see core/config/config.php
+     * @see core/walleye.config.php
      * @var string
+     * @static
      * @access private
      */
     private static $server_base_dir;
+    
+    /**
+     * The domain name of this app
+     * @see core/walleye.config.php
+     * @var string
+     * @static
+     * @access private
+     */
+    private static $domain;
 
     /**
      * All of the application options given in the config array
@@ -106,6 +113,14 @@ final class Walleye {
         $this->pqp = new PhpQuickProfiler(PhpQuickProfiler::getMicroTime());
         $this->data = $this->getDataFromUrl($_SERVER["REQUEST_URI"]);
         $this->url = $_SERVER["REQUEST_URI"];
+        $this->routes = Walleye_config::getRoutes();
+        $this->appOptions = Walleye_config::getAppOptions();
+        if (isset($this->appOptions['BASE'])) {
+            self::$server_base_dir = $this->appOptions['BASE'];
+        }
+        if (isset($this->appOptions['DOMAIN'])) {
+            self::$domain = $this->appOptions['DOMAIN'];
+        }
     }
 
     /**
@@ -129,10 +144,9 @@ final class Walleye {
      */
     public function run() {
         $this->route();
-        if (!$this->appOptions['PRODUCTION']) {
+        /*if (!$this->appOptions['PRODUCTION']) {
             $this->pqp->display(Walleye_database::getInstance());
-        }
-        require(Walleye::getServerBaseDir() . 'includes/app/views/_footer.php');
+        }*/
         exit();
     }
 
@@ -154,7 +168,6 @@ final class Walleye {
             else {
                 if (preg_match($route, $this->url)) {
                     if (class_exists($controller)) {
-                        Console::log('class: ' . $controller);
                         $instance = new $controller($this->url, $this->data);
                         $instance->doAction();
                     }
@@ -178,47 +191,20 @@ final class Walleye {
     }
 
     /**
-     * Sets the application options (production mode? base dir? local?)
-     *
-     * @param array $appOptions
-     * @return void
-     */
-    public function setAppOptions($appOptions) {
-        $this->appOptions = $appOptions;
-        if (isset($appOptions['BASE'])) {
-            self::$server_base_dir = $appOptions['BASE'];
-        }
-    }
-
-    /**
-     * Sets the db options. The array must contain server, username, password, and database information.
-     * After Walleye is updated the Walleye_database instance is created and the db options are sent.
-     *
-     * @param array $dbOptions
-     * @return void
-     */
-    public function setDbOptions($dbOptions) {
-        $this->dbOptions = $dbOptions;
-        Walleye_database::getInstance($dbOptions);
-    }
-
-    /**
-     * Use this to set the routes for this application. The routes must be in the form regexp => controller
-     *
-     * @param array $routes
-     * @return void
-     */
-    public function setRoutes($routes) {
-        $this->routes = $routes;
-    }
-
-    /**
      * Gives the base directory for this application
      *
      * @return string
      */
     public static function getServerBaseDir() {
         return self::$server_base_dir;
+    }
+    
+    /**
+     * Gives the domain of this app
+     * @return string
+     */
+    public static function getDomain() {
+        return self::$domain;
     }
 
     /**
