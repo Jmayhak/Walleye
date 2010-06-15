@@ -95,12 +95,19 @@ abstract class Walleye_controller {
      * @final
      * @access protected
      * @see Walleye_controller::view()
-     * @param string $URL the URL the browser should be redirected to. Send the full URL
+     * @param string $URL the URL the browser should be redirected to. Send the url from domain.com/
      * @return void
      */
-    final protected function redirect($URL) {
-        header("Location: $URL");
+    final protected function redirect($URL = '') {
+        header('Location: ' . Walleye::getDomain() . $URL);
         exit();
+    }
+
+    /**
+     * Changes the header to be text/xml. This is used for the api
+     */
+    final protected function useXmlHeader() {
+        header("Content-Type: text/xml"); 
     }
 
     /**
