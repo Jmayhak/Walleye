@@ -8,17 +8,17 @@ Please note: this is a WORK IN PROGRESS and is not production quality out of the
 The framework is based around the following directory structure:
 
 httpdocs/
-	css/
-	images/
-	js/
-	plugins/
+    css/
+    images/
+    js/
+    plugins/
 includes/
-	app/
-		controllers/
-		models/
-		views/
-	core/
-		libraries/
+    app/
+        controllers/
+        models/
+        views/
+    core/
+        libraries/
 tests/
 
 == How to use the framework
@@ -31,13 +31,11 @@ The Walleye class (walleye.php) is found in includes/core. The Walleye class is 
 
 Each controller extends includes/core/walleye.controller.php which requires each controller to have a doAction() function and stores the action and url (route).
 
-ex. /user/login will go to the user controller and perform the action login.
+	/user/login will go to the user controller and perform the action login.
 
 The specific controller does not attempt to handle the business logic. This is handled by a model. In the case of logging in a user, the Walleye_user (walleye.user.php) model will be used. The controller attempts to create a new Walleye_user by passing a username/password pair to the constructor (it's a static function that returns an instance of self). If a new Walleye_user is correctly authenticated then the the controller will set the logged in user with a function in Walleye_user.
 
 After the login is finished in the backend, the browser needs a page to be rendered to the user. This is handled by Walleye_controller (walleye.controller.php). Each controller you create should extend this class. The class Walleye_controller contains a function called view($view, $values). When you call this function you need to pass a specific view that should be defined in the Walleye class and the necessary values for that view.
-
-ex. each view (aka template) may contain a placeholder for title. This page requires a title key/value in order to render correctly.
 
 Once the controller calls view, the view is rendered through the php includes function. The application is finished server-side.
 
@@ -49,7 +47,7 @@ note: the way the database is handled is probably going to change soon
 
 The Walleye_database class itself is simply an extension of MySQLi and can be created with the following line:
 
-$db = Walleye::getInstance()->db();
+	$db = Walleye::getInstance()->db();
 
 Once you have the wDb instance you can do all the functions available to you through MySQLi. 
 
@@ -57,6 +55,5 @@ Once you have the wDb instance you can do all the functions available to you thr
 
 PQP is included in the project and it allows for easy server-side logging. The PQP class found in includes/core/libraries/pqp/ is included before the Walleye class is created so it can be used at anytime.
 
-ex.
-Console::log('this is a message to be logged');
-Console::logError($ex, $ex->getMessage());
+	Console::log('this is a message to be logged');
+	Console::logError($ex, $ex->getMessage());
