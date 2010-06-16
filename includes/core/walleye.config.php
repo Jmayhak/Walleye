@@ -18,8 +18,8 @@ class Walleye_config {
      */
     public static function getAppOptions() {
         return array(
-                   'BASE' => '/var/www/vhosts/veschile.com/subdomains/walleye/',
-                   'DOMAIN' => 'http://jon.veschile.com/',
+                   'BASE' => '',
+                   'DOMAIN' => '',
                    'PRODUCTION' => false,
                    'LOCAL' => false
                );
@@ -32,11 +32,11 @@ class Walleye_config {
     public static function getDbOptions() {
         // !todo move to a ini file?
         return array(
-                   'ENGINE' => 'mysql',
-                   'SERVER' => '127.0.0.1',
-                   'USER' => 'admin',
-                   'PASS' => 'teSpe7rabagArUnu',
-                   'DATABASE' => 'fbc_development'
+                   'ENGINE' => '',
+                   'SERVER' => '',
+                   'USER' => '',
+                   'PASS' => '',
+                   'DATABASE' => ''
                );
     }
     
