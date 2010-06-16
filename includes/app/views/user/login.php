@@ -1,11 +1,26 @@
-<?php require('../_header.php'); ?>
-<div id="container">
-    <h2>Log in</h2>
-
-    <form action="/user/login" method="post">
-        Username: <input type="text" name="userName"/><br/>
-        Password: <input type="password" name="password"/>
-        <input type="submit" value="Submit">
-    </form>
-</div>
-<?php require('../_footer.php'); ?>
+<?php include(Walleye::getServerBaseDir() . 'includes/app/views/_header.php'); ?>
+	<form action="/user/login" method="post">
+	    <?php if (isset($values['login_message'])) : ?>
+	    <div class="error">
+			<span>Error</span>
+			<?php echo $values['login_message']; ?>
+		</div>
+		<?php endif; ?>
+			<div id="border">
+				<table cellpadding="2" cellspacing="0" border="0">
+					<tr>
+						<td>Username:</td>
+						<td><input type="text" name="username" /></td>
+					</tr>
+					<tr>
+						<td>Password:</td>
+						<td><input type="password" name="password" /></td>
+					</tr>
+					<tr>
+						<td colspan="2" align="center"><input type="submit" name="submit" value="Login" /></td>
+					</tr>
+				</table>
+			</div>
+			<p>username: test pw: test</p>
+	</form>
+<?php include(Walleye::getServerBaseDir() . 'includes/app/views/_footer.php'); ?>

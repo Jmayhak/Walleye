@@ -7,5 +7,4 @@
 </head>
 <body>
 <div id="wrapper">
-    <p>Looks like Walleye is working</p>
-</div>
+    
