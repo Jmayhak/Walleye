@@ -7,19 +7,19 @@ Please note: this is a WORK IN PROGRESS and is not production quality out of the
 
 The framework is based around the following directory structure:
 
-httpdocs/
-    css/
-    images/
-    js/
-    plugins/
-includes/
-    app/
-        controllers/
-        models/
-        views/
-    core/
-        libraries/
-tests/
+    httpdocs/
+        css/
+        images/
+        js/
+        plugins/
+    includes/
+        app/
+            controllers/
+            models/
+            views/
+        core/
+            libraries/
+    tests/
 
 == How to use the framework
 
