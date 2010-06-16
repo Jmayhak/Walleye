@@ -64,6 +64,13 @@ final class Walleye {
     private $pqp;
 
     /**
+     * Should be the only instance of the database so that pqp can track all db calls
+     * @see PhpQuickProfiler
+     * @var Walleye_database
+     */
+    private $db;
+    
+    /**
      * The base directory address given in the config array
      * @see core/walleye.config.php
      * @var string
@@ -114,6 +121,7 @@ final class Walleye {
         $this->data = $this->getDataFromUrl($_SERVER["REQUEST_URI"]);
         $this->url = $_SERVER["REQUEST_URI"];
         $this->routes = Walleye_config::getRoutes();
+        $this->db = new Walleye_database();
         $this->appOptions = Walleye_config::getAppOptions();
         if (isset($this->appOptions['BASE'])) {
             self::$server_base_dir = $this->appOptions['BASE'];
@@ -134,6 +142,15 @@ final class Walleye {
             self::$me = new Walleye();
         }
         return self::$me;
+    }
+    
+    /**
+     * Returns the instance of the database that should be used through the app in order
+     * to use pqp to keep track of all database calls
+     * @return Walleye_database
+     */
+    public function db() {
+        return $this->db;
     }
 
     /**
