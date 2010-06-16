@@ -75,32 +75,39 @@ class Walleye_user extends Walleye_model {
     private static $current_logged_user;
 
     /**
-     * Creates a new User based on the uid (not a logged in user)
-     * Do not call function if the object is already created.
-     *
-     * @todo exception handling
-     * @property string $id
+     * The base User constructor. Sets everything to nothing.
      */
     public function __construct($id) {
-        $db = new Walleye_database();
-        $get_user_stmt = $db->prepare('select id, username, first_name, last_name, date_created from Users where id = ?');
-        $get_user_stmt->bind_param('i', $id);
-        $get_user_stmt->execute();
-        $get_user_stmt->bind_result($id, $username, $first_name, $last_name, $date_created);
-        if ($get_user_stmt->fetch()) {
-            $this->id = $id;
-            $this->username = $username;
-            $this->firstName = $first_name;
-            $this->lastName = $last_name;
-            $this->regDate = $date_created;
+        // !TODO check if session has expired before execute()
+        // !TODO check date_created on session
+        $db = Walleye::getInstance()->db();
+        if (isset($_SESSION[Walleye_user::USER_SESSION])) {
+            $get_session_id_stmt = $db->prepare('SELECT id FROM Sessions WHERE session_key = ?');
+            $get_session_id_stmt->bind_param('s', $_SESSION[Walleye_user::USER_SESSION]);
+            $get_session_id_stmt->execute();
+            $get_session_id_stmt->bind_result($session_id);
+            $get_session_id_stmt->fetch();
+            $get_session_id_stmt->close();
+            $get_user_id_and_date_created_stmt = $db->prepare('SELECT user_id, date_created FROM UserSessions WHERE session_id = ?');
+            $get_user_id_and_date_created_stmt->bind_param('i', $session_id);
+            $get_user_id_and_date_created_stmt->execute();
+            $get_user_id_and_date_created_stmt->bind_result($user_id, $date_created);
+            $get_user_id_and_date_created_stmt->fetch();
+            $get_user_id_and_date_created_stmt->close();
+            try {
+                $instance = new Walleye_user($user_id);
+            }
+            catch (Exception $ex) {
+                Console::logError($ex, $ex->message);
+                $instance = null;
+            }
         }
-        else {
-            $this->id = 0;
-            $this->username = '';
-            $this->firstName = '';
-            $this->lastName = '';
-            $this->regDate = '';
+        else
+        {
+            $instance = null;
         }
+        $db->close();
+        return $instance;
     }
 
     /**
@@ -110,25 +117,26 @@ class Walleye_user extends Walleye_model {
      * @return Walleye_user
      */
     public static function withSession() {
-        // TODO check if session has expired before execute()
-        // TODO check date_created on session
-        $db = new Walleye_database();
+        // !TODO check if session has expired before execute()
+        // !TODO check date_created on session
+        $db = Walleye::getInstance()->db();
         if (isset($_SESSION[Walleye_user::USER_SESSION])) {
-            $get_session_id_stmt = $db->prepare('SELECT id FROM Sessions WHERE session_key = :session_key');
-            $get_session_id_stmt->execute(array('sessions_key' => $_SESSION[Walleye_user::USER_SESSION]));
-            $user_session_row = $get_session_id_stmt->fetch();
-            $session_id = $user_session_row['id'];
-            $get_user_id_and_date_created_stmt = $db->prepare('SELECT user_id, date_created FROM UserSessions WHERE session_id = :session_id');
-            $get_user_id_and_date_created_stmt->execute(array('session_id' => $session_id));
-            $user_session = $get_user_id_and_date_created_stmt->fetch();
-        }
-        if (isset($user_session['user_id'])) {
-            try
-            {
-                $instance = Walleye_user::withId($user_session['user_id']);
+            $get_session_id_stmt = $db->prepare('SELECT id FROM Sessions WHERE session_key = ?');
+            $get_session_id_stmt->bind_param('s', $_SESSION[Walleye_user::USER_SESSION]);
+            $get_session_id_stmt->execute();
+            $get_session_id_stmt->bind_result($session_id);
+            $get_session_id_stmt->fetch();
+            $get_session_id_stmt->close();
+            $get_user_id_and_date_created_stmt = $db->prepare('SELECT user_id, date_created FROM UserSessions WHERE session_id = ?');
+            $get_user_id_and_date_created_stmt->bind_param('i', $session_id);
+            $get_user_id_and_date_created_stmt->execute();
+            $get_user_id_and_date_created_stmt->bind_result($user_id, $date_created);
+            $get_user_id_and_date_created_stmt->fetch();
+            $get_user_id_and_date_created_stmt->close();
+            try {
+                $instance = new Walleye_user($user_id);
             }
-            catch (Exception $ex)
-            {
+            catch (Exception $ex) {
                 Console::logError($ex, $ex->message);
                 $instance = null;
             }
@@ -137,6 +145,7 @@ class Walleye_user extends Walleye_model {
         {
             $instance = null;
         }
+        $db->close();
         return $instance;
     }
 
@@ -151,35 +160,35 @@ class Walleye_user extends Walleye_model {
      * @param string $password
      * @return Walleye_user
      */
-    public static function withUserNameAndPassword($username, $password) {
-        $db = new Walleye_database();
-        $get_user_id_stmt = $db->prepare('SELECT id FROM Users WHERE username = :username and password = :password');
-        $get_user_id_stmt->execute(array(':username' => $username, ':password' => $password));
-        while ($user = $get_user_id_stmt->fetch()) {
-        if (isset($user['id'])) {
-            try
-            {
-                // !todo add whirlpool hash instead of md5 for creation of session_key
-                $instance = self::withId($user['id']);
-                $session = md5($instance->firstname . $instance->lastname . $instance->regDate . $instance->id . $instance->username . time());
-                $insert_session_stmt = $db->prepare('INSERT INTO Sessions (session_key) VALUES (:session))');
-                $insert_session_stmt->execute(array(':session' => $session));
-                $session_id = $db->lastInsertId();
-                $insert_user_session_stmt = $db->prepare('INSERT INTO UserSessions (user_id, session_id) VALUES (:id, :session_id)');
-                $insert_user_session_stmt->execute(array(':id' => $instance->id, ':session_id' => $session_id));
-                $_SESSION[Walleye_user::USER_SESSION] = md5($session);
-            }
-            catch (Exception $ex)
-            {
-                Console::logError($ex, $ex->message);
-                $instance = null;
-            }
+    public static function withUsernameAndPassword($username, $password) {
+        // TODO add whirlpool hash instead of md5 for creation of session_key
+        // TODO exception handling
+        $db = Walleye::getInstance()->db();
+        $get_user_id_stmt = $db->prepare('SELECT id FROM Users WHERE username = ? and password = ?');
+        $get_user_id_stmt->bind_param('ss', $username, $password);
+        $get_user_id_stmt->execute();
+        $get_user_id_stmt->bind_result($id);
+        $get_user_id_stmt->fetch();
+        $get_user_id_stmt->close();
+        try {
+            $instance = new Walleye_user($id);
+            $session = md5($instance->firstName . $instance->lastName . time());
+            $insert_session_stmt = $db->prepare('INSERT INTO Sessions (session_key) VALUES (?)');
+            $insert_session_stmt->bind_param('s', $session);
+            $insert_session_stmt->execute();
+            $session_id = $db->insert_id;
+            $insert_session_stmt->close();
+            $insert_user_session_stmt = $db->prepare('INSERT INTO UserSessions (user_id, session_id) VALUES (?, ?)');
+            $insert_user_session_stmt->bind_param('ii', $id, $session_id);
+            $insert_user_session_stmt->execute();
+            $insert_user_session_stmt->close();
+            $_SESSION[Walleye_user::USER_SESSION] = $session;
         }
-        else
-        {
+        catch (Exception $ex) {
+            Console::logError($ex, $ex->message);
             $instance = null;
         }
-        }
+        $db->close();
         return $instance;
     }
 
@@ -189,40 +198,38 @@ class Walleye_user extends Walleye_model {
      * @todo exception handling
      * @property string $username
      */
-    public static function withUserName($username) {
-        $db = new Walleye_database();
-        $get_user_id_stmt = $db->prepare('SELECT id FROM Users WHERE username = :username');
-        $get_user_id_stmt->execute(array(':username' => $username));
-        $user = $get_user_id_stmt->fetch();
-        if ($user['id']) {
-            try
-            {
-                $instance = self::withId($user['id']);
+    public static function withUsername($username) {
+        $db = Walleye::getInstance()->db();
+        $get_user_id_stmt = $db->prepare('SELECT id FROM Users WHERE username = ?');
+        $get_user_id_stmt->bind_param('i', $username);
+        $get_user_id_stmt->execute();
+        $get_user_id_stmt->bind_result($id);
+        $get_user_id_stmt->fetch();
+        $get_user_id_stmt->close();
+        if ($id) {
+            try {
+                $instance = new Walleye_user($id);
             }
-            catch (Exception $ex)
-            {
+            catch (Exception $ex) {
                 Console::logError($ex, $ex->message);
                 $instance = null;
             }
         }
-        else
-        {
+        else {
             $instance = null;
         }
+        $db->close();
         return $instance;
     }
-    
+
     /**
-     * Accepts the id of the user in the db
+     * Creates a new User based on the uid (not a logged in user)
+     * Do not call function if the object is already created.
      *
-     * @return Walleye_user|null
+     * @property string|int $id
      */
     public static function withId($id) {
-        $instance = new Walleye_user($id);
-        if ($instance->id == 0) {
-            return null;
-        }
-        return $instance;
+        return new Walleye_user($id);
     }
 
     /**
@@ -235,15 +242,18 @@ class Walleye_user extends Walleye_model {
      * @return Walleye_user|null
      */
     public static function create($username, $password) {
-        $db = new Walleye_database();
+        $db = Walleye::getInstance()->db();
         if (Walleye_user::isUsernameUnique($username)) {
-            $insert_user_stmt = $db->prepare('INSERT INTO Users (username, password) VALUES (:username, :password)');
-            $insert_user_stmt->execute(array(':username' => $username, ':password' => $password));
+            $insert_user_stmt = $db->prepare('INSERT INTO Users (username, password) VALUES (?, ?)');
+            $insert_user_stmt->bind_param('ss', $username, $password);
+            $insert_user_stmt->execute();
+            $insert_user_stmt->close();
             $user_id = $db->lastInsertId();
-            $instance = new Walleye_user();
-            $instance->id = $user_id;
+            $instance = new Walleye_user($user_id);
+            $db->close();
             return $instance;
         }
+        $db->close();
         return null;
     }
 
@@ -254,10 +264,14 @@ class Walleye_user extends Walleye_model {
      * @return boolean
      */
     public function commit() {
-        $db = new Walleye_database();
-        $update_user_stmt = $db->prepare('UPDATE Users SET (firstName = :firstName, lastName = :lastName) WHERE (id = :id)');
-        $result = $update_user_stmt->execute(array(':firstName' => $this->firstName, ':lastName' => $this->lastName, ':id' => $this->id));
+        $db = Walleye::getInstance()->db();
+        $update_user_stmt = $db->prepare('UPDATE Users SET (firstName = ?, lastName = ?) WHERE (id = ?)');
+        $update_user_stmt->bind_param('ssi', $this->firstName, $this->lastName, $this->id);
+        $result = $update_user_stmt->execute();
+        $update_user_stmt->close();
+        $update_user_stmt->close();
         return $result;
+        
     }
 
     /**
@@ -295,28 +309,33 @@ class Walleye_user extends Walleye_model {
      * @return boolean
      */
     public static function isUsernameUnique($username) {
-        $db = new Walleye_database();
-        $get_username_stmt = $db->prepare('SELECT id FROM Users WHERE username = :username');
-        $result = $get_username_stmt->execute(array(':username' => $username));
-        if (empty($result)) {
+        $db = Walleye::getInstance()->db();
+        $get_username_stmt = $db->prepare('SELECT id FROM Users WHERE username = ?');
+        $get_username_stmt->bind_param('s', $username);
+        $get_username_stmt->execute();
+        if ($get_username_stmt->fetch()) {
+            $get_username_stmt->close();
+            $db->close();
             return true;
         }
+        $get_username_stmt->close();
+        $db->close();
         return false;
     }
     
     /**
-     * @return string|int
+     * @return int|string
      */
     public function getId() {
         return $this->id;
     }
 
     /**
-     * Gives a string formatted as follows: id: '' userName: '' firstName: '' lastName: '' regDate: ''
+     * Gives a string formatted as follows: uid: '' userName: '' firstName: '' lastName: '' regDate: ''
      * @return string
      */
     public function __toString() {
-        return "id: '$this->id' userName: '$this->username' firstName: '$this->firstName' lastName: '$this->lastName' regDate: '$this->regDate'";
+        return "uid: '$this->id' username: '$this->username' firstName: '$this->firstName' lastName: '$this->lastName' regDate: '$this->regDate'";
     }
 }
 
