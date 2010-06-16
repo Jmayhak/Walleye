@@ -18,7 +18,7 @@ class Walleye_config {
      */
     public static function getAppOptions() {
         return array(
-                   'BASE' => '/var/www/vhosts/veschile.com/subdomains/jon/',
+                   'BASE' => '/var/www/vhosts/veschile.com/subdomains/walleye/',
                    'DOMAIN' => 'http://jon.veschile.com/',
                    'PRODUCTION' => false,
                    'LOCAL' => false
@@ -36,7 +36,7 @@ class Walleye_config {
                    'SERVER' => '127.0.0.1',
                    'USER' => 'admin',
                    'PASS' => 'teSpe7rabagArUnu',
-                   'DATABASE' => 'efnep_development'
+                   'DATABASE' => 'fbc_development'
                );
     }
     
@@ -47,9 +47,9 @@ class Walleye_config {
      */
     public static function getRoutes() {
         return array(
-                   '/^(\/user)/' => 'EFNEP_controllers_user',
-                   '/^(\/api)/' => 'EFNEP_controllers_api',
-                   'default' => 'EFNEP_controllers_site'
+                   '/^(\/user)/' => 'User',
+                   '/^(\/api)/' => 'Api',
+                   'default' => 'Site'
                );
     }
 
