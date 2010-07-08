@@ -6,7 +6,7 @@
  * Set all config settings in the class.
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.5
+ * @version 0.8
  * @package Walleye
  */
 class Walleye_config {
@@ -20,8 +20,7 @@ class Walleye_config {
         return array(
                    'BASE' => '',
                    'DOMAIN' => '',
-                   'PRODUCTION' => false,
-                   'LOCAL' => false
+                   'PRODUCTION' => false
                );
     }
     
@@ -41,8 +40,8 @@ class Walleye_config {
     }
     
     /**
-     * Returns the basic routes this application will follow. Which controller Walleye will
-     * pass control to.
+     * Returns the basic routes this application will follow and which controller Walleye will
+     * pass control to
      * @return array
      */
     public static function getRoutes() {
@@ -52,6 +51,17 @@ class Walleye_config {
                    'default' => 'Site'
                );
     }
+}
+
+$appOptions = Walleye_config::getAppOptions();
+
+// PRODUCTION
+if ($appOptions['PRODUCTION']) {
+    // Turn off all error reporting
+    ini_set("display_errors", 0);
+}
+// DEVELOPMENT
+else {
 
 }
 
