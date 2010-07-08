@@ -24,9 +24,9 @@ class Site extends Walleye_controller {
         $this->url = $url;
         $this->data = $data;
         $this->handlers = array(
-            '/^(\/about)$/' => 'aboutHandler',
             '/^(\/contact)$/' => 'contactHandler',
-            'default' => 'indexHandler'
+            '/^(\/)$/' => 'indexHandler',
+            'default' => 'error_404'
         );
     }
 
@@ -56,11 +56,7 @@ class Site extends Walleye_controller {
         }
         $this->view('index.php', $values);
     }
-    
-    private function aboutHandler() {
-        $this->view('about.php');
-    }
-    
+
     private function contactHandler() {
         $this->view('contact.php');
     }
