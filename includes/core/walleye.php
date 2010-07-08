@@ -1,12 +1,12 @@
 <?php
 
 require('walleye.config.php');
+require('walleye.console.php');
 require('walleye.functions.php');
 require('walleye.database.php');
 require('walleye.model.php');
 require('walleye.controller.php');
 require('walleye.user.php');
-require('libraries/pqp/pqp.php');
 
 /**
  * walleye.php
@@ -14,7 +14,7 @@ require('libraries/pqp/pqp.php');
  * The base exception handler for Walleye
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.5
+ * @version 0.8
  * @package Walleye
  */
 class Walleye_exception extends Exception {
@@ -30,7 +30,7 @@ class Walleye_exception extends Exception {
  *
  * @final
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.5
+ * @version 0.8
  * @package Walleye
  */
 final class Walleye {
@@ -55,20 +55,6 @@ final class Walleye {
      * @access private
      */
     private $url;
-
-    /**
-     * The instance of PQP used for logging
-     * @var PhpQuickProfiler
-     * @access private
-     */
-    private $pqp;
-
-    /**
-     * Should be the only instance of the database so that pqp can track all db calls
-     * @see PhpQuickProfiler
-     * @var Walleye_database
-     */
-    private $db;
     
     /**
      * The base directory address given in the config array
@@ -87,6 +73,14 @@ final class Walleye {
      * @access private
      */
     private static $domain;
+    
+    /**
+     * Lets the application know if it is running in production mode
+     * @see Walleye::isProduction()
+     * @var boolean
+     * @access private
+     */
+    private static $production;
 
     /**
      * All of the application options given in the config array
@@ -113,21 +107,22 @@ final class Walleye {
     private $routes = array();
 
     /**
-     * Starts the session, instantiates the pqp object, the post or get data, and the action given in the url
+     * Starts the session, stores the post or get data, and the action given in the url
      */
     private function __construct() {
         session_start();
-        $this->pqp = new PhpQuickProfiler(PhpQuickProfiler::getMicroTime());
         $this->data = $this->getDataFromUrl($_SERVER["REQUEST_URI"]);
         $this->url = $_SERVER["REQUEST_URI"];
         $this->routes = Walleye_config::getRoutes();
-        $this->db = new Walleye_database();
         $this->appOptions = Walleye_config::getAppOptions();
         if (isset($this->appOptions['BASE'])) {
             self::$server_base_dir = $this->appOptions['BASE'];
         }
         if (isset($this->appOptions['DOMAIN'])) {
             self::$domain = $this->appOptions['DOMAIN'];
+        }
+        if (isset($this->appOptions['PRODUCTION'])) {
+            self::$production = $this->appOptions['PRODUCTION'];
         }
     }
 
@@ -145,15 +140,6 @@ final class Walleye {
     }
     
     /**
-     * Returns the instance of the database that should be used through the app in order
-     * to use pqp to keep track of all database calls
-     * @return Walleye_database
-     */
-    public function db() {
-        return $this->db;
-    }
-
-    /**
      * Should be called directly after retrieving the Walleye object. This function performs the action
      * given in the url and shows pqp if not in production mode.
      *
@@ -161,10 +147,6 @@ final class Walleye {
      */
     public function run() {
         $this->route();
-        /*if (!$this->appOptions['PRODUCTION']) {
-            $this->pqp->display(Walleye_database::getInstance());
-        }*/
-        exit();
     }
 
     /**
@@ -222,6 +204,15 @@ final class Walleye {
      */
     public static function getDomain() {
         return self::$domain;
+    }
+    
+    /**
+     * Lets the application know if it is running in production mode
+     * @see Walleye::$production
+     * @return boolean
+     */
+    public static function isProduction() {
+        return self::$production;
     }
 
     /**
