@@ -3,10 +3,24 @@
 /**
  * walleye.model.php
  *
+ * The general exception class that all exceptions created through this framework
+ * should extend. This is because this exception will deal with logging for you.
+ *
+ * @author Jonathan Mayhak <Jmayhak@gmail.com>
+ * @version 0.8
+ * @package Walleye
+ */
+abstract class Walleye_model_exception extends Exception {
+
+}
+
+/**
+ * walleye.model.php
+ *
  * Each model you create in your application should extend this class.
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.5
+ * @version 0.8
  * @package Walleye
  */
 abstract class Walleye_model {
@@ -30,6 +44,14 @@ abstract class Walleye_model {
      * @return void
      */
     abstract public function commit();
+
+    /**
+     * Use this function to create a new row in the database for this instanct of this model.
+     *
+     * @abstract
+     * @return self
+     */
+    abstract public static function create();
 
     /**
      * Every model in your application should have a toString function
