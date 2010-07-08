@@ -16,5 +16,40 @@ function __autoload($class_name) {
     }
 }
 
+/**
+ * Takes a 1 dimensional array of data and returns a 256bit string hash whirlpool style
+ *
+ * @final
+ * @access protected
+ * @param array $data
+ * @return string|null
+ */
+function encode($data) {
+    if (is_array($data)) {
+        return null;
+    }
+    return hash('whirlpool', $data);
+}
+
+/**
+ * Will return a string of  an array in a decent fashion. Used mostly for logging
+ *
+ * @param array $array
+ * @return string
+ */
+function print_array($array) {
+    if (is_null ($array)) {
+        return '';
+    }
+    $returnString = '';
+    foreach ($array as $key => $value) {
+        if (is_array ($key)) {
+            $returnString .= print_array($key);
+        }
+        $returnString .= $key . ' - ' . $value . ' ';
+    }
+    return $returnString;
+}
+
 
 ?>
