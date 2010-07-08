@@ -26,6 +26,14 @@ abstract class Walleye_controller {
      * @access protected
      */
     protected $url;
+    
+    /**
+     * The actions in the URL. Use this property to get information from the URL.
+     * ex. /user/view/1 will return array('user', 'view', '1')
+     * @var array
+     * @access protected
+     */
+    protected $actions;
 
     /**
      * The routes the controller that extends this abstract class should follow
@@ -76,6 +84,18 @@ abstract class Walleye_controller {
         }
         return null;
     }
+    
+    /**
+     * Takes the url and will spit back out an array seperated by '/'
+     *
+     * @see Walleye_controller::$actions;
+     * @param string $url
+     * @return array
+     */
+    final protected function getActionsFromUrl($url) {
+        $url_without_data_array = explode('?', $url);
+        return explode('/', $url_without_data_array[0]);
+    }
 
     /**
      * This function will tell the view() function to display the 404 page which defaults to 404.php
@@ -111,7 +131,7 @@ abstract class Walleye_controller {
     }
 
     /**
-     *  Render a template. Be sure to include the path from /includes/app/views/
+     * Render a template through a basic php include
      *
      * ex. view('home/index.php', array('title'=>'Title'));
      *
@@ -123,9 +143,12 @@ abstract class Walleye_controller {
      * @return void
      */
     final protected function view($view, $values = array()) {
-        // TODO either track views in db here or as a trigger
-        Console::log('view: ' . $view);
-        Console::log('values: ' . $values);
+        // TODO track views here in the db or some log file
+        Console::log('view: ' . $view, __FILE__, __LINE__);
+        Console::log('values: ' . $values, __FILE__, __LINE__);
+        if (!Walleye::isProduction()) {
+            $values['logs'] = Console::getLogs();
+        }
         include(Walleye::getServerBaseDir() . 'includes/app/views/' . $view);
     }
 }
