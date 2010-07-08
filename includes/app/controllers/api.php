@@ -15,12 +15,8 @@ class Api extends Walleye_controller {
     public function __construct($url, $data) {
         $this->url = $url;
         $this->data = $data;
-        // !todo remove getAll handler and replace with better get handler
+        // !todo create a handler for bad api requests
         $this->handlers = array(
-            '/^(\/api\/prayer\/insert)$/' => 'insertPrayerRequestHandler',
-            '/^(\/api\/prayer\/getAll)$/' => 'getAllPrayerRequestsHandler',
-            '/^(\/api\/prayer\/get)$/' => 'getPrayerRequestHandler',
-            '/^(\/api\/prayer\/count)$/' => 'countHandler',
             'default' => 'indexHandler'
         );
     }
@@ -38,59 +34,6 @@ class Api extends Walleye_controller {
             $this->$handler();
         }
     }
-
-    /**
-     * @return void
-     */
-    private function insertPrayerRequestHandler() {
-        $this->useXmlHeader();
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $message = (isset ($this->data['message'])) ? $this->data['message'] : '';
-            $email = (isset ($this->data['email'])) ? $this->data['email'] :  '';
-            $name = (isset ($this->data['name'])) ? $this->data['name'] :  'anonymous';
-            $prayer_request = new PrayerRequest();
-            $prayer_request->name = $name;
-            $prayer_request->email = $email;
-            $prayer_request->message = $message;
-            $prayer_request->commit();
-        }
-        $values = array(
-            'response' => 'success'
-        );
-        $this->view('api/insert.php', $values);
-    }
-
-    /**
-     * @return void
-     */
-    private function getPrayerRequestHandler() {
-
-    }
-
-    /**
-     * @return void
-     */
-    private function getAllPrayerRequestsHandler() {
-        $this->useXmlHeader();
-        $values = array();
-        $values['prayer_requests'] = array();
-        $db = Walleye::getInstance()->db();
-        $get_id_stmt = $db->prepare('SELECT id FROM PrayerRequests');
-        $get_id_stmt->execute();
-        $get_id_stmt->bind_result($id);
-        while ($get_id_stmt->fetch()) {
-            array_push($values['prayer_requests'], PrayerRequest::withId($id));
-        }
-        $this->view('api/get.php', $values);
-    }
-
-    /**
-     * @return void
-     */
-    private function countHandler() {
-
-    }
-
 }
 
 ?>
