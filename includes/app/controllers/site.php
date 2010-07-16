@@ -46,7 +46,7 @@ class Site extends Walleye_controller {
 
     private function indexHandler() {
         Console::log('You can create log messages', 'site.php', __LINE__);
-        Console::logError('You can create error messages', 'site.php', __LINE__);
+        Console::logError('You can create error messages');
         if (Walleye_user::getLoggedUser()) {
             Console::alert('Cool, you logged in');
         }
@@ -58,6 +58,11 @@ class Site extends Walleye_controller {
 
     private function contactHandler() {
         $this->view('contact.php');
+    }
+
+    protected function error_404() {
+        Console::alert('How did you get here?');
+        parent::error_404();
     }
 }
 
