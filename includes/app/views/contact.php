@@ -1,9 +1,8 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: jmayhak
- * Date: Jul 16, 2010
- * Time: 11:06:02 AM
- * To change this template use File | Settings | File Templates.
- */
- 
+<?php $this->view('_header.php'); ?>
+<div id="wrapper">
+<div id="container">
+    <h2>Contact Page</h2>
+    <p>blah blah blah</p>
+</div>
+</div>
+<?php $this->view('_footer.php'); ?>
