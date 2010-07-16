@@ -144,8 +144,6 @@ abstract class Walleye_controller {
      */
     final protected function view($view, $values = array()) {
         // TODO track views here in the db or some log file
-        Console::log('view: ' . $view, __FILE__, __LINE__);
-        Console::log('values: ' . $values, __FILE__, __LINE__);
         if (!Walleye::isProduction()) {
             $values['logs'] = Console::getLogs();
         }
