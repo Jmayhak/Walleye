@@ -3,7 +3,7 @@
 /**
  * walleye.config.php
  *
- * Set all config settings in the class.
+ * Set all config settings in this class.
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
  * @version 0.8
@@ -18,9 +18,15 @@ class Walleye_config {
      */
     public static function getAppOptions() {
         return array(
+                   // the location of this application from the server root. end with a '/'
                    'BASE' => '',
+                   // end the domain with a '/'
                    'DOMAIN' => '',
-                   'PRODUCTION' => false
+                   // if in production mode, no php warning/errors will be shown
+                   'PRODUCTION' => false,
+                   'LOG_ERRORS' => true,
+                   // the location of the log file in relation to BASE
+                   'LOG_FILE' => 'logs/app.log'
                );
     }
     
