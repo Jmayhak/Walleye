@@ -117,13 +117,16 @@ class Walleye_user extends Walleye_model {
             $get_session_id_stmt->bind_param('s', $_SESSION[Walleye_user::USER_SESSION]);
             $get_session_id_stmt->execute();
             $get_session_id_stmt->bind_result($session_id);
-            $get_session_id_stmt->fetch();  
+            $get_session_id_stmt->fetch();
+            $get_session_id_stmt->close();
             $get_user_id_and_date_created_stmt = $db->prepare('SELECT user_id, date_created FROM UserSessions WHERE session_id = ?');
             $get_user_id_and_date_created_stmt->bind_param('i', $session_id);
             $get_user_id_and_date_created_stmt->execute();
-            $get_user_id_and_date_created_stmt->bind_result($user_id);
+            $get_user_id_and_date_created_stmt->bind_result($user_id, $date_created);
+            $get_user_id_and_date_created_stmt->fetch();
+            $get_user_id_and_date_created_stmt->close();
         }
-        if ($get_user_id_and_date_created_stmt->fetch()) {
+        if ($user_id) {
             try
             {
                 $instance = new Walleye_user($user_id);
@@ -157,35 +160,35 @@ class Walleye_user extends Walleye_model {
         $get_user_id_stmt = $db->prepare('SELECT id FROM Users WHERE username = ? and password = ?');
         $get_user_id_stmt->bind_param('ss', $username, $password);
         $get_user_id_stmt->execute();
-        $get_user_id_stmt->bind_result($user_id);
+        $get_user_id_stmt->bind_result($id);
         if ($get_user_id_stmt->fetch()) {
             try
             {
-                $instance = new Walleye_user($user_id);
-                $to_encode = array(
-                    $instance->firstname,
-                    $instance->lastname,
-                    $instance->regDate,
-                    $instance->id,
-                    $instance->username,
-                    time()
-                );
-                $session = encode($to_encode);
-                $insert_session_stmt = $db->prepare('INSERT INTO Sessions (session_key) VALUES (?))');
+                $instance = new Walleye_user($id);
+                $session = encode($instance->firstName . $instance->lastName . time());
+                $get_user_id_stmt->close();
+                $insert_session_stmt = $db->prepare('INSERT INTO Sessions (session_key) VALUES (?)');
                 $insert_session_stmt->bind_param('s', $session);
                 $insert_session_stmt->execute();
                 $session_id = $db->insert_id;
+                $insert_session_stmt->close();
                 $insert_user_session_stmt = $db->prepare('INSERT INTO UserSessions (user_id, session_id) VALUES (?, ?)');
-                $insert_user_session_stmt->bind_param('ii', $instance->id, $session_id);
+                $insert_user_session_stmt->bind_param('ii', $instance->getId(), $session_id);
                 $insert_user_session_stmt->execute();
-                $_SESSION[Walleye_user::USER_SESSION] = md5($session);
+                $insert_user_session_stmt->close();
+                $_SESSION[Walleye_user::USER_SESSION] = $session;
             }
             catch (Exception $ex)
             {
-                Console::logError($ex, $ex->message);
+                Console::logError($ex->getMessage(), $ex);
                 $instance = null;
             }
         }
+        else
+        {
+            $instance = null;
+        }
+
         return $instance;
     }
 
@@ -219,7 +222,7 @@ class Walleye_user extends Walleye_model {
         }
         return $instance;
     }
-    
+
     /**
      * Accepts the id of the user in the db
      *
@@ -317,7 +320,7 @@ class Walleye_user extends Walleye_model {
         }
         return false;
     }
-    
+
     /**
      * @return string|int
      */
