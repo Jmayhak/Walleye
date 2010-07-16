@@ -4,6 +4,7 @@ Please note: this is a WORK IN PROGRESS and is not production quality out of the
 
 * Uses MySQLi
 * Server-side logging through the javascript console object and a text file
+* Messages can be sent to the browser via Console::alert() and gritter
 * Secure session management
 * Includes basic sql
 
@@ -65,11 +66,14 @@ The Walleye_database class itself is simply an extension of MySQLi and can be cr
 
 	$db = new Walleye_database();
 
-Now you have all the functions available to you through MySQLi.
+Now you have all the functions available to you through MySQLi. You can change the database that you are connection to by passing the name as a parameter.
+
+	$db = new Walleye_database('test_db');
 
 == Logging
 
 Server-side logging is performed through the Console class (walleye.console.php). The file and line should be passed with each log unless you are logging an error (the Exception object will contain that information).
 
 	Console::log('this is a message to be logged', __FILE__, __LINE__);
-	Console::logError($ex->getMessage(), $ex);
+	Console::logError($ex->getMessage());
+	Console::alert('this is a message to be sent to the browser');
