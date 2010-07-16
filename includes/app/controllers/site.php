@@ -45,16 +45,10 @@ class Site extends Walleye_controller {
     }
 
     private function indexHandler() {
-        $values = array();
-        $values['prayer_requests'] = array();
-        $db = Walleye::getInstance()->db();
-        $get_id_stmt = $db->prepare('SELECT id FROM PrayerRequests');
-        $get_id_stmt->execute();
-        $get_id_stmt->bind_result($id);
-        while ($get_id_stmt->fetch()) {
-            array_push($values['prayer_requests'], PrayerRequest::withId($id));
-        }
-        $this->view('index.php', $values);
+        Console::alert('This is just to show that you can send alerts to the user server-side. Check out the javascript console');
+        Console::log('You can create log messages');
+        Console::logError('You can create error messages');
+        $this->view('index.php');
     }
 
     private function contactHandler() {
