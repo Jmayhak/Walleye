@@ -66,7 +66,7 @@ The Walleye_database class itself is simply an extension of MySQLi and can be cr
 
 	$db = new Walleye_database();
 
-Now you have all the functions available to you through MySQLi. You can change the database that you are connection to by passing the name as a parameter.
+Now you have all the functions available to you through MySQLi. You can change the database that you are connecting to by passing the name as a parameter.
 
 	$db = new Walleye_database('test_db');
 
