@@ -36,41 +36,66 @@ class Console {
             'line' => $line,
             'date' => date('F j, Y, g:i a')
         );
-        if ($store) {
+        $options = Walleye_config::getAppOptions();
+        if ($store && $options['LOG_ERRORS']) {
             self::storeLog($logItem);
         }
         array_push(self::$logs, $logItem);
     }
-    
+
     /**
      * Use this function to add an error log to the app.log file
-     * @static
      * @param string $message
      * @param exception $ex
      * @param boolean $store
+     */
+    public static function logError($message, $ex = null, $store = true) {
+        if (is_null($ex)) {
+            Console::log($message, 'unknown file', 'unknown line', $store, 'error');
+        }
+        else if (class_exists($ex)) {
+            if (in_array('getFile', get_class_methods($ex)) && in_array('getLine', get_class_methods($ex))) {
+                Console::log($message, $ex->getFile(), $ex->getLine(), $store, 'error');
+            }
+        }
+        else {
+            Console::log($message, 'unknown file', 'unknown line', $store, 'error');
+        }
+    }
+
+    /**
+     * Use this function to alert the currently logged in user of something
+     * @static
+     * @param string $message
+     * @param string $file
+     * @param string $line
+     * @param bool $store
      * @return void
      */
-    public static function logError($message, $ex, $store = true) {
-        Console::log($message, $ex->getFile(), $ex->getLine(), $store, 'error');
+    public static function alert($message, $file = 'unknown file', $line = 'unknown line', $store = false) {
+        Console::log($message, $file, $line, $store, 'alert');
     }
-    
+
     /**
      * Returns all logs
-     * @static
      * @return array
      */
     public static function getLogs() {
         return self::$logs;
     }
-    
+
     /**
      * Takes an array and adds it to the logs/app.log file
-     * @static
      * @param array $log
+     * @param string $location
      * @return void
      */
-    private static function storeLog($logItem) {
-        $stream = fopen(Walleye::getServerBaseDir() . 'logs/app.log', 'a');
+    private static function storeLog($logItem, $location = null) {
+        if (is_null($location)) {
+            $options = Walleye_config::getAppOptions();
+            $location = $options['LOG_FILE'];
+        }
+        $stream = fopen(Walleye::getServerBaseDir() . $location, 'a');
         fwrite($stream, print_array($logItem) . "\n");
         fclose($stream);
     }
