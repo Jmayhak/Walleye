@@ -45,9 +45,14 @@ class Site extends Walleye_controller {
     }
 
     private function indexHandler() {
-        Console::alert('This is just to show that you can send alerts to the user server-side. Check out the javascript console');
-        Console::log('You can create log messages');
-        Console::logError('You can create error messages');
+        Console::log('You can create log messages', 'site.php', __LINE__);
+        Console::logError('You can create error messages', 'site.php', __LINE__);
+        if (Walleye_user::getLoggedUser()) {
+            Console::alert('Cool, you logged in');
+        }
+        else {
+            Console::alert('This is just to show that you can send alerts to the user server-side. Check out the javascript console');
+        }
         $this->view('index.php');
     }
 
