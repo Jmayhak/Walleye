@@ -17,7 +17,7 @@ class Api extends Walleye_controller {
         $this->data = $data;
         // !todo create a handler for bad api requests
         $this->handlers = array(
-            'default' => 'indexHandler'
+            'default' => 'error_404'
         );
     }
 
