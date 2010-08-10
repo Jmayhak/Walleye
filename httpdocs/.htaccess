@@ -1,6 +1,7 @@
-Options +FollowSymLinks
+<IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteRule ^css/.*$ - [PT]
-RewriteRule ^images/.*$ - [PT]
-RewriteRule ^js/.*$ - [PT]
-RewriteRule (.*) index.php
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>

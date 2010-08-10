@@ -6,7 +6,7 @@
  * Exception class to handle the Walleye_database class
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.8
+ * @version 0.5
  * @package Walleye
  */
 class Walleye_database_exception extends Exception {
@@ -18,13 +18,12 @@ class Walleye_database_exception extends Exception {
 /**
  * walleye.database.php
  *
- * This is the class that handles all connections to the database. It uses
- * PQP to print the queries to the screen if not in production.
+ * This is the class that handles all connections to the database. 
  *
  * Uses MySQLi
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.8
+ * @version 0.5
  * @package Walleye
  */
 class Walleye_database extends MySQLi {
@@ -54,7 +53,39 @@ class Walleye_database extends MySQLi {
         }
         parent::__construct($server, $user, $password, $database);
     }
+    
+    public function getresult($stmt) 
+    { 
+      $result = array(); 
+      
+      $metadata = $stmt->result_metadata(); 
+      $fields = $metadata->fetch_fields(); 
 
+      for (;;) 
+      { 
+        $pointers = array(); 
+        $row = new stdClass(); 
+        
+        $pointers[] = $stmt; 
+        foreach ($fields as $field) 
+        { 
+          $fieldname = $field->name; 
+          $pointers[] = &$row->$fieldname; 
+        } 
+        
+        call_user_func_array(mysqli_stmt_bind_result, $pointers); 
+        
+        if (!$stmt->fetch()) 
+          break; 
+        
+        $result[] = $row; 
+      } 
+      
+      $metadata->free(); 
+      
+      return $result; 
+    }
+    
 }
 
 ?>
