@@ -7,6 +7,7 @@ require('walleye.database.php');
 require('walleye.model.php');
 require('walleye.controller.php');
 require('walleye.user.php');
+require('walleye.email.php');
 
 /**
  * walleye.php
