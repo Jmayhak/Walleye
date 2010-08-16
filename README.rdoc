@@ -34,6 +34,7 @@ The framework is based around the following directory structure:
             walleye.functions.php
             walleye.model.php
             walleye.user.php
+            walleye.email.php
             walleye.php
     tests/
         bootstrap.php
@@ -77,3 +78,26 @@ Server-side logging is performed through the Console class (walleye.console.php)
 	Console::log('this is a message to be logged', __FILE__, __LINE__);
 	Console::logError($ex->getMessage());
 	Console::alert('this is a message to be sent to the browser');
+
+== Email
+
+Email can be sent via a template or a simple string. The values in a template (greeting.txt for example) should be marked as follows: #{value}
+
+	Hello #{username},
+	
+	How are you?
+	
+	love, #{admin}
+	
+After creating your template file you can send the email with the following code:
+
+	$email = Walleye_email::withTemplate($to, $subject, 'greeting.txt', array('username' => 'Jon', 'admin' => 'Bob'));
+	$email->send();
+
+or without a template:
+
+	$email = Walleye_email($to, $subject, 'This is an email');
+	$email->send();
+	
+Eventually you will be able to manage things like a default from and various headers through Walleye_config.php
+	
