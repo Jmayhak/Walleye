@@ -73,9 +73,8 @@ class Walleye_user extends Walleye_model {
     private static $current_logged_user;
 
     /**
-     * Creates a new User based on the uid (not a logged in user)
+     * Creates a new Walleye_user based on the uid (not a logged in user)
      *
-     * @todo exception handling
      * @property string $id
      */
     public function __construct($id) {
@@ -83,20 +82,13 @@ class Walleye_user extends Walleye_model {
         $get_user_stmt = $db->prepare('select id, username, first_name, last_name, date_created from Users where id = ?');
         $get_user_stmt->bind_param('i', $id);
         $get_user_stmt->execute();
-        $get_user_stmt->bind_result($id, $username, $first_name, $last_name, $date_created);
-        if ($get_user_stmt->fetch()) {
-            $this->id = $id;
-            $this->username = $username;
-            $this->firstName = $first_name;
-            $this->lastName = $last_name;
-            $this->regDate = $date_created;
-        }
-        else {
-            $this->id = 0;
-            $this->username = '';
-            $this->firstName = '';
-            $this->lastName = '';
-            $this->regDate = '';
+        $result = $db->getResult($get_user_stmt);
+        foreach ($result as $row) {
+            $this->id = $row->id;
+            $this->username = $row->username;
+            $this->firstName = $row->first_name;
+            $this->lastName = $row->last_name;
+            $this->regDate = $row->date_created;
         }
     }
 
@@ -107,9 +99,8 @@ class Walleye_user extends Walleye_model {
      * @return Walleye_user
      */
     public static function withSession() {
-        // TODO check if session has expired before execute()
-        // TODO check date_created on session
         $db = new Walleye_database();
+        $instance = null;
         if (isset($_SESSION[Walleye_user::USER_SESSION])) {
             $get_session_id_stmt = $db->prepare('SELECT id FROM Sessions WHERE session_key = ?');
             $get_session_id_stmt->bind_param('s', $_SESSION[Walleye_user::USER_SESSION]);
@@ -193,20 +184,9 @@ class Walleye_user extends Walleye_model {
         $get_user_id_stmt->bind_param('s', $username);
         $get_user_id_stmt->execute();
         $get_user_id_stmt->bind_result($user_id);
+        $instance = null;
         if ($get_user_id_stmt->fetch()) {
-            try
-            {
-                $instance = new Walleye_user($user_id);
-            }
-            catch (Exception $ex)
-            {
-                Console::logError($ex, $ex->message);
-                $instance = null;
-            }
-        }
-        else
-        {
-            $instance = null;
+            $instance = Walleye_user::withId($user_id);
         }
         return $instance;
     }
@@ -218,9 +198,6 @@ class Walleye_user extends Walleye_model {
      */
     public static function withId($id) {
         $instance = new Walleye_user($id);
-        if ($instance->id == 0) {
-            return null;
-        }
         return $instance;
     }
 
@@ -257,8 +234,9 @@ class Walleye_user extends Walleye_model {
      */
     public function commit() {
         $db = new Walleye_database();
-        $update_user_stmt = $db->prepare('UPDATE Users SET (firstName = :firstName, lastName = :lastName) WHERE (id = :id)');
-        $result = $update_user_stmt->execute(array(':firstName' => $this->firstName, ':lastName' => $this->lastName, ':id' => $this->id));
+        $update_user_stmt = $db->prepare('UPDATE Users SET (firstName = ?, lastName = ?) WHERE (id = ?)');
+        $update_user_stmt->bind_param('ssi', $this->firstName, $this->lastName, $this->id);
+        $result = $update_user_stmt->execute();
         return $result;
     }
 
@@ -301,9 +279,8 @@ class Walleye_user extends Walleye_model {
         $get_username_stmt = $db->prepare('SELECT id FROM Users WHERE username = ?');
         $get_username_stmt->bind_param('s', $username);
         $get_username_stmt->execute();
-        // !todo figure out if binding here is necessary
-        $get_username_stmt->bind_result($id);
-        if ($get_username_stmt->fetch()) {
+        $result = $db->getResult($get_username_stmt);
+        if (empty($result)) {
             return true;
         }
         return false;
