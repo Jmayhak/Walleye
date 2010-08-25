@@ -41,6 +41,8 @@ The framework is based around the following directory structure:
 
 == How to use the framework
 
+Set up the configuration options in walleye.config.php.
+
 Everything starts with index.php in the httpdocs folder. The .htaccess file routes all requests (excluding css, images, and js) to index.php.
 
 The file creates a new instance of Walleye, sets the options found in walleye.config.php, and starts the app. This should always be the same process.
@@ -74,7 +76,7 @@ Now you have all the functions available to you through MySQLi. You can change t
 Server-side logging is performed through the Console class (walleye.console.php). The file and line should be passed with each log unless you are logging an error (the Exception object will contain that information).
 
 	Console::log('this is a message to be logged', __FILE__, __LINE__);
-	Console::logError($ex->getMessage());
+	Console::logError('this is an error');
 	Console::alert('this is a message to be sent to the browser');
 
 == Email
