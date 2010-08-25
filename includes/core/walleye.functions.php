@@ -51,5 +51,15 @@ function print_array($array) {
     return $returnString;
 }
 
+/**
+ * Pass a string and this function will return the amount of days since then
+ *
+ * @param string $when should be a TIMESTAMP yyyy-mm-dd
+ * @return int the number of days
+ */
+function daysFromNow($when) {
+    return floor((time() - strtotime($when)) / (60 * 60 * 24));
+}
+
 
 ?>
