@@ -1,7 +1,5 @@
 == WALLEYE - An MVC style PHP framework based on PHP 5.1.6
 
-Please note: this is a WORK IN PROGRESS and is not production quality out of the box.
-
 * Uses MySQLi
 * Server-side logging through the javascript console object and a text file
 * Messages can be sent to the browser via Console::alert() and gritter
@@ -100,4 +98,4 @@ or without a template:
 	$email->send();
 	
 Eventually you will be able to manage things like a default from and various headers through Walleye_config.php
-	
+
