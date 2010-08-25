@@ -1,4 +1,4 @@
-<?php include(Walleye::getServerBaseDir() . 'includes/app/views/_header.php'); ?>
+<?php $this->view('_header.php'); ?>
 <form action="/user/login" method="post">
 <?php if (isset($values['login_message'])) : ?>
     <div class="error">
@@ -23,4 +23,4 @@
     </div>
     <p>username: test pw: test</p>
 </form>
-<?php include(Walleye::getServerBaseDir() . 'includes/app/views/_footer.php'); ?>
+<?php $this->view('_footer.php'); ?>
