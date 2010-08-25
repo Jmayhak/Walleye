@@ -123,21 +123,11 @@ class Walleye_user extends Walleye_model {
             $get_user_id_and_date_created_stmt->bind_result($user_id, $date_created);
             $get_user_id_and_date_created_stmt->fetch();
             $get_user_id_and_date_created_stmt->close();
-        }
-        if ($user_id) {
-            try
-            {
-                $instance = new Walleye_user($user_id);
+            $date_created_array = explode(' ', $date_created);
+            $appOptions = Walleye_config::getAppOptions();
+            if (daysFromNow($date_created_array[0]) <= $appOptions['SESSION_KEY_EXPIRE_TIME']) {
+                $instance = Walleye_user::withId($user_id);
             }
-            catch (Exception $ex)
-            {
-                Console::logError($ex, $ex->message);
-                $instance = null;
-            }
-        }
-        else
-        {
-            $instance = null;
         }
         return $instance;
     }

@@ -26,7 +26,11 @@ class Walleye_config {
                    'PRODUCTION' => false,
                    'LOG_ERRORS' => true,
                    // the location of the log file in relation to BASE
-                   'LOG_FILE' => 'logs/app.log'
+                   'LOG_FILE' => 'logs/app.log',
+                   // Enter the expiration time in days
+                   'REG_KEY_EXPIRE_TIME' => '7', // not implemented
+                   // The length a session lasts in code in days (php.ini controls the session variable)
+                   'SESSION_KEY_EXPIRE_TIME' => '1'
                );
     }
     
