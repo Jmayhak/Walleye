@@ -8,7 +8,6 @@
  * that function for).
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.5
  * @package Walleye
  */
 abstract class Walleye_controller {

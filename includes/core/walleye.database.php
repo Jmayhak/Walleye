@@ -23,7 +23,6 @@ class Walleye_database_exception extends Exception {
  * Uses MySQLi
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.5
  * @package Walleye
  */
 class Walleye_database extends MySQLi {

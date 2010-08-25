@@ -15,7 +15,6 @@ require('walleye.email.php');
  * The base exception handler for Walleye
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.8
  * @package Walleye
  */
 class Walleye_exception extends Exception {
@@ -31,7 +30,6 @@ class Walleye_exception extends Exception {
  *
  * @final
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.8
  * @package Walleye
  */
 final class Walleye {

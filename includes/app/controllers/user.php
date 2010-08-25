@@ -4,9 +4,6 @@
  * user.php
  *
  * This class is used to handle routes related to user management.
- *
- * @package Prayer
- * @subpackage controllers
  */
 class User extends Walleye_controller {
 

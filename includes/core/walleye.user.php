@@ -6,7 +6,6 @@
  * The basic exception class for a Walleye_user
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.8
  * @package Walleye
  */
 class Walleye_user_exception extends Walleye_exception {
@@ -24,7 +23,6 @@ class Walleye_user_exception extends Walleye_exception {
  * The user model that you create for your application should extend this class.
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.8
  * @package Walleye
  */
 class Walleye_user extends Walleye_model {

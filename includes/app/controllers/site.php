@@ -4,9 +4,6 @@
  * site.php
  *
  * This controller handlers all basic/static requests like the contact page or the index page.
- *
- * @package Prayer
- * @subpackage controllers
  */
 class Site extends Walleye_controller {
 

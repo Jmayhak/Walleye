@@ -7,7 +7,6 @@
  * should extend. This is because this exception will deal with logging for you.
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.8
  * @package Walleye
  */
 abstract class Walleye_model_exception extends Exception {
@@ -20,7 +19,6 @@ abstract class Walleye_model_exception extends Exception {
  * Each model you create in your application should extend this class.
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.8
  * @package Walleye
  */
 abstract class Walleye_model {
