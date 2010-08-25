@@ -7,12 +7,12 @@
     <link href="/css/jquery.gritter.css" rel="stylesheet" media="all"/>
     <script type="text/javascript" src="/js/jquery-1.3.2.js"></script>
     <script type="text/javascript" src="/js/jquery.gritter.min.js"></script>
-<?php if (isset($values['css'])) : foreach ($values['css'] as $src) : ?>
-    <script type="text/javascript" src="<?php echo $src; ?>"></script>
-<?php endforeach; endif; ?>
-<?php if (isset($values['js'])) : foreach ($values['js'] as $js) : ?>
-    <script rel="stylesheet" href="<?php echo $js; ?>"></script>
-<?php endforeach; endif; ?>
+	<?php if (isset($values['css'])) : foreach ($values['css'] as $href) : ?>
+	    <link rel="stylesheet" href="<?php echo $href ?>" type="text/css" />
+	<?php endforeach; endif; ?>
+	<?php if (isset($values['js'])) : foreach ($values['js'] as $js) : ?>
+	    <script rel="text/javascript" src="<?php echo $js; ?>"></script>
+	<?php endforeach; endif; ?>
     <script type="text/javascript">
         $(document).ready(function() {
         <?php if (isset($values['logs'])) : foreach ($values['logs'] as $log) : ?>
