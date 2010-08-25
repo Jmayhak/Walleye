@@ -57,7 +57,6 @@ class User extends Walleye_controller {
         $values = array();
         $data = $this->data;
         if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($data['username']) && isset($data['password'])) {
-            // !TODO send over password post encryption
             $user = Walleye_user::withUsernameAndPassword($data['username'], md5($data['password']));
             if (!is_null($user)) {
                 Walleye_user::setLoggedUserWithSession();
