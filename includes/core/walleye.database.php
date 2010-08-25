@@ -53,7 +53,7 @@ class Walleye_database extends MySQLi {
         parent::__construct($server, $user, $password, $database);
     }
     
-    public function getresult($stmt) 
+    public function getResult($stmt) 
     { 
       $result = array(); 
       
