@@ -6,7 +6,6 @@
  * Set all config settings in this class.
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.8
  * @package Walleye
  */
 class Walleye_config {
@@ -39,7 +38,6 @@ class Walleye_config {
      * @return array
      */
     public static function getDbOptions() {
-        // !todo move to a ini file?
         return array(
                    'ENGINE' => '',
                    'SERVER' => '',
