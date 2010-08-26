@@ -97,6 +97,24 @@ abstract class Walleye_controller {
     }
 
     /**
+     * Checks if HTTP POST
+     * @return boolean
+     */
+    protected function isPost() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') return true;
+        return false;
+    }
+
+    /**
+     * Checks if HTTP GET
+     * @return boolean
+     */
+    protected function isGet() {
+        if ($this->isPost()) return false;
+        return true;
+    }
+
+    /**
      * This function will tell the view() function to display the 404 page which defaults to 404.php
      *
      * @see Walleye_controller::view()
