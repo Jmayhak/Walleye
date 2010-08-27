@@ -211,7 +211,7 @@ class Walleye_user extends Walleye_model {
      * @return Walleye_user|null
      */
     public static function create($username = '', $password = '') {
-        if ($username == '' || $password = '') {
+        if ($username == '' || $password == '') {
             return null;
         }
         $db = new Walleye_database();
