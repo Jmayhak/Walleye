@@ -71,5 +71,3 @@ class Walleye_database extends MySQLi {
     }
     
 }
-
-?>

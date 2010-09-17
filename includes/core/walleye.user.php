@@ -290,9 +290,7 @@ class Walleye_user extends Walleye_model {
      * Gives a string formatted as follows: id: '' userName: '' firstName: '' lastName: '' regDate: ''
      * @return string
      */
-    public function __toString() {
+    public function toString() {
         return "id: '$this->id' userName: '$this->username' firstName: '$this->firstName' lastName: '$this->lastName' regDate: '$this->regDate'";
     }
 }
-
-?>

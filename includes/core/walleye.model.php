@@ -31,7 +31,7 @@ abstract class Walleye_model {
     abstract public function commit();
 
     /**
-     * Use this function to create a new row in the database for this instanct of this model.
+     * Use this function to create a new row in the database for this instance of this model.
      *
      * @abstract
      * @return self
@@ -39,13 +39,11 @@ abstract class Walleye_model {
     abstract public static function create();
 
     /**
-     * Every model in your application should have a toString function
+     * Every model in your application should have a toString function. 5.1.6 does not support __toString
      *
      * @abstract
      * @return string
      */
-    abstract public function __toString();
+    abstract public function toString();
 
 }
-
-?>
