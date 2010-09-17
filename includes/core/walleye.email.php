@@ -6,7 +6,6 @@
  * This class handles email
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.8
  * @package Walleye
  */
 class Walleye_email {
