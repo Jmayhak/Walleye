@@ -118,7 +118,7 @@ class Walleye_user extends Walleye_model {
      *
      * @param string $username
      * @param string $password
-     * @return Walleye_user
+     * @return Walleye_user|null
      */
     public static function withUserNameAndPassword($username, $password) {
         $db = new Walleye_database();
@@ -126,34 +126,22 @@ class Walleye_user extends Walleye_model {
         $get_user_id_stmt->bind_param('ss', $username, $password);
         $get_user_id_stmt->execute();
         $get_user_id_stmt->bind_result($id);
+        $instance = null;
         if ($get_user_id_stmt->fetch()) {
-            try
-            {
-                $instance = new Walleye_user($id);
-                $session = encode($instance->firstName . $instance->lastName . time());
-                $get_user_id_stmt->close();
-                $insert_session_stmt = $db->prepare('INSERT INTO Sessions (session_key) VALUES (?)');
-                $insert_session_stmt->bind_param('s', $session);
-                $insert_session_stmt->execute();
-                $session_id = $db->insert_id;
-                $insert_session_stmt->close();
-                $insert_user_session_stmt = $db->prepare('INSERT INTO UserSessions (user_id, session_id) VALUES (?, ?)');
-                $insert_user_session_stmt->bind_param('ii', $instance->getId(), $session_id);
-                $insert_user_session_stmt->execute();
-                $insert_user_session_stmt->close();
-                $_SESSION[Walleye_user::USER_SESSION] = $session;
-            }
-            catch (Exception $ex)
-            {
-                Console::logError($ex->getMessage(), $ex);
-                $instance = null;
-            }
+            $instance = new Walleye_user($id);
+            $session = encode($instance->firstName . $instance->lastName . time());
+            $get_user_id_stmt->close();
+            $insert_session_stmt = $db->prepare('INSERT INTO Sessions (session_key) VALUES (?)');
+            $insert_session_stmt->bind_param('s', $session);
+            $insert_session_stmt->execute();
+            $session_id = $db->insert_id;
+            $insert_session_stmt->close();
+            $insert_user_session_stmt = $db->prepare('INSERT INTO UserSessions (user_id, session_id) VALUES (?, ?)');
+            $insert_user_session_stmt->bind_param('ii', $instance->getId(), $session_id);
+            $insert_user_session_stmt->execute();
+            $insert_user_session_stmt->close();
+            $_SESSION[Walleye_user::USER_SESSION] = $session;
         }
-        else
-        {
-            $instance = null;
-        }
-
         return $instance;
     }
 
@@ -241,7 +229,7 @@ class Walleye_user extends Walleye_model {
 
     /**
      * Sets the logged in user via Sessions. Use this after changing the session
-     * of a user after reauthentication to make sure on the next view render the
+     * of a user after re-authentication to make sure on the next view render the
      * user will be allowed access.
      *
      * The Session is updated by User::withUserNameAndPassword()
