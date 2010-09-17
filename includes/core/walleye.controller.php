@@ -4,7 +4,7 @@
  * walleye.controller.php
  *
  * Every controller in your application should extend this class. This is because the routes() function
- * in Walleye tries to call the doAction() function dynamically (it doesn't know what class it's calling
+ * in Walleye tries to call the doHandler() function dynamically (it doesn't know what class it's calling
  * that function for).
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
@@ -27,15 +27,16 @@ abstract class Walleye_controller {
     protected $url;
     
     /**
-     * The actions in the URL. Use this property to get information from the URL.
+     * The path of the URL. Use this property to get information from the URL.
      * ex. /user/view/1 will return array('user', 'view', '1')
      * @var array
      * @access protected
      */
-    protected $actions;
+    protected $path;
 
     /**
-     * The routes the controller that extends this abstract class should follow
+     * The handlers the controller that extends this abstract class should follow.
+     * ex. array('/hello/' => 'helloHandler')
      * @var array
      * @access protected
      */
@@ -52,17 +53,17 @@ abstract class Walleye_controller {
     abstract protected function __construct($url, $data);
 
     /**
-     * Since Walleye is based on PHP 5.1.6 we cannot perform late static binding and stick doAction and
+     * Since Walleye is based on PHP 5.1.6 we cannot perform late static binding and stick doHandler and
      * getHandler together. Look for an update in future versions of Walleye.
      *
      * @abstract
      * @access protected
      * @return void
      */
-    abstract protected function doAction();
+    abstract protected function doHandler();
 
     /**
-     * Call this function first in the doAction() function to figure out which handler (function in the controller)
+     * Call this function first in the doHandler() function to figure out which handler (function in the controller)
      * should be called.
      *
      * @final
@@ -85,13 +86,13 @@ abstract class Walleye_controller {
     }
     
     /**
-     * Takes the url and will spit back out an array seperated by '/'
+     * Takes the url and will spit back out an array separated by '/'
+     * ex. $url = /user/1/edit will return array('user', '1', 'edit') 
      *
-     * @see Walleye_controller::$actions;
      * @param string $url
      * @return array
      */
-    final protected function getActionsFromUrl($url) {
+    final protected function getUrlPath($url) {
         $url_without_data_array = explode('?', $url);
         return explode('/', $url_without_data_array[0]);
     }
@@ -142,6 +143,9 @@ abstract class Walleye_controller {
 
     /**
      * Changes the header to be text/xml. This is used for the api
+     * @final
+     * @access protected
+     * @return void
      */
     final protected function useXmlHeader() {
         header("Content-Type: text/xml"); 
@@ -152,19 +156,15 @@ abstract class Walleye_controller {
      *
      * ex. view('home/index.php', array('title'=>'Title'));
      *
-     * @final
      * @access protected
      * @param string $view the view to be rendered.
      * @param array $values the values to be shown on the view
-     * @param string $dir the location from includes/app/views/
      * @return void
      */
-    final protected function view($view, $values = array()) {
+    protected function view($view, $values = array()) {
         if (!Walleye::isProduction()) {
             $values['logs'] = Console::getLogs();
         }
         include(Walleye::getServerBaseDir() . 'includes/app/views/' . $view);
     }
 }
-
-?>
