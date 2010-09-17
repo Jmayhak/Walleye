@@ -95,11 +95,16 @@ final class Walleye {
      * Starts the session, stores the post or get data, and the action given in the url
      */
     private function __construct() {
+	    $this->appOptions = Walleye_config::getAppOptions();
+	    if ($this->isMobile() && $this->appOptions['IF_MOBILE_REDIRECT'] != '') {
+		    header('Location: ' . $this->appOptions['IF_MOBILE_REDIRECT']);
+	        exit();
+	    }
         session_start();
         $this->data = $this->getDataFromUrl($_SERVER["REQUEST_URI"]);
-        $this->url = $_SERVER["REQUEST_URI"];
+        $url_array = explode('?', $_SERVER["REQUEST_URI"]);
+        $this->url = $url_array[0];
         $this->routes = Walleye_config::getRoutes();
-        $this->appOptions = Walleye_config::getAppOptions();
         if (isset($this->appOptions['BASE'])) {
             self::$server_base_dir = $this->appOptions['BASE'];
         }
@@ -159,7 +164,6 @@ final class Walleye {
                 }
             }
         }
-
     }
 
     /**
