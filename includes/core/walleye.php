@@ -12,20 +12,6 @@ require('walleye.email.php');
 /**
  * walleye.php
  *
- * The base exception handler for Walleye
- *
- * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @package Walleye
- */
-class Walleye_exception extends Exception {
-    public function __construct() {
-        parent::__construct();
-    }
-}
-
-/**
- * walleye.php
- *
  * Handles the basic routing of URLs to their proper controller.
  *
  * @final

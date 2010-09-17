@@ -3,20 +3,6 @@
 /**
  * walleye.user.php
  *
- * The basic exception class for a Walleye_user
- *
- * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @package Walleye
- */
-class Walleye_user_exception extends Walleye_exception {
-    public function __construct() {
-        parent::__construct();
-    }
-}
-
-/**
- * walleye.user.php
- *
  * The basic Walleye user class. This class provides functionality such as session handling, user creation,
  * user logging, and user updating.
  *

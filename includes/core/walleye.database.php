@@ -3,21 +3,6 @@
 /**
  * walleye.database.php
  *
- * Exception class to handle the Walleye_database class
- *
- * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @version 0.5
- * @package Walleye
- */
-class Walleye_database_exception extends Exception {
-    public function __construct() {
-        parent::__construct();
-    }
-}
-
-/**
- * walleye.database.php
- *
  * This is the class that handles all connections to the database. 
  *
  * Uses MySQLi

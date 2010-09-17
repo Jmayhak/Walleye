@@ -3,19 +3,6 @@
 /**
  * walleye.model.php
  *
- * The general exception class that all exceptions created through this framework
- * should extend. This is because this exception will deal with logging for you.
- *
- * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @package Walleye
- */
-abstract class Walleye_model_exception extends Exception {
-
-}
-
-/**
- * walleye.model.php
- *
  * Each model you create in your application should extend this class.
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
