@@ -19,9 +19,7 @@ class Walleye_config {
         return array(
                    // the location of this application from the server root. end with a '/'
                    'BASE' => '',
-                   // leave blank to not forward anywhere. only checks for iphone
-				   'IF_MOBILE_REDIRECT' => ''
-                   // end the domain with a '/'
+                   // end the domain with a '/' and MUST start with http://
                    'DOMAIN' => '',
                    // if in production mode, no php warning/errors will be shown
                    'PRODUCTION' => false,
@@ -29,7 +27,9 @@ class Walleye_config {
                    // Enter the expiration time in days
                    'REG_KEY_EXPIRE_TIME' => '7', // not implemented
                    // The length a session lasts in code in days (php.ini controls the session variable)
-                   'SESSION_KEY_EXPIRE_TIME' => '1'
+                   'SESSION_KEY_EXPIRE_TIME' => '1',
+				   // leave blank to not forward anywhere. only checks for iphone
+				   'IF_MOBILE_REDIRECT' => ''
                );
     }
     
