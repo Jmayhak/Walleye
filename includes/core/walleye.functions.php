@@ -61,5 +61,15 @@ function daysFromNow($when) {
     return floor((time() - strtotime($when)) / (60 * 60 * 24));
 }
 
+/**
+ * Creates a url slug from a string
+ * @param string $string
+ * @return string
+ */
+function slugify($string)
+{
+    return strtolower(trim(preg_replace(array('~[^0-9a-z]~i', '~-+~'), '-', preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', htmlentities($string, ENT_QUOTES, 'UTF-8'))), '-'));
+}
+
 
 ?>
