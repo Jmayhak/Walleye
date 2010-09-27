@@ -148,9 +148,9 @@ final class Walleye {
     private function route() {
         foreach ($this->routes as $route => $controller) {
             if ($route == 'default') {
-                if (class_exists($controller) && in_array(('doAction'), get_class_methods($controller))) {
+                if (class_exists($controller) && in_array(('doHandler'), get_class_methods($controller))) {
                     $instance = new $controller($this->url, $this->data);
-                    $instance->doAction();
+                    $instance->doHandler();
                 }
                 break;
             }
@@ -158,7 +158,7 @@ final class Walleye {
                 if (preg_match($route, $this->url)) {
                     if (class_exists($controller)) {
                         $instance = new $controller($this->url, $this->data);
-                        $instance->doAction();
+                        $instance->doHandler();
                     }
                     break;
                 }
