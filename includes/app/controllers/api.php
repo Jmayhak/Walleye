@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * The controller for a public or private API
+ */
 class Api extends Walleye_controller {
 
     /*
