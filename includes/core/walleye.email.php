@@ -3,7 +3,7 @@
 /**
  * walleye.email.php
  *
- * This class handles email
+ * This class handles email. Extend this class to include header information
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
  * @package Walleye
@@ -13,22 +13,27 @@ class Walleye_email {
     /**
      * @var string
      */
-    public $to;
+    protected $to;
 
     /**
      * @var string
      */
-    public $subject;
+    protected $subject;
 
     /**
      * @var string
      */
-    public $from;
+    protected $from;
 
     /**
      * @var string
      */
-    public $message;
+    protected $message;
+
+    /**
+     * @var string
+     */
+    protected $headers;
 
     /**
      * A new Walleye_email should have a to and a subject set on construction. The message can be sent as well
@@ -72,7 +77,12 @@ class Walleye_email {
      * @return boolean
      */
     public function send() {
-        $return = mail($this->to, $this->subject, $this->message);
+	    if ($this->headers == '') {
+		    $return = mail($this->to, $this->subject, $this->message);
+	    }
+        else {
+	        $return = mail($this->to, $this->subject, $this->message, $this->headers);
+        }
         return $return;
     }
 }
