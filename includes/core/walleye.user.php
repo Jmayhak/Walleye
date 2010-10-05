@@ -129,7 +129,7 @@ class Walleye_user extends Walleye_model {
         $instance = null;
         if ($get_user_id_stmt->fetch()) {
             $instance = new Walleye_user($id);
-            $session = encode($instance->firstName . $instance->lastName . time());
+            $session = hash_data($instance->firstName . $instance->lastName . time());
             $get_user_id_stmt->close();
             $insert_session_stmt = $db->prepare('INSERT INTO Sessions (session_key) VALUES (?)');
             $insert_session_stmt->bind_param('s', $session);
