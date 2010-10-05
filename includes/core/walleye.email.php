@@ -42,10 +42,10 @@ class Walleye_email {
      */
     public function __construct($to, $subject, $message) {
         $this->to = $to;
-        $this->from = 'no-reply'; // have this set in the config file
+        $appOptions = Walleye_config::getAppOptions();
+        $this->from = $appOptions['REPLY-TO_EMAIL'];
         $this->subject = $subject;
         $this->message = $message;
-        // set additional default header info
     }
 
     /**

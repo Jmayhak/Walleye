@@ -17,19 +17,22 @@ class Walleye_config {
      */
     public static function getAppOptions() {
         return array(
-                   // the location of this application from the server root. end with a '/'
+                   // string - the location of this application from the server root. end with a '/'
                    'BASE' => '',
-                   // end the domain with a '/' and MUST start with http://
+                   // string - end the domain with a '/' and MUST start with http://
                    'DOMAIN' => '',
-                   // if in production mode, no php warning/errors will be shown
+                   // boolean - if in production mode, no php warning/errors will be shown
                    'PRODUCTION' => false,
+                   // boolean - should this app log errors to the database
                    'LOG_ERRORS' => true,
-                   // Enter the expiration time in days
-                   'REG_KEY_EXPIRE_TIME' => '7', // not implemented
-                   // The length a session lasts in code in days (php.ini controls the session variable)
+                   // string number - Enter the expiration time in days
+                   'REG_KEY_EXPIRE_TIME' => '7', 
+                   // string number - The length a session lasts in code in days (php.ini controls the session variable)
                    'SESSION_KEY_EXPIRE_TIME' => '1',
-				   // leave blank to not forward anywhere. only checks for iphone
-				   'IF_MOBILE_REDIRECT' => ''
+				   // string - leave blank to not forward anywhere. only checks for iphone
+				   'IF_MOBILE_REDIRECT' => '',
+				   // string - the reply-to email address
+				   'REPLY-TO_EMAIL' => ''
                );
     }
     
