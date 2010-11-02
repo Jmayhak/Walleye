@@ -1,5 +1,5 @@
 == WALLEYE - An MVC style PHP framework based on PHP 5.1.6
-x
+
 * Uses MySQLi
 * Server-side logging through the javascript console object and a text file
 * Messages can be sent to the browser via Console::alert() and gritter
