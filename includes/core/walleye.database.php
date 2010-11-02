@@ -57,7 +57,7 @@ class Walleye_database extends MySQLi {
           $pointers[] = &$row->$fieldname; 
         } 
         
-        call_user_func_array(mysqli_stmt_bind_result, $pointers); 
+        call_user_func_array('mysqli_stmt_bind_result', $pointers); 
         
         if (!$stmt->fetch()) 
           break; 
