@@ -208,7 +208,7 @@ class Walleye_user extends Walleye_model {
      */
     public function commit() {
         $db = new Walleye_database();
-        $update_user_stmt = $db->prepare('UPDATE Users SET (firstName = ?, lastName = ?) WHERE (id = ?)');
+        $update_user_stmt = $db->prepare('UPDATE Users SET (first_name = ?, last_name = ?) WHERE (id = ?)');
         $update_user_stmt->bind_param('ssi', $this->firstName, $this->lastName, $this->id);
         $result = $update_user_stmt->execute();
         return $result;
@@ -258,6 +258,22 @@ class Walleye_user extends Walleye_model {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Change the password of a user. Assumes you have already checked if the user attempting to change
+     * this user's password can peform this operation
+     *
+     * @static
+     * @param Walleye_user $user
+     * @param string $password *do NOT send cleartext*
+     * @return boolean
+     */
+    public function changePassword($password) {
+        $db = new Walleye_database();
+        $change_password_stmt = $db->prepare('UPDATE Users SET password = ? WHERE id = ?');
+        $change_password_stmt->bind_param('si', $password, $this->getId());
+        return $change_password_stmt->execute();
     }
 
     /**
