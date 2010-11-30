@@ -20,7 +20,7 @@ class Walleye_config {
                    // string - the location of this application from the server root. end with a '/'
                    'BASE' => '',
                    // string - end the domain with a '/' and MUST start with http://
-                   'DOMAIN' => '',
+                   'DOMAIN' => 'http://',
                    // boolean - if in production mode, no php warning/errors will be shown
                    'PRODUCTION' => false,
                    // boolean - should this app log errors to the database
