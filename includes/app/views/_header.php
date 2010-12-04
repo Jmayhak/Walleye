@@ -11,7 +11,7 @@
 	    <link rel="stylesheet" href="<?php echo $href ?>" type="text/css" />
 	<?php endforeach; endif; ?>
 	<?php if (isset($values['js'])) : foreach ($values['js'] as $js) : ?>
-	    <script rel="text/javascript" src="<?php echo $js; ?>"></script>
+	    <script type="text/javascript" src="<?php echo $js; ?>"></script>
 	<?php endforeach; endif; ?>
     <script type="text/javascript">
         $(document).ready(function() {
