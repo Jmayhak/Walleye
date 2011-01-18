@@ -176,7 +176,7 @@ class User extends \Walleye\Model
             if (!is_null($user = \Walleye\User::withId($row->id))) {
 
                 // set the session for this user
-                $session = hash_data($user->firstName . $user->lastName . time());
+                $session = \Walleye\User::getSessionKey($user);
                 $insert_session_stmt = $db->prepare('INSERT INTO Sessions (session_key) VALUES (?)');
                 $insert_session_stmt->bind_param('s', $session);
                 if ($insert_session_stmt->execute()) {
@@ -324,6 +324,16 @@ class User extends \Walleye\Model
     public function getUsername()
     {
         return $this->username;
+    }
+
+    /**
+     * Creates and returns a key to be used to mark this users session in the database and in the $_SESSION array
+     * @param \Walleye\User $user
+     * @return string
+     */
+    private static function getSessionKey($user)
+    {
+        return hash_data($user->username . $user->regDate . time());
     }
 
     /**
