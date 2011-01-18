@@ -10,7 +10,14 @@ namespace Walleye;
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
  */
-class Console {
+class Console
+{
+
+    const ALERT = 'alert';
+
+    const LOG = 'log';
+
+    const ERROR = 'error';
 
     /**
      * Holds all logs that are going to be sent to the browser
@@ -28,7 +35,8 @@ class Console {
      * @param string $line
      * @param boolean $store
      */
-    public static function log($message, $file = 'unknown file', $line = 'unknown line', $store = true, $type = 'log') {
+    public static function log($message, $file = 'unknown file', $line = 'unknown line', $store = true, $type = 'log')
+    {
         $logItem = array(
             'type' => $type,
             'message' => $message,
@@ -51,13 +59,14 @@ class Console {
      * @param string $line
      * @param boolean $store
      */
-    public static function logError($message, $file = 'unknown file', $line = 'unknown line', $store = true) {
+    public static function logError($message, $file = 'unknown file', $line = 'unknown line', $store = true)
+    {
         Console::log($message, $file, $line, $store, 'error');
     }
 
     /**
      * Use this function to alert the currently logged in user of something via gritter
-     * 
+     *
      * @static
      * @param string $message
      * @param string $file
@@ -65,7 +74,8 @@ class Console {
      * @param bool $store
      * @return void
      */
-    public static function alert($message, $file = 'unknown file', $line = 'unknown line', $store = false) {
+    public static function alert($message, $file = 'unknown file', $line = 'unknown line', $store = false)
+    {
         Console::log($message, $file, $line, $store, 'alert');
     }
 
@@ -74,8 +84,25 @@ class Console {
      * @static
      * @return array
      */
-    public static function getLogs() {
+    public static function getLogs()
+    {
         return self::$logs;
+    }
+
+    /**
+     * Returns only the alert logs
+     * @static
+     * @return array
+     */
+    public static function getAlerts()
+    {
+        $alerts = array();
+        foreach (self::$logs as $log) {
+            if ($log['type'] == Console::ALERT) {
+                $alerts[] = $log;
+            }
+        }
+        return $alerts;
     }
 
     /**
@@ -84,7 +111,8 @@ class Console {
      * @param array $logItem
      * @return boolean
      */
-    private static function storeLog($logItem) {
+    private static function storeLog($logItem)
+    {
         $db = new \Walleye\Database();
         $insert_log_stmt = $db->prepare('INSERT INTO Logs (user_id, type, line, file, message) VALUES (?, ?, ?, ?, ?)');
         $user_id = (is_null(\Walleye\User::getLoggedUser())) ? 0 : \Walleye\User::getLoggedUser()->getId();
