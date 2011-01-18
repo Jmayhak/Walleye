@@ -1,7 +1,7 @@
-== WALLEYE - An MVC style PHP framework based on PHP 5.1.6
+== WALLEYE - An MVC style PHP framework based on PHP 5.3.0
 
 * Uses MySQLi
-* Server-side logging through the javascript console object and a text file
+* Server-side logging through the javascript console object and a the database
 * Messages can be sent to the browser via Console::alert() and gritter
 * Secure session management
 * Includes basic sql
@@ -99,5 +99,3 @@ or without a template:
 	$email = Walleye_email($to, $subject, 'This is an email');
 	$email->send();
 	
-Eventually you will be able to manage things like a default from and various headers through Walleye_config.php
-
