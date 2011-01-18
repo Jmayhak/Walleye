@@ -54,14 +54,16 @@ abstract class Controller {
     abstract protected function __construct($url, $data);
 
     /**
-     * Since Walleye is based on PHP 5.1.6 we cannot perform late static binding and stick doHandler and
-     * getHandler together. Look for an update in future versions of Walleye.
-     *
-     * @abstract
-     * @access protected
+     * @see Walleye_controller::$handlers
      * @return void
      */
-    abstract protected function doHandler();
+    public function doHandler()
+    {
+        $handler = $this->getHandler();
+        if (!is_null($handler) && method_exists($this, $handler)) {
+            $this->$handler();
+        }
+    }
 
     /**
      * Call this function first in the doHandler() function to figure out which handler (function in the controller)

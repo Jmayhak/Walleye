@@ -21,14 +21,6 @@ class Api extends \Walleye\Controller
         );
     }
 
-    public function doHandler()
-    {
-        $handler = $this->getHandler();
-        if (!is_null($handler) && method_exists($this, $handler)) {
-            $this->$handler();
-        }
-    }
-
     /**
      * Returns xml for invalid api call
      */

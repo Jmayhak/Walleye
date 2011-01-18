@@ -23,17 +23,6 @@ class User extends \Walleye\Controller {
     }
 
     /**
-     * @see Walleye_controller::$handlers
-     * @return void
-     */
-    public function doHandler() {
-        $handler = $this->getHandler();
-        if (!is_null($handler) && method_exists($this, $handler)) {
-            $this->$handler();
-        }
-    }
-    
-    /**
      * Logs out the currently logged user.
      * Sets the view to be the homepage
      */

@@ -23,18 +23,7 @@ class Site extends \Walleye\Controller {
         );
     }
 
-    /**
-     * @see Walleye_controller::$handlers
-     * @return void
-     */
-    public function doHandler() {
-        $handler = $this->getHandler();
-        if (!is_null($handler) && method_exists($this, $handler)) {
-            $this->$handler();
-        }
-    }
-
-    private function indexHandler() {
+    protected function indexHandler() {
         \Walleye\Console::log('You can create log messages', 'site.php', __LINE__);
         \Walleye\Console::logError('You can create error messages');
         if (\Walleye\User::getLoggedUser()) {
@@ -46,7 +35,7 @@ class Site extends \Walleye\Controller {
         $this->view('index.php');
     }
 
-    private function contactHandler() {
+    protected function contactHandler() {
         $this->view('contact.php');
     }
 
