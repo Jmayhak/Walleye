@@ -5,7 +5,7 @@
  *
  * This controller handlers all basic/static requests like the contact page or the index page.
  */
-class Site extends Walleye_controller {
+class Site extends \Walleye\Controller {
 
     /**
      * @see Walleye_controller
@@ -35,13 +35,13 @@ class Site extends Walleye_controller {
     }
 
     private function indexHandler() {
-        Console::log('You can create log messages', 'site.php', __LINE__);
-        Console::logError('You can create error messages');
-        if (Walleye_user::getLoggedUser()) {
-            Console::alert('Cool, you logged in');
+        \Walleye\Console::log('You can create log messages', 'site.php', __LINE__);
+        \Walleye\Console::logError('You can create error messages');
+        if (\Walleye\User::getLoggedUser()) {
+            \Walleye\Console::alert('Cool, you logged in');
         }
         else {
-            Console::alert('This is just to show that you can send alerts to the user server-side. Check out the javascript console');
+            \Walleye\Console::alert('This is just to show that you can send alerts to the user server-side. Check out the javascript console');
         }
         $this->view('index.php');
     }
@@ -51,7 +51,7 @@ class Site extends Walleye_controller {
     }
 
     protected function error_404() {
-        Console::alert('How did you get here?');
+        \Walleye\Console::alert('How did you get here?');
         parent::error_404();
     }
 }

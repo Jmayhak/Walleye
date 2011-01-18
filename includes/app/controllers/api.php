@@ -3,14 +3,16 @@
 /**
  * The controller for a public or private API
  */
-class Api extends Walleye_controller {
+class Api extends \Walleye\Controller
+{
 
     /*
      * @see Walleye_controller
      * @param string $url
      * @param array $data
      */
-    public function __construct($url, $data) {
+    public function __construct($url, $data)
+    {
         $this->url = $url;
         $this->data = $data;
         $this->path = $this->getUrlPath($url);
@@ -19,7 +21,8 @@ class Api extends Walleye_controller {
         );
     }
 
-    public function doHandler() {
+    public function doHandler()
+    {
         $handler = $this->getHandler();
         if (!is_null($handler) && method_exists($this, $handler)) {
             $this->$handler();
@@ -29,10 +32,11 @@ class Api extends Walleye_controller {
     /**
      * Returns xml for invalid api call
      */
-    private function bad_api_callHandler() {
-	    $view = 'api/error.php';
-	    $this->useXmlHeader();
-	    $this->view($view);
+    private function bad_api_callHandler()
+    {
+        $view = 'api/error.php';
+        $this->useXmlHeader();
+        $this->view($view);
     }
 }
 

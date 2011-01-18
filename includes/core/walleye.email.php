@@ -1,14 +1,16 @@
 <?php
 
+namespace Walleye;
+
 /**
  * walleye.email.php
  *
  * This class handles email. Extend this class to include header information
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @package Walleye
  */
-class Walleye_email {
+class Email
+{
 
     /**
      * @var string
@@ -45,10 +47,11 @@ class Walleye_email {
      * @param string $message
      * @return void
      */
-    public function __construct($to, $subject, $message) {
+    public function __construct($to, $subject, $message)
+    {
         $this->to = $to;
-        $appOptions = Walleye_config::getAppOptions();
-        $this->from = $appOptions['REPLY-TO_EMAIL'];
+        $appOptions = \Walleye\Config::getAppOptions();
+        $this->from = (isset($appOptions['REPLY-TO_EMAIL'])) ? $appOptions['REPLY-TO_EMAIL'] : '';
         $this->subject = $subject;
         $this->message = $message;
     }
@@ -64,11 +67,12 @@ class Walleye_email {
      * @param array $values the values to fill the email template with
      * @return Walleye_email
      */
-    public static function withTemplate($to, $subject, $template, $values = array()) {
+    public static function withTemplate($to, $subject, $template, $values = array())
+    {
         foreach ($values as $tag => $value) {
-            $template = preg_replace('/(#\{' . $tag . '\}?)/m', $value, file_get_contents(Walleye::getServerBaseDir() . 'views/email/' . $template));
+            $template = preg_replace('/(#\{' . $tag . '\}?)/m', $value, file_get_contents(\Walleye\Walleye::getServerBaseDir() . 'views/email/' . $template));
         }
-        $instance = new Walleye_email($to, $subject, $template);
+        $instance = new \Walleye\Email($to, $subject, $template);
         return $instance;
     }
 
@@ -76,15 +80,14 @@ class Walleye_email {
      * Sends the email to recipient
      * @return boolean
      */
-    public function send() {
-	    if ($this->headers == '') {
-		    $return = mail($this->to, $this->subject, $this->message);
-	    }
+    public function send()
+    {
+        if ($this->headers == '') {
+            $return = mail($this->to, $this->subject, $this->message);
+        }
         else {
-	        $return = mail($this->to, $this->subject, $this->message, $this->headers);
+            $return = mail($this->to, $this->subject, $this->message, $this->headers);
         }
         return $return;
     }
 }
-
-?>

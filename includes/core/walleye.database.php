@@ -1,5 +1,7 @@
 <?php
 
+namespace Walleye;
+
 /**
  * walleye.database.php
  *
@@ -8,9 +10,8 @@
  * Uses MySQLi
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @package Walleye
  */
-class Walleye_database extends MySQLi {
+class Database extends \mysqli {
 
     /**
      * Creates the Database object and sets the database connection info based on
@@ -19,12 +20,13 @@ class Walleye_database extends MySQLi {
      * You can connect to another database on the server listed in the config class by passing its
      * name in the constructor
      *
-     * @access public
+     * Only supports Mysql databases.
+     *
      * @see includes/walleye.config.php
      * @param string $db
      */
     public function __construct($db = null) {
-        $dbOptions = Walleye_config::getDbOptions();
+        $dbOptions = \Walleye\Config::getDbOptions();
         $engine = $dbOptions['ENGINE'];
         $server = $dbOptions['SERVER'];
         $user = $dbOptions['USER'];
@@ -35,9 +37,14 @@ class Walleye_database extends MySQLi {
         else {
             $database = $db;
         }
-        parent::__construct($server, $user, $password, $database);
+        parent::mysqli($server, $user, $password, $database);
     }
-    
+
+    /**
+     * Returns all the selected rows as an array full of objects
+     * @param MySQLi_STMT $stmt
+     * @return array
+     */
     public function getResult($stmt) 
     { 
       $result = array(); 
@@ -48,7 +55,7 @@ class Walleye_database extends MySQLi {
       for (;;) 
       { 
         $pointers = array(); 
-        $row = new stdClass(); 
+        $row = new \stdClass();
         
         $pointers[] = $stmt; 
         foreach ($fields as $field) 
@@ -68,6 +75,20 @@ class Walleye_database extends MySQLi {
       $metadata->free(); 
       
       return $result; 
+    }
+
+    /**
+     * Gets the first row from a select statement
+     * @param MySQLi_STMT $stmt
+     * @return stdClass|null
+     */
+    public function getRow($stmt)
+    {
+        $result = $this->getResult($stmt);
+        if (!empty($result)) {
+            return $result[0];
+        }
+        return null;
     }
     
 }

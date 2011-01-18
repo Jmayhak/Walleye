@@ -1,14 +1,15 @@
 <?php
 
+namespace Walleye;
+
 /**
  * walleye.model.php
  *
  * Each model you create in your application should extend this class.
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @package Walleye
  */
-abstract class Walleye_model {
+abstract class Model {
 
     /**
      * Every model in your application should have a constructor that takes an id to initialize. All
@@ -44,6 +45,6 @@ abstract class Walleye_model {
      * @abstract
      * @return string
      */
-    abstract public function toString();
+    abstract public function __toString();
 
 }

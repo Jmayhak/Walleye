@@ -5,7 +5,7 @@
  *
  * This class is used to handle routes related to user management.
  */
-class User extends Walleye_controller {
+class User extends \Walleye\Controller {
 
     /**
      * @param array $url
@@ -38,8 +38,8 @@ class User extends Walleye_controller {
      * Sets the view to be the homepage
      */
     public function logoutHandler() {
-        if (Walleye_user::getLoggedUser()) {
-            unset($_SESSION[Walleye_user::USER_SESSION]);
+        if (\Walleye\User::getLoggedUser()) {
+            unset($_SESSION[\Walleye\User::USER_SESSION]);
         }
         $this->redirect();
     }
@@ -52,10 +52,9 @@ class User extends Walleye_controller {
     public function loginHandler() {
         $values = array();
         $data = $this->data;
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($data['username']) && isset($data['password'])) {
-            $user = Walleye_user::withUsernameAndPassword($data['username'], hash_data($data['password']));
+        if ($this->isPost() && isset($data['username']) && isset($data['password'])) {
+            $user = \Walleye\User::withUsernameAndPassword($data['username'], hash_data($data['password']));
             if (!is_null($user)) {
-                Walleye_user::setLoggedUserWithSession();
                 if (isset($data['return_url']) && $data['return_url'] != '') {
                     $this->redirect($data['return_url']);
                 }

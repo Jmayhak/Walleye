@@ -6,13 +6,14 @@
  * @param string $class_name
  * @return void
  */
-function __autoload($class_name) {
+function __autoload($class_name)
+{
     $class_name = str_replace('_', '.', $class_name);
-    if (file_exists(Walleye::getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name) . '.php')) {
-        require(Walleye::getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name) . '.php');
+    if (file_exists(\Walleye\Walleye::getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name) . '.php')) {
+        require(\Walleye\Walleye::getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name) . '.php');
     }
-    if (file_exists(Walleye::getServerBaseDir() . 'includes/app/models/' . strtolower($class_name) . '.php')) {
-        require(Walleye::getServerBaseDir() . 'includes/app/models/' . strtolower($class_name) . '.php');
+    if (file_exists(\Walleye\Walleye::getServerBaseDir() . 'includes/app/models/' . strtolower($class_name) . '.php')) {
+        require(\Walleye\Walleye::getServerBaseDir() . 'includes/app/models/' . strtolower($class_name) . '.php');
     }
 }
 
@@ -24,7 +25,8 @@ function __autoload($class_name) {
  * @param array $data
  * @return string|null
  */
-function hash_data($data) {
+function hash_data($data)
+{
     if (is_array($data)) {
         return null;
     }
@@ -38,17 +40,18 @@ function hash_data($data) {
  * @param string $key
  * @return string
  */
-function encrypt($string, $key) {
+function encrypt($string, $key)
+{
     $result = '';
-    for($i=0; $i<strlen($string); $i++) {
-      $char = substr($string, $i, 1);
-      $keychar = substr($key, ($i % strlen($key))-1, 1);
-      $char = chr(ord($char)+ord($keychar));
-      $result.=$char;
+    for ($i = 0; $i < strlen($string); $i++) {
+        $char = substr($string, $i, 1);
+        $keychar = substr($key, ($i % strlen($key)) - 1, 1);
+        $char = chr(ord($char) + ord($keychar));
+        $result .= $char;
     }
 
     return base64_encode($result);
-  }
+}
 
 /**
  * Pass the encrypted string and the secret key to decrypt
@@ -57,17 +60,18 @@ function encrypt($string, $key) {
  * @param string $key
  * @return string
  */
-function decrypt($string, $key) {
+function decrypt($string, $key)
+{
     $result = '';
     $string = base64_decode($string);
-  
-    for($i=0; $i<strlen($string); $i++) {
-      $char = substr($string, $i, 1);
-      $keychar = substr($key, ($i % strlen($key))-1, 1);
-      $char = chr(ord($char)-ord($keychar));
-      $result.=$char;
+
+    for ($i = 0; $i < strlen($string); $i++) {
+        $char = substr($string, $i, 1);
+        $keychar = substr($key, ($i % strlen($key)) - 1, 1);
+        $char = chr(ord($char) - ord($keychar));
+        $result .= $char;
     }
-  
+
     return $result;
 }
 
@@ -77,13 +81,14 @@ function decrypt($string, $key) {
  * @param array $array
  * @return string
  */
-function print_array($array) {
-    if (is_null ($array)) {
+function print_array($array)
+{
+    if (is_null($array)) {
         return '';
     }
     $returnString = '';
     foreach ($array as $key => $value) {
-        if (is_array ($key)) {
+        if (is_array($key)) {
             $returnString .= print_array($key);
         }
         $returnString .= $key . ' - ' . $value . ' ';
@@ -97,7 +102,8 @@ function print_array($array) {
  * @param string $when should be a TIMESTAMP yyyy-mm-dd
  * @return int the number of days
  */
-function daysFromNow($when) {
+function daysFromNow($when)
+{
     return floor((time() - strtotime($when)) / (60 * 60 * 24));
 }
 
@@ -110,6 +116,3 @@ function slugify($string)
 {
     return strtolower(trim(preg_replace(array('~[^0-9a-z]~i', '~-+~'), '-', preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', htmlentities($string, ENT_QUOTES, 'UTF-8'))), '-'));
 }
-
-
-?>

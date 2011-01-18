@@ -1,5 +1,7 @@
 <?php
 
+namespace Walleye;
+
 /**
  * walleye.controller.php
  *
@@ -8,9 +10,8 @@
  * that function for).
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @package Walleye
  */
-abstract class Walleye_controller {
+abstract class Controller {
 
     /**
      * Either the GET or POST array
@@ -137,7 +138,7 @@ abstract class Walleye_controller {
      * @return void
      */
     final protected function redirect($URL = '') {
-        header('Location: ' . Walleye::getDomain() . $URL);
+        header('Location: ' . \Walleye\Walleye::getDomain() . $URL);
         exit();
     }
 
@@ -163,7 +164,7 @@ abstract class Walleye_controller {
      */
     protected function view($view, $values = array()) {
         if (!Walleye::isProduction()) {
-            $values['logs'] = Console::getLogs();
+            $values['logs'] = \Walleye\Console::getLogs();
         }
         include(Walleye::getServerBaseDir() . 'includes/app/views/' . $view);
     }

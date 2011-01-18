@@ -1,5 +1,7 @@
 <?php
 
+namespace Walleye;
+
 require('walleye.config.php');
 require('walleye.console.php');
 require('walleye.functions.php');
@@ -16,9 +18,9 @@ require('walleye.email.php');
  *
  * @final
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @package Walleye
  */
-final class Walleye {
+final class Walleye
+{
 
     /**
      * The singleton instance of Walleye
@@ -40,7 +42,7 @@ final class Walleye {
      * @access private
      */
     private $url;
-    
+
     /**
      * The base directory address given in the config array
      * @see core/walleye.config.php
@@ -49,7 +51,7 @@ final class Walleye {
      * @access private
      */
     private static $server_base_dir;
-    
+
     /**
      * The domain name of this app
      * @see core/walleye.config.php
@@ -58,7 +60,7 @@ final class Walleye {
      * @access private
      */
     private static $domain;
-    
+
     /**
      * Lets the application know if it is running in production mode
      * @see Walleye::isProduction()
@@ -94,17 +96,18 @@ final class Walleye {
     /**
      * Starts the session, stores the post or get data, and the action given in the url
      */
-    private function __construct() {
-	    $this->appOptions = Walleye_config::getAppOptions();
-	    if ($this->isMobile() && $this->appOptions['IF_MOBILE_REDIRECT'] != '') {
-		    header('Location: ' . $this->appOptions['IF_MOBILE_REDIRECT']);
-	        exit();
-	    }
+    private function __construct()
+    {
+        $this->appOptions = \Walleye\Config::getAppOptions();
+        if ($this->isMobile() && $this->appOptions['IF_MOBILE_REDIRECT'] != '') {
+            header('Location: ' . $this->appOptions['IF_MOBILE_REDIRECT']);
+            exit();
+        }
         session_start();
         $this->data = $this->getDataFromUrl($_SERVER["REQUEST_URI"]);
         $url_array = explode('?', $_SERVER["REQUEST_URI"]);
         $this->url = $url_array[0];
-        $this->routes = Walleye_config::getRoutes();
+        $this->routes = \Walleye\Config::getRoutes();
         if (isset($this->appOptions['BASE'])) {
             self::$server_base_dir = $this->appOptions['BASE'];
         }
@@ -122,20 +125,22 @@ final class Walleye {
      *
      * @return Walleye
      */
-    public static function getInstance() {
+    public static function getInstance()
+    {
         if (!self::$me) {
             self::$me = new Walleye();
         }
         return self::$me;
     }
-    
+
     /**
      * Should be called directly after retrieving the Walleye object. This function performs the action
      * given in the url and shows pqp if not in production mode.
      *
      * @return void
      */
-    public function run() {
+    public function run()
+    {
         $this->route();
     }
 
@@ -145,7 +150,8 @@ final class Walleye {
      * @see includes/core/config/routes.php
      * @return void
      */
-    private function route() {
+    private function route()
+    {
         foreach ($this->routes as $route => $controller) {
             if ($route == 'default') {
                 if (class_exists($controller) && in_array(('doHandler'), get_class_methods($controller))) {
@@ -171,7 +177,8 @@ final class Walleye {
      *
      * @return array
      */
-    private function getDataFromUrl() {
+    private function getDataFromUrl()
+    {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             return $_POST;
         }
@@ -183,24 +190,27 @@ final class Walleye {
      *
      * @return string
      */
-    public static function getServerBaseDir() {
+    public static function getServerBaseDir()
+    {
         return self::$server_base_dir;
     }
-    
+
     /**
      * Gives the domain of this app
      * @return string
      */
-    public static function getDomain() {
+    public static function getDomain()
+    {
         return self::$domain;
     }
-    
+
     /**
      * Lets the application know if it is running in production mode
      * @see Walleye::$production
      * @return boolean
      */
-    public static function isProduction() {
+    public static function isProduction()
+    {
         return self::$production;
     }
 
@@ -209,7 +219,8 @@ final class Walleye {
      *
      * @return boolean
      */
-    private function isMobile() {
+    private function isMobile()
+    {
         if (strstr($_SERVER['HTTP_USER_AGENT'], " AppleWebKit/") && strstr($_SERVER['HTTP_USER_AGENT'], " Mobile/")) {
             return true;
         }
@@ -221,9 +232,8 @@ final class Walleye {
      *
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return '';
     }
 }
-
-?>

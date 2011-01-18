@@ -1,5 +1,7 @@
 <?php
 
+namespace Walleye;
+
 /*
  * walleye.console.php
  *
@@ -7,7 +9,6 @@
  * for storage will be saved to the Logs table in the db
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
- * @package Walleye
  */
 class Console {
 
@@ -19,7 +20,9 @@ class Console {
     protected static $logs = array();
 
     /**
-     * Use this function to add a general log
+     * Use this function to add a general log to the Logs table
+     *
+     * @static
      * @param string $message
      * @param string $file
      * @param string $line
@@ -32,15 +35,17 @@ class Console {
             'file' => $file,
             'line' => $line
         );
-        $options = Walleye_config::getAppOptions();
+        $options = \Walleye\Config::getAppOptions();
         if ($store && $options['LOG_ERRORS']) {
             self::storeLog($logItem);
         }
-        array_push(self::$logs, $logItem);
+        self::$logs[] = $logItem;
     }
 
     /**
-     * Use this function to add an error log to the app.log file
+     * Use this function to add an error log to the Logs table
+     *
+     * @static
      * @param string $message
      * @param string $file
      * @param string $line
@@ -52,6 +57,7 @@ class Console {
 
     /**
      * Use this function to alert the currently logged in user of something via gritter
+     * 
      * @static
      * @param string $message
      * @param string $file
@@ -65,6 +71,7 @@ class Console {
 
     /**
      * Returns all logs
+     * @static
      * @return array
      */
     public static function getLogs() {
@@ -73,13 +80,14 @@ class Console {
 
     /**
      * Takes an array representing a log and inserts it into the Logs table in the db
+     * @static
      * @param array $logItem
      * @return boolean
      */
     private static function storeLog($logItem) {
-        $db = new Walleye_database();
+        $db = new \Walleye\Database();
         $insert_log_stmt = $db->prepare('INSERT INTO Logs (user_id, type, line, file, message) VALUES (?, ?, ?, ?, ?)');
-        $user_id = (is_null(Walleye_user::getLoggedUser())) ? 0 : Walleye_user::getLoggedUser()->getId();
+        $user_id = (is_null(\Walleye\User::getLoggedUser())) ? 0 : \Walleye\User::getLoggedUser()->getId();
         $insert_log_stmt->bind_param('issss', $user_id, $logItem['type'], $logItem['line'], $logItem['file'], $logItem['message']);
         return $insert_log_stmt->execute();
     }
