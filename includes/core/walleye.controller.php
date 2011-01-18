@@ -11,7 +11,8 @@ namespace Walleye;
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
  */
-abstract class Controller {
+abstract class Controller
+{
 
     /**
      * Either the GET or POST array
@@ -26,7 +27,7 @@ abstract class Controller {
      * @access protected
      */
     protected $url;
-    
+
     /**
      * The path of the URL. Use this property to get information from the URL.
      * ex. /user/view/1 will return array('user', 'view', '1')
@@ -74,7 +75,8 @@ abstract class Controller {
      * @see Walleye_controller::$handlers
      * @return string|null
      */
-    final protected function getHandler() {
+    final protected function getHandler()
+    {
         foreach ($this->handlers as $route => $handler) {
             if ($route == 'default') {
                 return $handler;
@@ -87,15 +89,16 @@ abstract class Controller {
         }
         return null;
     }
-    
+
     /**
      * Takes the url and will spit back out an array separated by '/'
-     * ex. $url = /user/1/edit will return array('user', '1', 'edit') 
+     * ex. $url = /user/1/edit will return array('user', '1', 'edit')
      *
      * @param string $url
      * @return array
      */
-    final protected function getUrlPath($url) {
+    final protected function getUrlPath($url)
+    {
         $url_without_data_array = explode('?', $url);
         return explode('/', $url_without_data_array[0]);
     }
@@ -104,7 +107,8 @@ abstract class Controller {
      * Checks if HTTP POST
      * @return boolean
      */
-    protected function isPost() {
+    protected function isPost()
+    {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') return true;
         return false;
     }
@@ -113,7 +117,8 @@ abstract class Controller {
      * Checks if HTTP GET
      * @return boolean
      */
-    protected function isGet() {
+    protected function isGet()
+    {
         if ($this->isPost()) return false;
         return true;
     }
@@ -125,8 +130,9 @@ abstract class Controller {
      * @access protected
      * @return void
      */
-    protected function error_404($view = '404.php') {
-        $this->view($view, array());
+    protected function error_404($view = '404.php', $values = array())
+    {
+        $this->view($view, $values);
     }
 
     /**
@@ -137,10 +143,31 @@ abstract class Controller {
      * @access protected
      * @see Walleye_controller::view()
      * @param string $URL the URL the browser should be redirected to. Send the url from domain.com/
+     * @param array $data an optional key/value pair to be sent to the redirected page
      * @return void
      */
-    final protected function redirect($URL = '') {
-        header('Location: ' . \Walleye\Walleye::getDomain() . $URL);
+    final protected function redirect($URL = '', $data = array())
+    {
+        $data_query = '';
+        $alerts = \Walleye\Console::getAlerts();
+        $logs = \Walleye\Console::getLogs();
+
+        if (!\Walleye\Walleye::isProduction() && !empty($logs)) {
+            // if the app is not in production, then get all logs including the alerts
+            $data['logs'] = $logs;
+        }
+        else if (!empty($alerts)) {
+            // else if there are alerts add them
+            $data['logs'] = $alerts;
+        }
+        else {
+            // else do nothing
+        }
+
+        if (!empty($data)) {
+            $data_query = '?' . http_build_query($data);
+        }
+        header('Location: ' . \Walleye\Walleye::getDomain() . $URL . $data_query);
         exit();
     }
 
@@ -150,8 +177,9 @@ abstract class Controller {
      * @access protected
      * @return void
      */
-    final protected function useXmlHeader() {
-        header("Content-Type: text/xml"); 
+    final protected function useXmlHeader()
+    {
+        header("Content-Type: text/xml");
     }
 
     /**
@@ -164,9 +192,13 @@ abstract class Controller {
      * @param array $values the values to be shown on the view
      * @return void
      */
-    protected function view($view, $values = array()) {
+    protected function view($view, $values = array())
+    {
         if (!Walleye::isProduction()) {
-            $values['logs'] = \Walleye\Console::getLogs();
+            $values['logs'] = Console::getLogs();
+        }
+        else {
+            $values['logs'] = Console::getAlerts();
         }
         include(Walleye::getServerBaseDir() . 'includes/app/views/' . $view);
     }

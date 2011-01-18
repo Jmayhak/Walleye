@@ -135,7 +135,7 @@ final class Walleye
 
     /**
      * Should be called directly after retrieving the Walleye object. This function performs the action
-     * given in the url and shows pqp if not in production mode.
+     * given in the url.
      *
      * @return void
      */
@@ -155,7 +155,7 @@ final class Walleye
         foreach ($this->routes as $route => $controller) {
             if ($route == 'default') {
                 if (class_exists($controller) && in_array(('doHandler'), get_class_methods($controller))) {
-                    $instance = new $controller($this->url, $this->data);
+                    $instance = new $controller($this->url, $this->setLogsFromData($this->data));
                     $instance->doHandler();
                 }
                 break;
@@ -163,13 +163,51 @@ final class Walleye
             else {
                 if (preg_match($route, $this->url)) {
                     if (class_exists($controller)) {
-                        $instance = new $controller($this->url, $this->data);
+                        $instance = new $controller($this->url, $this->setLogsFromData($this->data));
                         $instance->doHandler();
                     }
                     break;
                 }
             }
         }
+    }
+
+    /**
+     * Any logs sent in the GET request will be removed from the data property and added through the Console class.
+     * The returned array will be all original key/value pairs minus logs
+     *
+     * @param array $data
+     * @return array
+     */
+    private function setLogsFromData($data)
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+            foreach ($data as $key => $value) {
+                if ($key == 'logs' && is_array($value)) {
+                    foreach ($value as $key => $log) {
+                        if (isset($log['type']) && isset($log['message']) && isset($log['file']) && isset($log['line'])) {
+                            switch ($log['type']) {
+                                case Console::ALERT:
+                                    Console::alert($log['message']);
+                                    unset($data[$key]);
+                                    break;
+                                case Console::LOG:
+                                    Console::log($log['message'], $log['file'], $log['line']);
+                                    unset($data[$key]);
+                                    break;
+                                case Console::ERROR:
+                                    Console::logError($log['message'], $log['file'], $log['line']);
+                                    unset($data[$key]);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $data;
     }
 
     /**
