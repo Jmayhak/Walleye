@@ -11,6 +11,11 @@ namespace Walleye;
  */
 class Config
 {
+    const PRODUCTION = 'production';
+
+    const DEVELOPMENT = 'development';
+
+    const TESTING = 'testing';
 
     /**
      * Returns the Base directory for this application, if the app is in production
@@ -24,8 +29,10 @@ class Config
             'BASE' => '/srv/www/',
             // end the domain with a '/'
             'DOMAIN' => 'http://example.com/',
-            // if in production mode, no php warning/errors will be shown
-            'PRODUCTION' => false,
+            // if in production, no php warning/errors will be shown
+            // use testing for unit tests and functional tests
+            // development should match production
+            'ENVIRONMENT' => Config::TESTING,
             // errors are logged to the Logs table in the db
             'LOG_ERRORS' => true,
             // Enter the expiration time in days
@@ -43,11 +50,24 @@ class Config
     public static function getDbOptions()
     {
         return array(
-            'ENGINE' => 'mysql',
-            'SERVER' => '',
-            'USER' => '',
-            'PASS' => '',
-            'DATABASE' => ''
+            // DEVELOPMENT
+            'DEV_ENGINE' => 'mysql',
+            'DEV_SERVER' => '',
+            'DEV_USER' => '',
+            'DEV_PASS' => '',
+            'DEV_DATABASE' => '',
+            // TESTING
+            'TEST_ENGINE' => 'mysql',
+            'TEST_SERVER' => '',
+            'TEST_USER' => '',
+            'TEST_PASS' => '',
+            'TEST_DATABASE' => '',
+            // PRODUCTION
+            'PROD_ENGINE' => 'mysql',
+            'PROD_SERVER' => '',
+            'PROD_USER' => '',
+            'PROD_PASS' => '',
+            'PROD_DATABASE' => ''
         );
     }
 

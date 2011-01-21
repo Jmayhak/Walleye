@@ -67,7 +67,23 @@ final class Walleye
      * @var boolean
      * @access private
      */
-    private static $production;
+    private static $production = false;
+
+    /**
+     * Lets the application know if it is running in testing mode
+     * @see Walleye::isTesting()
+     * @var boolean
+     * @access private
+     */
+    private static $testing = false;
+
+    /**
+     * Lets the application know if it is running in development mode
+     * @see Walleye::isDevelopment()
+     * @var boolean
+     * @access private
+     */
+    private static $development = false;
 
     /**
      * All of the application options given in the config array
@@ -94,28 +110,69 @@ final class Walleye
     private $routes = array();
 
     /**
-     * Starts the session, stores the post or get data, and the action given in the url
+     * Starts the session, stores the post or get data, and the path given in the url
      */
     private function __construct()
     {
-        $this->appOptions = \Walleye\Config::getAppOptions();
-        if ($this->isMobile() && $this->appOptions['IF_MOBILE_REDIRECT'] != '') {
-            header('Location: ' . $this->appOptions['IF_MOBILE_REDIRECT']);
-            exit();
+        $this->appOptions = Config::getAppOptions();
+
+        if ($this->appOptions['ENVIRONMENT'] == Config::PRODUCTION) {
+            self::$production = true;
+            if ($this->isMobile() && $this->appOptions['IF_MOBILE_REDIRECT'] != '') {
+                header('Location: ' . $this->appOptions['IF_MOBILE_REDIRECT']);
+                exit();
+            }
+
+            session_start();
+            $this->data = $this->getDataFromUrl($_SERVER["REQUEST_URI"]);
+            $url_array = explode('?', $_SERVER["REQUEST_URI"]);
+            $this->url = $url_array[0];
+            $this->routes = \Walleye\Config::getRoutes();
+            if (isset($this->appOptions['BASE'])) {
+                self::$server_base_dir = $this->appOptions['BASE'];
+            }
+            if (isset($this->appOptions['DOMAIN'])) {
+                self::$domain = $this->appOptions['DOMAIN'];
+            }
+            if (isset($this->appOptions['PRODUCTION'])) {
+                self::$production = $this->appOptions['PRODUCTION'];
+            }
         }
-        session_start();
-        $this->data = $this->getDataFromUrl($_SERVER["REQUEST_URI"]);
-        $url_array = explode('?', $_SERVER["REQUEST_URI"]);
-        $this->url = $url_array[0];
-        $this->routes = \Walleye\Config::getRoutes();
-        if (isset($this->appOptions['BASE'])) {
-            self::$server_base_dir = $this->appOptions['BASE'];
+        else if ($this->appOptions['ENVIRONMENT'] == Config::DEVELOPMENT) {
+            self::$development = true;
+            if ($this->isMobile() && $this->appOptions['IF_MOBILE_REDIRECT'] != '') {
+                header('Location: ' . $this->appOptions['IF_MOBILE_REDIRECT']);
+                exit();
+            }
+
+            session_start();
+            $this->data = $this->getDataFromUrl($_SERVER["REQUEST_URI"]);
+            $url_array = explode('?', $_SERVER["REQUEST_URI"]);
+            $this->url = $url_array[0];
+            $this->routes = \Walleye\Config::getRoutes();
+            if (isset($this->appOptions['BASE'])) {
+                self::$server_base_dir = $this->appOptions['BASE'];
+            }
+            if (isset($this->appOptions['DOMAIN'])) {
+                self::$domain = $this->appOptions['DOMAIN'];
+            }
+            if (isset($this->appOptions['PRODUCTION'])) {
+                self::$production = $this->appOptions['PRODUCTION'];
+            }
         }
-        if (isset($this->appOptions['DOMAIN'])) {
-            self::$domain = $this->appOptions['DOMAIN'];
-        }
-        if (isset($this->appOptions['PRODUCTION'])) {
-            self::$production = $this->appOptions['PRODUCTION'];
+        else {
+            // TESTING
+            self::$testing = true;
+            $this->routes = \Walleye\Config::getRoutes();
+            if (isset($this->appOptions['BASE'])) {
+                self::$server_base_dir = $this->appOptions['BASE'];
+            }
+            if (isset($this->appOptions['DOMAIN'])) {
+                self::$domain = $this->appOptions['DOMAIN'];
+            }
+            if (isset($this->appOptions['PRODUCTION'])) {
+                self::$production = $this->appOptions['PRODUCTION'];
+            }
         }
     }
 
@@ -243,13 +300,27 @@ final class Walleye
     }
 
     /**
-     * Lets the application know if it is running in production mode
-     * @see Walleye::$production
      * @return boolean
      */
     public static function isProduction()
     {
         return self::$production;
+    }
+
+    /**
+     * @return boolean
+     */
+    public static function isTesting()
+    {
+        return self::$testing;
+    }
+
+    /**
+     * @return boolean
+     */
+    public static function isDevelopment()
+    {
+        return self::$development;
     }
 
     /**
