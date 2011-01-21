@@ -13,13 +13,15 @@ namespace Walleye;
 function __autoload($class_name)
 {
     $class_name = str_replace('_', '.', $class_name);
-    $class_name_array = explode('\\', $class_name);
-    $class_name = array_pop($class_name_array);
-    if (file_exists(Walleye::getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name) . '.php')) {
-        require(Walleye::getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name) . '.php');
+    if (strpos($class_name, '\\')) {
+        $class_name_array = explode('\\', $class_name);
+        $class_name = array_pop($class_name_array);
     }
-    if (file_exists(Walleye::getServerBaseDir() . 'includes/app/models/' . strtolower($class_name) . '.php')) {
-        require(Walleye::getServerBaseDir() . 'includes/app/models/' . strtolower($class_name) . '.php');
+    if (file_exists(\Walleye\Walleye::getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name) . '.php')) {
+        require(\Walleye\Walleye::getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name) . '.php');
+    }
+    if (file_exists(\Walleye\Walleye::getServerBaseDir() . 'includes/app/models/' . strtolower($class_name) . '.php')) {
+        require(\Walleye\Walleye::getServerBaseDir() . 'includes/app/models/' . strtolower($class_name) . '.php');
     }
 }
 
