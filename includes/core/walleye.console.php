@@ -45,7 +45,10 @@ class Console
         );
         $options = \Walleye\Config::getAppOptions();
         if ($store && $options['LOG_ERRORS']) {
-            self::storeLog($logItem);
+            $log_id = self::storeLog($logItem);
+            if ($log_id) {
+                $logItem['id'] = $log_id;
+            }
         }
         self::$logs[] = $logItem;
     }
@@ -106,10 +109,18 @@ class Console
     }
 
     /**
+     * Removes all logs and leaves an empty array
+     */
+    public static function resetLogs()
+    {
+        self::$logs = array();
+    }
+
+    /**
      * Takes an array representing a log and inserts it into the Logs table in the db
      * @static
      * @param array $logItem
-     * @return boolean
+     * @return int
      */
     private static function storeLog($logItem)
     {
@@ -117,6 +128,9 @@ class Console
         $insert_log_stmt = $db->prepare('INSERT INTO Logs (user_id, type, line, file, message) VALUES (?, ?, ?, ?, ?)');
         $user_id = (is_null(\Walleye\User::getLoggedUser())) ? 0 : \Walleye\User::getLoggedUser()->getId();
         $insert_log_stmt->bind_param('issss', $user_id, $logItem['type'], $logItem['line'], $logItem['file'], $logItem['message']);
-        return $insert_log_stmt->execute();
+        if ($insert_log_stmt->execute()) {
+            return $db->insert_id;
+        }
+        return 0;
     }
 }
