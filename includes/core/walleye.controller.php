@@ -100,6 +100,12 @@ abstract class Controller
     final protected function getUrlPath($url)
     {
         $url_without_data_array = explode('?', $url);
+        if (substr($url_without_data_array[0], 0, 1) == '/') {
+            $url_without_data_array[0] = substr($url_without_data_array[0], 1);
+        }
+        if (substr($url_without_data_array[0], -1) == '/') {
+            $url_without_data_array[0] = substr($url_without_data_array[0], 0, -1);
+        }
         return explode('/', $url_without_data_array[0]);
     }
 
