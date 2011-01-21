@@ -75,7 +75,7 @@ class User extends \Walleye\Model
     public function __construct($id)
     {
         $db = new \Walleye\Database();
-        $get_user_stmt = $db->prepare('select id, username, first_name, last_name, date_created from Users where id = ?');
+        $get_user_stmt = $db->prepare('SELECT id, username, first_name, last_name, date_created FROM Users WHERE id = ?');
         $get_user_stmt->bind_param('i', $id);
         $get_user_stmt->execute();
         if ($row = $db->getRow($get_user_stmt)) {
