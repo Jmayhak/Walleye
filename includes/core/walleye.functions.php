@@ -1,7 +1,11 @@
 <?php
 
+namespace Walleye;
+
 /**
  * Attempts to require a class at runtime if it has not been loaded yet.
+ *
+ * If your class name has underscores in it, they will be converted to periods when searching for the file name.
  *
  * @param string $class_name
  * @return void
@@ -9,11 +13,13 @@
 function __autoload($class_name)
 {
     $class_name = str_replace('_', '.', $class_name);
-    if (file_exists(\Walleye\Walleye::getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name) . '.php')) {
-        require(\Walleye\Walleye::getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name) . '.php');
+    $class_name_array = explode('\\', $class_name);
+    $class_name = array_pop($class_name_array);
+    if (file_exists(Walleye::getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name) . '.php')) {
+        require(Walleye::getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name) . '.php');
     }
-    if (file_exists(\Walleye\Walleye::getServerBaseDir() . 'includes/app/models/' . strtolower($class_name) . '.php')) {
-        require(\Walleye\Walleye::getServerBaseDir() . 'includes/app/models/' . strtolower($class_name) . '.php');
+    if (file_exists(Walleye::getServerBaseDir() . 'includes/app/models/' . strtolower($class_name) . '.php')) {
+        require(Walleye::getServerBaseDir() . 'includes/app/models/' . strtolower($class_name) . '.php');
     }
 }
 
@@ -27,7 +33,7 @@ function __autoload($class_name)
  */
 function hash_data($data)
 {
-    if (is_array($data)) {
+    if (!is_string($data)) {
         return null;
     }
     return hash('whirlpool', $data);
