@@ -5,13 +5,14 @@ namespace Walleye;
 /**
  * walleye.database.php
  *
- * This is the class that handles all connections to the database. 
+ * This is the class that handles all connections to the database.
  *
  * Uses MySQLi
  *
  * @author Jonathan Mayhak <Jmayhak@gmail.com>
  */
-class Database extends \mysqli {
+class Database extends \mysqli
+{
 
     /**
      * Creates the Database object and sets the database connection info based on
@@ -25,7 +26,8 @@ class Database extends \mysqli {
      * @see includes/walleye.config.php
      * @param string $db
      */
-    public function __construct($db = null) {
+    public function __construct($db = null)
+    {
         $dbOptions = \Walleye\Config::getDbOptions();
         $engine = $dbOptions['ENGINE'];
         $server = $dbOptions['SERVER'];
@@ -45,50 +47,53 @@ class Database extends \mysqli {
      * @param MySQLi_STMT $stmt
      * @return array
      */
-    public function getResult($stmt) 
-    { 
-      $result = array(); 
-      
-      $metadata = $stmt->result_metadata(); 
-      $fields = $metadata->fetch_fields(); 
+    public function getResult($stmt)
+    {
+        if (is_a($stmt, 'MySQLi_STMT')) {
+            $result = array();
 
-      for (;;) 
-      { 
-        $pointers = array(); 
-        $row = new \stdClass();
-        
-        $pointers[] = $stmt; 
-        foreach ($fields as $field) 
-        { 
-          $fieldname = $field->name; 
-          $pointers[] = &$row->$fieldname; 
-        } 
-        
-        call_user_func_array('mysqli_stmt_bind_result', $pointers); 
-        
-        if (!$stmt->fetch()) 
-          break; 
-        
-        $result[] = $row; 
-      } 
-      
-      $metadata->free(); 
-      
-      return $result; 
+            $metadata = $stmt->result_metadata();
+            $fields = $metadata->fetch_fields();
+
+            for (; ;)
+            {
+                $pointers = array();
+                $row = new \stdClass();
+
+                $pointers[] = $stmt;
+                foreach ($fields as $field)
+                {
+                    $fieldname = $field->name;
+                    $pointers[] = &$row->$fieldname;
+                }
+
+                call_user_func_array('mysqli_stmt_bind_result', $pointers);
+
+                if (!$stmt->fetch())
+                    break;
+
+                $result[] = $row;
+            }
+
+            $metadata->free();
+
+            return $result;
+        }
+        return array();
     }
 
     /**
      * Gets the first row from a select statement
      * @param MySQLi_STMT $stmt
-     * @return stdClass|null
+     * @return stdClass
      */
     public function getRow($stmt)
     {
         $result = $this->getResult($stmt);
-        if (!empty($result)) {
+        if ($result && !empty($result)) {
             return $result[0];
         }
-        return null;
+        return $result;
     }
-    
+
 }
