@@ -69,8 +69,13 @@ class Email
      */
     public static function withTemplate($to, $subject, $template, $values = array())
     {
-        foreach ($values as $tag => $value) {
-            $template = preg_replace('/(#\{' . $tag . '\}?)/m', $value, file_get_contents(\Walleye\Walleye::getServerBaseDir() . 'views/email/' . $template));
+        if (empty($values)) {
+            $template = file_get_contents(Walleye::getServerBaseDir() . 'includes/app/views/email/' . $template);
+        }
+        else {
+            foreach ($values as $tag => $value) {
+                $template = preg_replace('/(#\{' . $tag . '\}?)/m', $value, file_get_contents(Walleye::getServerBaseDir() . 'includes/app/views/email/' . $template));
+            }
         }
         $instance = new \Walleye\Email($to, $subject, $template);
         return $instance;
@@ -89,5 +94,45 @@ class Email
             $return = mail($this->to, $this->subject, $this->message, $this->headers);
         }
         return $return;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTo()
+    {
+        return $this->to;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubject()
+    {
+        return $this->subject;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFrom()
+    {
+        return $this->from;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
     }
 }
