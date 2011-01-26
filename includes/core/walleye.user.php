@@ -253,8 +253,8 @@ class User extends \Walleye\Model
      */
     public function commit()
     {
-        $db = new \Walleye\Database();
-        $update_user_stmt = $db->prepare('UPDATE Users SET (first_name = ?, last_name = ?) WHERE (id = ?)');
+        $db = new Database();
+        $update_user_stmt = $db->prepare('UPDATE Users SET first_name = ?, last_name = ? WHERE id = ?');
         $update_user_stmt->bind_param('ssi', $this->firstName, $this->lastName, $this->id);
         return $update_user_stmt->execute();
     }
