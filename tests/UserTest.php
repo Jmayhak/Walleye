@@ -1,8 +1,7 @@
 <?php
 namespace Walleye;
 
-
-require_once '/srv/www/walleye.apparctica.com/includes/core/walleye.user.php';
+require_once '../includes/core/walleye.user.php';
 
 /**
  * Test class for User.
@@ -10,10 +9,6 @@ require_once '/srv/www/walleye.apparctica.com/includes/core/walleye.user.php';
  */
 class UserTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var User
-     */
-    protected $object;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -21,7 +16,6 @@ class UserTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new User;
     }
 
     /**
