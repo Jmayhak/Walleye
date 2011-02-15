@@ -7,7 +7,8 @@ namespace Walleye;
  *
  * Each model you create in your application should extend this class.
  *
- * @author Jonathan Mayhak <Jmayhak@gmail.com>
+ * @author	Jonathan Mayhak <Jmayhak@gmail.com>
+ * @package	Walleye
  */
 abstract class Model {
 

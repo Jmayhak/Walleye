@@ -10,9 +10,10 @@ namespace Walleye;
  *
  * The user model that you create for your application should extend this class.
  *
- * @author Jonathan Mayhak <Jmayhak@gmail.com>
+ * @author	Jonathan Mayhak <Jmayhak@gmail.com>
+ * @package	Walleye
  */
-class User extends \Walleye\Model
+class User extends Model
 {
 
     /**
@@ -60,13 +61,13 @@ class User extends \Walleye\Model
 
     /**
      * @static
-     * @var Walleye_user
+     * @var User
      * @access private
      */
     private static $current_logged_user;
 
     /**
-     * Creates a new Walleye_user based on the uid (not a logged in user).
+     * Creates a new User based on the uid (not a logged in user).
      *
      * DO NOT call this constructor directly.
      *
@@ -74,7 +75,7 @@ class User extends \Walleye\Model
      */
     public function __construct($id)
     {
-        $db = new \Walleye\Database();
+        $db = new Database();
         $get_user_stmt = $db->prepare('SELECT id, username, first_name, last_name, date_created FROM Users WHERE id = ?');
         $get_user_stmt->bind_param('i', $id);
         $get_user_stmt->execute();
@@ -86,7 +87,7 @@ class User extends \Walleye\Model
             $this->regDate = $row->date_created;
         }
         else {
-            $this->id = \Walleye\User::ID_OF_UNKNOWN_USER;
+            $this->id = User::ID_OF_UNKNOWN_USER;
         }
     }
 
@@ -94,12 +95,12 @@ class User extends \Walleye\Model
      * Creates a new user based on the id of the user in the Users table
      *
      * @static
-     * @return Walleye_user
+     * @return User
      */
     public static function withId($id)
     {
-        $instance = new \Walleye\User($id);
-        if ($instance->getId() == \Walleye\User::ID_OF_UNKNOWN_USER) {
+        $instance = new User($id);
+        if ($instance->getId() == User::ID_OF_UNKNOWN_USER) {
             $instance = null;
         }
         return $instance;
@@ -110,17 +111,17 @@ class User extends \Walleye\Model
      * Use this constructor if the user is not doing something critical
      *
      * @static
-     * @return Walleye_user
+     * @return User
      */
     public static function withSession()
     {
         $instance = null;
-        if (isset($_SESSION[\Walleye\User::USER_SESSION])) {
-            $db = new \Walleye\Database();
+        if (isset($_SESSION[User::USER_SESSION])) {
+            $db = new Database();
 
             // get the session in the db
             $get_session_id_stmt = $db->prepare('SELECT id FROM Sessions WHERE session_key = ?');
-            $get_session_id_stmt->bind_param('s', $_SESSION[\Walleye\User::USER_SESSION]);
+            $get_session_id_stmt->bind_param('s', $_SESSION[User::USER_SESSION]);
             $get_session_id_stmt->execute();
             $session_id = ($session_row = $db->getRow($get_session_id_stmt)) ? $session_row->id : null;
             $get_session_id_stmt->close();
@@ -135,9 +136,9 @@ class User extends \Walleye\Model
 
                 // make sure this session hasn't expired in the database
                 $date_created_array = explode(' ', $date_created);
-                $appOptions = \Walleye\Config::getAppOptions();
+                $appOptions = Config::getAppOptions();
                 if (daysFromNow($date_created_array[0]) <= $appOptions['SESSION_KEY_EXPIRE_TIME']) {
-                    $instance = \Walleye\User::withId($user_id);
+                    $instance = User::withId($user_id);
                 }
             }
             $get_user_id_and_date_created_stmt->close();
@@ -158,13 +159,13 @@ class User extends \Walleye\Model
      * @static
      * @param string $username
      * @param string $password
-     * @return Walleye_user
+     * @return User
      */
     public static function withUserNameAndPassword($username, $password)
     {
         $instance = null;
 
-        $db = new \Walleye\Database();
+        $db = new Database();
         $get_user_id_stmt = $db->prepare('SELECT id FROM Users WHERE username = ? AND password = ?');
         $get_user_id_stmt->bind_param('ss', $username, $password);
         $get_user_id_stmt->execute();
@@ -173,10 +174,10 @@ class User extends \Walleye\Model
             $get_user_id_stmt->close();
 
             // create the new user object
-            if (!is_null($user = \Walleye\User::withId($row->id))) {
+            if (!is_null($user = User::withId($row->id))) {
 
                 // set the session for this user
-                $session = \Walleye\User::getSessionKey($user);
+                $session = User::getSessionKey($user);
                 $insert_session_stmt = $db->prepare('INSERT INTO Sessions (session_key) VALUES (?)');
                 $insert_session_stmt->bind_param('s', $session);
                 if ($insert_session_stmt->execute()) {
@@ -184,8 +185,8 @@ class User extends \Walleye\Model
                     $insert_user_session_stmt = $db->prepare('INSERT INTO UserSessions (user_id, session_id) VALUES (?, ?)');
                     $insert_user_session_stmt->bind_param('ii', $user->getId(), $session_id);
                     if ($insert_user_session_stmt->execute()) {
-                        $_SESSION[\Walleye\User::USER_SESSION] = $session;
-                        self::$current_logged_user = $instance = \Walleye\User::withSession();
+                        $_SESSION[User::USER_SESSION] = $session;
+                        self::$current_logged_user = $instance = User::withSession();
                     }
                     $insert_user_session_stmt->close();
                 }
@@ -200,19 +201,19 @@ class User extends \Walleye\Model
      *
      * @static
      * @param string $userName
-     * @return Walleye_user
+     * @return User
      */
     public static function withUserName($userName)
     {
         $instance = null;
 
         if (is_string($userName)) {
-            $db = new \Walleye\Database();
+            $db = new Database();
             $get_user_id_stmt = $db->prepare('SELECT id FROM Users WHERE username = ?');
             $get_user_id_stmt->bind_param('s', $userName);
             $get_user_id_stmt->execute();
             if ($user_id = $db->getRow($get_user_id_stmt)) {
-                $instance = \Walleye\User::withId($user_id);
+                $instance = User::withId($user_id);
             }
         }
         return $instance;
@@ -224,21 +225,21 @@ class User extends \Walleye\Model
      * @static
      * @param string $username
      * @param string $password send in hashed form. *DO NOT SEND CLEAR TEXT*
-     * @return Walleye_user
+     * @return User
      */
     public static function create($username = null, $password = null)
     {
         $instance = null;
 
         if ($username && $password) {
-            $db = new \Walleye\Database();
+            $db = new Database();
 
-            if (\Walleye\User::isUsernameUnique($username)) {
+            if (User::isUsernameUnique($username)) {
                 $insert_user_stmt = $db->prepare('INSERT INTO Users (username, password) VALUES (?, ?)');
                 $insert_user_stmt->bind_param('ss', $username, $password);
                 if ($insert_user_stmt->execute()) {
                     $user_id = $db->insert_id;
-                    $instance = \Walleye\User::withId($user_id);
+                    $instance = User::withId($user_id);
                 }
             }
         }
@@ -263,13 +264,13 @@ class User extends \Walleye\Model
      * Returns the currently logged in user via sessions.
      *
      * @static
-     * @see \Walleye\User::withSession()
-     * @return Walleye_user
+     * @see User::withSession()
+     * @return User
      */
     public static function getLoggedUser()
     {
         if (!self::$current_logged_user) {
-            self::$current_logged_user = \Walleye\User::withSession();
+            self::$current_logged_user = User::withSession();
         }
         return self::$current_logged_user;
     }
@@ -283,7 +284,7 @@ class User extends \Walleye\Model
      */
     public static function isUsernameUnique($username)
     {
-        $db = new \Walleye\Database();
+        $db = new Database();
         $get_username_stmt = $db->prepare('SELECT id FROM Users WHERE username = ?');
         $get_username_stmt->bind_param('s', $username);
         $get_username_stmt->execute();
@@ -304,7 +305,7 @@ class User extends \Walleye\Model
      */
     public function changePassword($password)
     {
-        $db = new \Walleye\Database();
+        $db = new Database();
         $change_password_stmt = $db->prepare('UPDATE Users SET password = ? WHERE id = ?');
         $change_password_stmt->bind_param('si', $password, $this->getId());
         return $change_password_stmt->execute();
@@ -328,7 +329,7 @@ class User extends \Walleye\Model
 
     /**
      * Creates and returns a key to be used to mark this users session in the database and in the $_SESSION array
-     * @param \Walleye\User $user
+     * @param User $user
      * @return string
      */
     private static function getSessionKey($user)
