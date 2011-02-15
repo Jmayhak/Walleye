@@ -9,7 +9,8 @@ namespace Walleye;
  *
  * Uses MySQLi
  *
- * @author Jonathan Mayhak <Jmayhak@gmail.com>
+ * @author	Jonathan Mayhak <Jmayhak@gmail.com>
+ * @package	Walleye
  */
 class Database extends \mysqli
 {
@@ -28,35 +29,24 @@ class Database extends \mysqli
      */
     public function __construct($db = null)
     {
-        $dbOptions = Config::getDbOptions();
+        $dbOptions = Walleye::getInstance()->getDbOptions();
         $appOptions = Config::getAppOptions();
 
-        $env = '';
-        switch ($appOptions['ENVIRONMENT']) {
-            case Config::DEVELOPMENT:
-                $env = 'DEV';
-                break;
-            case Config::PRODUCTION:
-                $env = 'PROD';
-                break;
-            default:
-                $env = 'TEST';
-                break;
-        }
-        $engine = $dbOptions[$env . '_ENGINE'];
-        $server = $dbOptions[$env . '_SERVER'];
-        $user = $dbOptions[$env . '_USER'];
-        $password = $dbOptions[$env . '_PASS'];
-        $port = $dbOptions[$env . '_PORT'];
+        $engine = $dbOptions['ENGINE'];
+        $server = $dbOptions['SERVER'];
+        $user = $dbOptions['USER'];
+        $password = $dbOptions['PASS'];
+        $port = $dbOptions['PORT'];
         if (is_null($db)) {
-            $database = $dbOptions[$env . '_DATABASE'];
+            $database = $dbOptions['DATABASE'];
         }
         else {
             $database = $db;
         }
+        
         parent::mysqli($server, $user, $password, $database, $port);
     }
-
+    
     /**
      * Returns all the selected rows as an array full of objects
      * @param MySQLi_STMT $stmt
@@ -91,7 +81,7 @@ class Database extends \mysqli
             }
 
             $metadata->free();
-
+            
             return $result;
         }
         return array();

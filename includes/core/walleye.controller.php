@@ -9,7 +9,8 @@ namespace Walleye;
  * in Walleye tries to call the doHandler() function dynamically (it doesn't know what class it's calling
  * that function for).
  *
- * @author Jonathan Mayhak <Jmayhak@gmail.com>
+ * @author	Jonathan Mayhak <Jmayhak@gmail.com>
+ * @package	Walleye
  */
 abstract class Controller
 {
@@ -45,10 +46,10 @@ abstract class Controller
     protected $handlers = array();
 
     /**
-     * The handler used
-     * @var string
+     * The handler used by the controller
+     * @var array
      */
-    protected $handler;
+    protected $handler = array();
 
     /**
      * Note: when handlers array is created do not forget to define a default handler called 'default'
@@ -61,15 +62,17 @@ abstract class Controller
     abstract protected function __construct($url, $data);
 
     /**
+     * Will return an array(route, handler)
      * @see Walleye_controller::$handlers
-     * @return void
+     * @return array
      */
     public function doHandler()
     {
         $this->handler = $handler = $this->getHandler();
-        if (!is_null($handler) && method_exists($this, $handler)) {
-            $this->$handler();
+        if (!is_null($handler[1]) && method_exists($this, $handler[1])) {
+            $this->$handler[1]();
         }
+        return $this->handler;
     }
 
     /**
@@ -85,11 +88,11 @@ abstract class Controller
     {
         foreach ($this->handlers as $route => $handler) {
             if ($route == 'default') {
-                return $handler;
+                return array($route, $handler);
             }
             else {
                 if (preg_match($route, $this->url)) {
-                    return $handler;
+                    return array($route, $handler);
                 }
             }
         }
@@ -167,11 +170,11 @@ abstract class Controller
         $alerts = Console::getAlerts();
         $logs = Console::getLogs();
 
-        if (!\Walleye\Walleye::isProduction() && !empty($logs)) {
+        if ( ! Walleye::isProduction() && ! empty($logs)) {
             // if the app is not in production, then get all logs including the alerts
             $data['logs'] = $logs;
         }
-        else if (!empty($alerts)) {
+        else if ( ! empty($alerts)) {
             // else if there are alerts add them
             $data['logs'] = $alerts;
         }
@@ -179,10 +182,18 @@ abstract class Controller
             // else do nothing
         }
 
-        if (!empty($data)) {
+        if ( ! empty($data)) {
             $data_query = '?' . http_build_query($data);
         }
-        header('Location: ' . Walleye::getDomain() . $URL . $data_query);
+        
+        // stop redirects to the app can be examined
+        $appOptions = Walleye::getInstance()->getAppOptions();
+        if ( ! $appOptions['PRINT_APP_INFO_ON_LOAD']) {
+            header('Location: ' . Walleye::getDomain() . $URL . $data_query);
+        }
+        else {
+            Console::log('Redirect: ' . Walleye::getDomain() . $URL . $data_query);
+        }
         exit();
     }
 
@@ -209,7 +220,7 @@ abstract class Controller
      */
     protected function view($view, $values = array())
     {
-        if (!Walleye::isProduction()) {
+        if ( ! Walleye::isProduction()) {
             $values['logs'] = Console::getLogs();
         }
         else {
