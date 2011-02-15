@@ -8,7 +8,8 @@ namespace Walleye;
  * Used for general logging and logging errors. All errors that are marked
  * for storage will be saved to the Logs table in the db
  *
- * @author Jonathan Mayhak <Jmayhak@gmail.com>
+ * @author	Jonathan Mayhak <Jmayhak@gmail.com>
+ * @package	Walleye
  */
 class Console
 {
@@ -18,6 +19,8 @@ class Console
     const LOG = 'log';
 
     const ERROR = 'error';
+    
+    const QUERY = 'query';
 
     /**
      * Holds all logs that are going to be sent to the browser
@@ -25,6 +28,16 @@ class Console
      * @access protected
      */
     protected static $logs = array();
+    
+    
+    /**
+     * Holds all the queries this app performed
+     * 
+     * @var array
+     * @access protected
+     * @static
+     */
+    protected static $queries = array();
 
     /**
      * Use this function to add a general log to the Logs table
@@ -64,7 +77,21 @@ class Console
      */
     public static function logError($message, $file = 'unknown file', $line = 'unknown line', $store = true)
     {
-        Console::log($message, $file, $line, $store, 'error');
+        Console::log($message, $file, $line, $store, Console::ERROR);
+    }
+    
+    
+    /**
+     * Log a query
+     * 
+     * @access public
+     * @static
+     * @param string $query
+     * @return void
+     */
+    public static function logQuery($query)
+    {
+        self::$queries[] = $query;
     }
 
     /**
@@ -79,7 +106,7 @@ class Console
      */
     public static function alert($message, $file = 'unknown file', $line = 'unknown line', $store = false)
     {
-        Console::log($message, $file, $line, $store, 'alert');
+        Console::log($message, $file, $line, $store, Console::ALERT);
     }
 
     /**
@@ -106,6 +133,32 @@ class Console
             }
         }
         return $alerts;
+    }
+    
+    
+    /**
+     * Get all queries that have been logged (queries are NOT automatically logged)
+     * 
+     * @access public
+     * @static
+     * @return array
+     */
+    public static function getQueries()
+    {
+        return self::$queries;
+    }
+    
+    
+    /**
+     * Reset all queries to an empty array
+     * 
+     * @access public
+     * @static
+     * @return void
+     */
+    public static function resetQueries()
+    {
+        self::$queries = array();
     }
 
     /**
