@@ -12,7 +12,7 @@ define('FPDF_FONTPATH', $appOptions['BASE'] . 'includes/core/libraries/font/');
 require('../includes/core/libraries/fpdf.php');
 
 // PRODUCTION
-if ($appOptions['PRODUCTION']) {
+if ($appOptions['PRODUCTION'] == 'testing') {
     // Turn off all error reporting
     ini_set('display_errors', 0);
 }

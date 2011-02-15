@@ -81,10 +81,9 @@ abstract class Controller
             if ($route == 'default') {
                 return $handler;
             }
-            else {
-                if (preg_match($route, $this->url)) {
-                    return $handler;
-                }
+            elseif (preg_match($route, $this->url))
+            {
+                return $handler;
             }
         }
         return null;

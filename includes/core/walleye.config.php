@@ -56,18 +56,21 @@ class Config
             'DEV_USER' => '',
             'DEV_PASS' => '',
             'DEV_DATABASE' => '',
+            'DEV_DATABASE' => '',
             // TESTING
             'TEST_ENGINE' => 'mysql',
             'TEST_SERVER' => '',
             'TEST_USER' => '',
             'TEST_PASS' => '',
             'TEST_DATABASE' => '',
+            'TEST_PORT' => '',
             // PRODUCTION
             'PROD_ENGINE' => 'mysql',
             'PROD_SERVER' => '',
             'PROD_USER' => '',
             'PROD_PASS' => '',
-            'PROD_DATABASE' => ''
+            'PROD_DATABASE' => '',
+            'PROD_PORT' => ''
         );
     }
 
