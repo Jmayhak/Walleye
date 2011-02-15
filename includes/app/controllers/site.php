@@ -1,5 +1,10 @@
 <?php
 
+namespace App\Controllers;
+
+use Walleye\Console as Console;
+use App\Models\User as User;
+
 /**
  * site.php
  *
@@ -24,13 +29,13 @@ class Site extends \Walleye\Controller {
     }
 
     protected function indexHandler() {
-        \Walleye\Console::log('You can create log messages', 'site.php', __LINE__);
-        \Walleye\Console::logError('You can create error messages');
-        if (\Walleye\User::getLoggedUser()) {
-            \Walleye\Console::alert('Cool, you logged in');
+        Console::log('You can create log messages', 'site.php', __LINE__);
+        Console::logError('You can create error messages');
+        if (User::getLoggedUser()) {
+            Console::alert('Cool, you logged in');
         }
         else {
-            \Walleye\Console::alert('This is just to show that you can send alerts to the user server-side. Check out the javascript console');
+            Console::alert('This is just to show that you can send alerts to the user server-side. Check out the javascript console');
         }
         $this->view('index.php');
     }
@@ -40,7 +45,7 @@ class Site extends \Walleye\Controller {
     }
 
     protected function error_404() {
-        \Walleye\Console::alert('How did you get here?');
+        Console::alert('How did you get here?');
         parent::error_404();
     }
 }

@@ -43,7 +43,7 @@ class Console
             'file' => $file,
             'line' => $line
         );
-        $options = \Walleye\Config::getAppOptions();
+        $options = Config::getAppOptions();
         if ($store && $options['LOG_ERRORS']) {
             $log_id = self::storeLog($logItem);
             if ($log_id) {
@@ -124,9 +124,9 @@ class Console
      */
     private static function storeLog($logItem)
     {
-        $db = new \Walleye\Database();
+        $db = new Database();
         $insert_log_stmt = $db->prepare('INSERT INTO Logs (user_id, type, line, file, message) VALUES (?, ?, ?, ?, ?)');
-        $user_id = (is_null(\Walleye\User::getLoggedUser())) ? 0 : \Walleye\User::getLoggedUser()->getId();
+        $user_id = (is_null(User::getLoggedUser())) ? 0 : User::getLoggedUser()->getId();
         $insert_log_stmt->bind_param('issss', $user_id, $logItem['type'], $logItem['line'], $logItem['file'], $logItem['message']);
         if ($insert_log_stmt->execute()) {
             return $db->insert_id;

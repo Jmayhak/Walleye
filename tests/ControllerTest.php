@@ -1,8 +1,9 @@
 <?php
 namespace Walleye;
 
+use App\Controllers\Site as Site;
 
-require_once '../includes/core/walleye.controller.php';
+require_once '../includes/core/walleye.php';
 require_once '../includes/app/controllers/site.php';
 
 /**
@@ -30,7 +31,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
 
     protected static function getMethod($name)
     {
-        $class = new \ReflectionClass('Site');
+        $class = new \ReflectionClass('\App\Controllers\Site');
         $method = $class->getMethod($name);
         $method->setAccessible(true);
         return $method;
@@ -39,7 +40,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     public function testGetUrlPathExpected()
     {
         $foo = self::getMethod('getUrlPath');
-        $obj = new \Site('/test/1/tester', array());
+        $obj = new Site('/test/1/tester', array());
         $path = $foo->invokeArgs($obj, array('test/1/tester'));
         $this->assertEquals(3, count($path));
     }
@@ -47,7 +48,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     public function testGetUrlPathWithSlashAtBeginning()
     {
         $foo = self::getMethod('getUrlPath');
-        $obj = new \Site('/test/1/tester', array());
+        $obj = new Site('/test/1/tester', array());
         $path = $foo->invokeArgs($obj, array('/test/1/tester'));
         $this->assertEquals(3, count($path));
     }
@@ -55,7 +56,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     public function testGetUrlPathWithSlashAtEnd()
     {
         $foo = self::getMethod('getUrlPath');
-        $obj = new \Site('/test/1/tester', array());
+        $obj = new Site('/test/1/tester', array());
         $path = $foo->invokeArgs($obj, array('/test/1/tester/'));
         $this->assertEquals(3, count($path));
     }
@@ -63,7 +64,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     public function testGetUrlPathWithData()
     {
         $foo = self::getMethod('getUrlPath');
-        $obj = new \Site('/test/1/tester', array());
+        $obj = new Site('/test/1/tester', array());
         $path = $foo->invokeArgs($obj, array('test/1/tester?foo=bar'));
         $this->assertEquals(3, count($path));
     }
@@ -71,9 +72,14 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     public function testGetUrlPathArray()
     {
         $foo = self::getMethod('getUrlPath');
-        $obj = new \Site('/test/1/tester', array());
+        $obj = new Site('/test/1/tester', array());
         $path = $foo->invokeArgs($obj, array('test/1/tester'));
         $this->assertEquals('1', $path[1]);
+    }
+
+    public function testRedirect()
+    {
+
     }
 }
 

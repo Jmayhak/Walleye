@@ -28,18 +28,33 @@ class Database extends \mysqli
      */
     public function __construct($db = null)
     {
-        $dbOptions = \Walleye\Config::getDbOptions();
-        $engine = $dbOptions['ENGINE'];
-        $server = $dbOptions['SERVER'];
-        $user = $dbOptions['USER'];
-        $password = $dbOptions['PASS'];
+        $dbOptions = Config::getDbOptions();
+        $appOptions = Config::getAppOptions();
+
+        $env = '';
+        switch ($appOptions['ENVIRONMENT']) {
+            case Config::DEVELOPMENT:
+                $env = 'DEV';
+                break;
+            case Config::PRODUCTION:
+                $env = 'PROD';
+                break;
+            default:
+                $env = 'TEST';
+                break;
+        }
+        $engine = $dbOptions[$env . '_ENGINE'];
+        $server = $dbOptions[$env . '_SERVER'];
+        $user = $dbOptions[$env . '_USER'];
+        $password = $dbOptions[$env . '_PASS'];
+        $port = $dbOptions[$env . '_PORT'];
         if (is_null($db)) {
-            $database = $dbOptions['DATABASE'];
+            $database = $dbOptions[$env . '_DATABASE'];
         }
         else {
             $database = $db;
         }
-        parent::mysqli($server, $user, $password, $database);
+        parent::mysqli($server, $user, $password, $database, $port);
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Controllers;
+
 /**
  * The controller for a public or private API
  */
@@ -31,5 +33,3 @@ class Api extends \Walleye\Controller
         $this->view($view);
     }
 }
-
-?>

@@ -45,6 +45,12 @@ abstract class Controller
     protected $handlers = array();
 
     /**
+     * The handler used
+     * @var string
+     */
+    protected $handler;
+
+    /**
      * Note: when handlers array is created do not forget to define a default handler called 'default'
      *
      * @abstract
@@ -60,7 +66,7 @@ abstract class Controller
      */
     public function doHandler()
     {
-        $handler = $this->getHandler();
+        $this->handler = $handler = $this->getHandler();
         if (!is_null($handler) && method_exists($this, $handler)) {
             $this->$handler();
         }
@@ -154,9 +160,12 @@ abstract class Controller
      */
     final protected function redirect($URL = '', $data = array())
     {
+        if (substr($URL, 0, 1) == '/') {
+            $URL = substr($URL, 1);
+        }
         $data_query = '';
-        $alerts = \Walleye\Console::getAlerts();
-        $logs = \Walleye\Console::getLogs();
+        $alerts = Console::getAlerts();
+        $logs = Console::getLogs();
 
         if (!\Walleye\Walleye::isProduction() && !empty($logs)) {
             // if the app is not in production, then get all logs including the alerts
@@ -173,7 +182,7 @@ abstract class Controller
         if (!empty($data)) {
             $data_query = '?' . http_build_query($data);
         }
-        header('Location: ' . \Walleye\Walleye::getDomain() . $URL . $data_query);
+        header('Location: ' . Walleye::getDomain() . $URL . $data_query);
         exit();
     }
 

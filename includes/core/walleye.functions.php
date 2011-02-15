@@ -1,7 +1,5 @@
 <?php
 
-namespace Walleye;
-
 /**
  * Attempts to require a class at runtime if it has not been loaded yet.
  *

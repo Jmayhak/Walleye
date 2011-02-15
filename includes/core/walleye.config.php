@@ -28,11 +28,11 @@ class Config
             // the location of this application from the server root. end with a '/'
             'BASE' => '/srv/www/',
             // end the domain with a '/'
-            'DOMAIN' => 'http://example.com/',
+            'DOMAIN' => 'http://',
             // if in production, no php warning/errors will be shown
             // use testing for unit tests and functional tests
             // development should match production
-            'ENVIRONMENT' => Config::TESTING,
+            'ENVIRONMENT' => Config::DEVELOPMENT,
             // errors are logged to the Logs table in the db
             'LOG_ERRORS' => true,
             // Enter the expiration time in days
@@ -47,7 +47,7 @@ class Config
      * Returns the necessary information to make a connection to a database
      * @return array
      */
-    public static function getDbOptions()
+     public static function getDbOptions()
     {
         return array(
             // DEVELOPMENT
@@ -56,18 +56,21 @@ class Config
             'DEV_USER' => '',
             'DEV_PASS' => '',
             'DEV_DATABASE' => '',
+            'DEV_PORT' => '',
             // TESTING
             'TEST_ENGINE' => 'mysql',
             'TEST_SERVER' => '',
             'TEST_USER' => '',
             'TEST_PASS' => '',
             'TEST_DATABASE' => '',
+            'TEST_PORT' => '',
             // PRODUCTION
-            'PROD_ENGINE' => 'mysql',
+            'PROD_ENGINE' => '',
             'PROD_SERVER' => '',
             'PROD_USER' => '',
             'PROD_PASS' => '',
-            'PROD_DATABASE' => ''
+            'PROD_DATABASE' => '',
+            'PROD_PORT' => ''
         );
     }
 
@@ -80,9 +83,9 @@ class Config
     {
         // the key is a regexp and the value is the name of the controller class
         return array(
-            '/^(\/user)/' => 'User',
-            '/^(\/api)/' => 'Api',
-            'default' => 'Site'
+            '/^(\/user)/' => 'App\Controllers\User',
+            '/^(\/api)/' => 'App\Controllers\Api',
+            'default' => 'App\Controllers\Site'
         );
     }
 }

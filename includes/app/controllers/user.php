@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Controllers;
+
 /**
  * user.php
  *
@@ -27,7 +29,7 @@ class User extends \Walleye\Controller {
      * Sets the view to be the homepage
      */
     public function logoutHandler() {
-        if (\Walleye\User::getLoggedUser()) {
+        if (\App\Models\User::getLoggedUser()) {
             unset($_SESSION[\Walleye\User::USER_SESSION]);
         }
         $this->redirect();
@@ -42,7 +44,7 @@ class User extends \Walleye\Controller {
         $values = array();
         $data = $this->data;
         if ($this->isPost() && isset($data['username']) && isset($data['password'])) {
-            $user = \Walleye\User::withUsernameAndPassword($data['username'], hash_data($data['password']));
+            $user = \App\Models\User::withUsernameAndPassword($data['username'], hash_data($data['password']));
             if (!is_null($user)) {
                 if (isset($data['return_url']) && $data['return_url'] != '') {
                     $this->redirect($data['return_url']);
@@ -61,5 +63,3 @@ class User extends \Walleye\Controller {
         }
     }
 }
-
-?>
