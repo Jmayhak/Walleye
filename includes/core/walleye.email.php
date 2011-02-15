@@ -7,7 +7,8 @@ namespace Walleye;
  *
  * This class handles email. Extend this class to include header information
  *
- * @author Jonathan Mayhak <Jmayhak@gmail.com>
+ * @author	Jonathan Mayhak <Jmayhak@gmail.com>
+ * @package	Walleye
  */
 class Email
 {
@@ -71,12 +72,12 @@ class Email
     {
         if (empty($values)) {
             //$template = file_get_contents(Walleye::getServerBaseDir() . 'includes/app/views/email/' . $template);
-            $template = file_get_contents(getcwd() . '/includes/app/views/email/' . $template);
+            $template = file_get_contents(realpath(dirname(__FILE__) . '/../app/views/email/' . $template));
         }
         else {
             foreach ($values as $tag => $value) {
                 //$template = preg_replace('/(#\{' . $tag . '\}?)/m', $value, file_get_contents(Walleye::getServerBaseDir() . 'includes/app/views/email/' . $template));
-                $template = preg_replace('/(#\{' . $tag . '\}?)/m', $value, file_get_contents(getcwd() . '/includes/app/views/email/' . $template));
+                $template = preg_replace('/(#\{' . $tag . '\}?)/m', $value, file_get_contents(realpath(dirname(__FILE__) . '/../app/views/email/' . $template)));
             }
         }
         $instance = new \Walleye\Email($to, $subject, $template);
