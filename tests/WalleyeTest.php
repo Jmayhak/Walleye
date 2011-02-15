@@ -1,8 +1,5 @@
 <?php
-
 namespace Walleye;
-
-require_once '../includes/core/walleye.php';
 
 /**
  * Test class for Walleye.
