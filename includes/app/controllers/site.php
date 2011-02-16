@@ -17,7 +17,6 @@ class Site extends \Walleye\Controller {
     public function __construct($url, $data) {
         $this->url = $url;
         $this->data = $data;
-        $this->path = $this->getUrlPath($url);
         $this->handlers = array(
             '/^(\/contact)$/' => 'contactHandler',
             '/^(\/)$/' => 'indexHandler',

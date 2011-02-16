@@ -68,6 +68,7 @@ abstract class Controller
      */
     public function doHandler()
     {
+        $this->path = $this->getUrlPath($this->url);
         $this->handler = $handler = $this->getHandler();
         if (!is_null($handler[1]) && method_exists($this, $handler[1])) {
             $this->$handler[1]();
