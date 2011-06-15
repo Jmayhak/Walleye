@@ -10,7 +10,7 @@ namespace Walleye;
  * @author	Jonathan Mayhak <Jmayhak@gmail.com>
  * @package	Walleye
  */
-abstract class Model {
+interface Model {
 
     /**
      * Every model in your application should have a constructor that takes an id to initialize. All
@@ -21,7 +21,7 @@ abstract class Model {
      * @param int|string $id
      * @return self
      */
-    abstract public static function withId($id);
+    public static function withId($id);
 
     /**
      * After you are done setting properties in your model call this function. Implement this function
@@ -30,7 +30,7 @@ abstract class Model {
      * @abstract
      * @return void
      */
-    abstract public function commit();
+    public function commit();
 
     /**
      * Use this function to create a new row in the database for this instance of this model.
@@ -38,7 +38,7 @@ abstract class Model {
      * @abstract
      * @return self
      */
-    abstract public static function create();
+    public static function create();
 
     /**
      * Every model in your application should have a toString function. 5.1.6 does not support __toString
@@ -46,6 +46,6 @@ abstract class Model {
      * @abstract
      * @return string
      */
-    abstract public function __toString();
+    public function __toString();
 
 }
