@@ -13,7 +13,7 @@ namespace Walleye;
  * @author	Jonathan Mayhak <Jmayhak@gmail.com>
  * @package	Walleye
  */
-class User extends Model
+class User implements Model
 {
 
     /**
