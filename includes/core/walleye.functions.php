@@ -3,23 +3,27 @@
 /**
  * Attempts to require a class at runtime if it has not been loaded yet.
  *
- * If your class name has underscores in it, they will be converted to periods when searching for the file name.
+ * Classes in subdirectories must follow a PEAR style naming convention for classes to be autoloaded into walleye.
+ * For example: controllers/folder/file.php , all classes in file.php must be FOLDER_classname.
+ * This is not case-sensitive.
+ *
+ * If your class name has underscores in it, they will be converted to a slash for file resolution.
  *
  * @param string $class_name
  * @return void
  */
 function __autoload($class_name)
 {
-    $class_name = str_replace('_', '.', $class_name);
-    if (strpos($class_name, '\\')) {
+    if (strpos($class_name, '\\') !== FALSE) {
         $class_name_array = explode('\\', $class_name);
         $class_name = array_pop($class_name_array);
     }
-    if (file_exists(\Walleye\Walleye::getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name) . '.php')) {
-        require(\Walleye\Walleye::getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name) . '.php');
+    $class_name = str_replace('_', '/', $class_name).'.php';
+    if (file_exists(\Walleye\Walleye::getInstance()->getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name))) {
+        require(\Walleye\Walleye::getInstance()->getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name));
     }
-    if (file_exists(\Walleye\Walleye::getServerBaseDir() . 'includes/app/models/' . strtolower($class_name) . '.php')) {
-        require(\Walleye\Walleye::getServerBaseDir() . 'includes/app/models/' . strtolower($class_name) . '.php');
+    if (file_exists(\Walleye\Walleye::getInstance()->getServerBaseDir() . 'includes/app/models/' . strtolower($class_name))) {
+        require(\Walleye\Walleye::getInstance()->getServerBaseDir() . 'includes/app/models/' . strtolower($class_name));
     }
 }
 
