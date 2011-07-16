@@ -13,7 +13,7 @@ namespace Walleye;
  * @author	Jonathan Mayhak <Jmayhak@gmail.com>
  * @package	Walleye
  */
-class User extends Model
+class User implements Model
 {
 
     /**
@@ -136,7 +136,7 @@ class User extends Model
 
                 // make sure this session hasn't expired in the database
                 $date_created_array = explode(' ', $date_created);
-                $appOptions = Config::getAppOptions();
+                $appOptions = \Walleye\Walleye::getInstance()->getAppOptions();
                 if (daysFromNow($date_created_array[0]) <= $appOptions['SESSION_KEY_EXPIRE_TIME']) {
                     $instance = User::withId($user_id);
                 }
@@ -270,7 +270,12 @@ class User extends Model
     public static function getLoggedUser()
     {
         if (!self::$current_logged_user) {
-            self::$current_logged_user = User::withSession();
+            if (Walleye::getInstance()->isTesting()) {
+                self::$current_logged_user = User::withId(Walleye::getInstance()->getTestingUserId());
+            }
+            else {
+                self::$current_logged_user = User::withSession();
+            }
         }
         return self::$current_logged_user;
     }
@@ -332,7 +337,7 @@ class User extends Model
      * @param User $user
      * @return string
      */
-    private static function getSessionKey($user)
+    protected static function getSessionKey($user)
     {
         return hash_data($user->username . $user->regDate . time());
     }
@@ -346,3 +351,5 @@ class User extends Model
         return "id: '$this->id' userName: '$this->username' firstName: '$this->firstName' lastName: '$this->lastName' regDate: '$this->regDate'";
     }
 }
+
+/* End of file */
