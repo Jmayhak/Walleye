@@ -9,11 +9,12 @@ namespace Walleye;
  *
  * Uses MySQLi
  *
- * @author	Jonathan Mayhak <Jmayhak@gmail.com>
- * @package	Walleye
+ * @author    Jonathan Mayhak <Jmayhak@gmail.com>
+ * @package    Walleye
  */
 class Database extends \mysqli
 {
+    private static $me;
 
     /**
      * Creates the Database object and sets the database connection info based on
@@ -27,12 +28,10 @@ class Database extends \mysqli
      * @see includes/walleye.config.php
      * @param string $db
      */
-    public function __construct($db = null)
+    private function __construct($db = null)
     {
         $dbOptions = Walleye::getInstance()->getDbOptions();
-        $appOptions = Config::getAppOptions();
 
-        $engine = $dbOptions['ENGINE'];
         $server = $dbOptions['SERVER'];
         $user = $dbOptions['USER'];
         $password = $dbOptions['PASS'];
@@ -43,10 +42,23 @@ class Database extends \mysqli
         else {
             $database = $db;
         }
-        
         parent::mysqli($server, $user, $password, $database, $port);
     }
-    
+
+    /**
+     * Makes sure the database is handled as a singleton. This function will give you
+     * the instance of the database.
+     *
+     * @return Database
+     */
+    public static function getInstance($db = null)
+    {
+        if (!self::$me) {
+            self::$me = new Database($db);
+        }
+        return self::$me;
+    }
+
     /**
      * Returns all the selected rows as an array full of objects
      * @param MySQLi_STMT $stmt
@@ -81,7 +93,7 @@ class Database extends \mysqli
             }
 
             $metadata->free();
-            
+
             return $result;
         }
         return array();
@@ -101,4 +113,22 @@ class Database extends \mysqli
         return $result;
     }
 
+    /**
+     * @return null|string
+     */
+    public function getDatabase()
+    {
+        return $this->database;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
 }
+
+/* End of file */
