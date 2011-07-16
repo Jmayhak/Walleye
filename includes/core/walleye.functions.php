@@ -10,16 +10,16 @@
  */
 function __autoload($class_name)
 {
-    $class_name = str_replace('_', '.', $class_name);
-    if (strpos($class_name, '\\')) {
+    if (strpos($class_name, '\\') !== FALSE) {
         $class_name_array = explode('\\', $class_name);
         $class_name = array_pop($class_name_array);
     }
-    if (file_exists(\Walleye\Walleye::getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name) . '.php')) {
-        require(\Walleye\Walleye::getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name) . '.php');
+    $class_name = str_replace('_', '/', $class_name).'.php';
+    if (file_exists(\Walleye\Walleye::getInstance()->getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name))) {
+        require(\Walleye\Walleye::getInstance()->getServerBaseDir() . 'includes/app/controllers/' . strtolower($class_name));
     }
-    if (file_exists(\Walleye\Walleye::getServerBaseDir() . 'includes/app/models/' . strtolower($class_name) . '.php')) {
-        require(\Walleye\Walleye::getServerBaseDir() . 'includes/app/models/' . strtolower($class_name) . '.php');
+    if (file_exists(\Walleye\Walleye::getInstance()->getServerBaseDir() . 'includes/app/models/' . strtolower($class_name))) {
+        require(\Walleye\Walleye::getInstance()->getServerBaseDir() . 'includes/app/models/' . strtolower($class_name));
     }
 }
 
@@ -28,12 +28,12 @@ function __autoload($class_name)
  *
  * @final
  * @access protected
- * @param array $data
+ * @param string $data
  * @return string|null
  */
 function hash_data($data)
 {
-    if (!is_string($data)) {
+    if (is_string($data) == false) {
         return null;
     }
     return hash('whirlpool', $data);
@@ -82,24 +82,18 @@ function decrypt($string, $key)
 }
 
 /**
- * Will return a string of  an array in a decent fashion. Used mostly for logging
+ * Will return a string of an array in a decent fashion. Used mostly for logging.
+ *
+ * THIS FUNCTION WILL PRINT TO THE BROWSER
  *
  * @param array $array
  * @return string
  */
-function print_array($array)
+function print_object($array)
 {
-    if (is_null($array)) {
-        return '';
-    }
-    $returnString = '';
-    foreach ($array as $key => $value) {
-        if (is_array($key)) {
-            $returnString .= print_array($key);
-        }
-        $returnString .= $key . ' - ' . $value . ' ';
-    }
-    return $returnString;
+    echo '<pre>';
+    print_r($array);
+    echo '</pre>';
 }
 
 /**
@@ -110,7 +104,8 @@ function print_array($array)
  */
 function daysFromNow($when)
 {
-    return floor((time() - strtotime($when)) / (60 * 60 * 24));
+    $when = explode(' ', $when);
+    return floor((time() - strtotime($when[0])) / (60 * 60 * 24));
 }
 
 /**
@@ -122,3 +117,28 @@ function slugify($string)
 {
     return strtolower(trim(preg_replace(array('~[^0-9a-z]~i', '~-+~'), '-', preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', htmlentities($string, ENT_QUOTES, 'UTF-8'))), '-'));
 }
+
+/**
+ * Implodes an array full of arrays based on the passed key that is in each element of the array
+ * by the passed delimiter
+ *
+ * implode_key(',', array(array('title'=>'jonathan'), array('title'=>'justin')), 'title')
+ * // will return jonathan,justin
+ *
+ * @param string $delimiter
+ * @param array $arrays
+ * @param string $key
+ * @return string
+ */
+function implode_by_key($delimiter, $arrays, $key)
+{
+    $new_array = array();
+    foreach ($arrays as $array) {
+        if (isset($array[$key]) == true) {
+            $new_array[] = $array[$key];
+        }
+    }
+    return implode($delimiter, $new_array);
+}
+
+/* End of file */
