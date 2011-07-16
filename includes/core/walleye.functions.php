@@ -3,7 +3,11 @@
 /**
  * Attempts to require a class at runtime if it has not been loaded yet.
  *
- * If your class name has underscores in it, they will be converted to periods when searching for the file name.
+ * Classes in subdirectories must follow a PEAR style naming convention for classes to be autoloaded into walleye.
+ * For example: controllers/folder/file.php , all classes in file.php must be FOLDER_classname.
+ * This is not case-sensitive.
+ *
+ * If your class name has underscores in it, they will be converted to a slash for file resolution.
  *
  * @param string $class_name
  * @return void

@@ -40,7 +40,7 @@ class Site extends \Walleye\Controller {
         $this->view('contact.php');
     }
 
-    protected function error_404() {
+    protected function error_404($view = '404.php', $values = array()) {
         \Walleye\Console::alert('How did you get here?');
         parent::error_404();
     }
