@@ -1,23 +1,24 @@
 == WALLEYE - An MVC style PHP framework based on PHP 5.3.0
 
-* Uses MySQLi
-* Server-side logging through the javascript console object and a the database
-* Messages can be sent to the browser via \Walleye\Console::alert() and gritter
-* Secure session management
-* Includes basic sql
-* Uses the Walleye namespace
-* Includes phpDoc
-* Unit tests can be found in the tests folder
-
 == How to use the framework
 
-Set up the configuration options in walleye.config.php.
+Set up the configuration options in includes/app/app.php, includes/app/routes.php and includes/app/db.php.
 
-Everything starts with index.php in the httpdocs folder. The .htaccess file routes all requests (excluding css, images, and js) to index.php.
+Set up mod_rewrite to point all requests to httpdocs/index.php unless the resource exists.
 
-The file creates a new instance of Walleye, sets the options found in walleye.config.php, and starts the app. This should always be the same process.
+    <IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /index.php [L]
+    </IfModule>
 
-The Walleye class (walleye.php) is found in includes/core. The Walleye class is a singleton and is final. Its main job is to perform the routes found in walleye.config.php. The routes are key/value pairs. The key is a regular expression and the value is the controller that should handle that route (aka url). So, the Walleye class performs the route by looping through the routes array until it finds a match then passes control over to a specific controller.
+Everything starts with index.php in the httpdocs folder.
+
+The file creates a new instance of Walleye, sets the options and starts the app. This should always be the same process.
+
+The Walleye class (walleye.php) is found in includes/core. The Walleye class is a singleton. Its main job is to perform the routes found in includes/app/routes.php. The routes are key/value pairs. The key is a regular expression and the value is the controller that should handle that route (aka url). So, the Walleye class performs the route by looping through the routes array until it finds a match then passes control over to a specific controller.
 
 Each controller extends includes/core/walleye.controller.php which requires each controller to have a doHandler() function. There is a generic doHandler() function in Controller that can be used.
 
@@ -33,13 +34,13 @@ Once the controller calls view, the view is rendered through the php includes fu
 
 A class in /includes/core/ called walleye.database.php is used for all interaction with the database. Before using this class the server, user, password, and database must be set in includes/core/walleye.config.php.
 
-The Walleye_database class itself is simply an extension of MySQLi and can be created with the following line:
+The \Walleye\Database class itself is simply an extension of MySQLi and can be created with the following line:
 
-	$db = new \Walleye\Database();
+	$db = \Walleye\Database::getInstance();
 
 Now you have all the functions available to you through MySQLi. You can change the database that you are connecting to by passing the name as a parameter.
 
-	$db = new \Walleye\Database('test_db');
+	$db = new \Walleye\Database::getInstance('test_db');
 
 == Logging
 
@@ -48,6 +49,7 @@ Server-side logging is performed through the Console class (walleye.console.php)
 	\Walleye\Console::log('this is a message to be logged', __FILE__, __LINE__);
 	\Walleye\Console::logError('this is an error');
 	\Walleye\Console::alert('this is a message to be sent to the browser');
+	\Walleye\Console::logQuery('SELECT id FROM Users');
 
 == Email
 
@@ -68,4 +70,12 @@ or without a template:
 
 	$email = \Walleye\Email($to, $subject, 'This is an email');
 	$email->send();
+
+== Migrations
+
+Ruckusing-Migrations included
+
+== Deployment
+
+Capistrano template included
 	
