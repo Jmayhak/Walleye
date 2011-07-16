@@ -9,8 +9,8 @@ namespace Walleye;
  * in Walleye tries to call the doHandler() function dynamically (it doesn't know what class it's calling
  * that function for).
  *
- * @author	Jonathan Mayhak <Jmayhak@gmail.com>
- * @package	Walleye
+ * @author    Jonathan Mayhak <Jmayhak@gmail.com>
+ * @package    Walleye
  */
 abstract class Controller
 {
@@ -50,6 +50,13 @@ abstract class Controller
      * @var array
      */
     protected $handler = array();
+
+    /**
+     * Eventually this will hold all values but for now it only holds js
+     *
+     * @var array
+     */
+    private $values = array();
 
     /**
      * Note: when handlers array is created do not forget to define a default handler called 'default'
@@ -135,8 +142,28 @@ abstract class Controller
      */
     protected function isGet()
     {
-        if ($this->isPost()) return false;
-        return true;
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') return true;
+        return false;
+    }
+
+    /**
+     * Checks if HTTP DELETE
+     * @return bool
+     */
+    protected function isDelete()
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'DELETE') return true;
+        return false;
+    }
+
+    /**
+     * Checks if HTTP PUT
+     * @return bool
+     */
+    protected function isPut()
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'PUT') return true;
+        return false;
     }
 
     /**
@@ -155,14 +182,12 @@ abstract class Controller
      * Redirects the browser to a specific URL. MUST be called before the <html>
      * is sent to the browser (before view())
      *
-     * @final
      * @access protected
-     * @see Walleye_controller::view()
      * @param string $URL the URL the browser should be redirected to. Send the url from domain.com/
      * @param array $data an optional key/value pair to be sent to the redirected page
      * @return void
      */
-    final protected function redirect($URL = '', $data = array())
+    protected function redirect($URL = '', $data = array())
     {
         if (substr($URL, 0, 1) == '/') {
             $URL = substr($URL, 1);
@@ -171,11 +196,11 @@ abstract class Controller
         $alerts = Console::getAlerts();
         $logs = Console::getLogs();
 
-        if ( ! Walleye::isProduction() && ! empty($logs)) {
+        if (Walleye::getInstance()->isProduction() == false && empty($logs) == false) {
             // if the app is not in production, then get all logs including the alerts
             $data['logs'] = $logs;
         }
-        else if ( ! empty($alerts)) {
+        else if (empty($alerts) == false) {
             // else if there are alerts add them
             $data['logs'] = $alerts;
         }
@@ -183,34 +208,66 @@ abstract class Controller
             // else do nothing
         }
 
-        if ( ! empty($data)) {
+        if (empty($data) == false) {
             $data_query = '?' . http_build_query($data);
         }
-        
-        // stop redirects to the app can be examined
+
+        // stop redirects so the app can be examined
         $appOptions = Walleye::getInstance()->getAppOptions();
-        if ( ! $appOptions['PRINT_APP_INFO_ON_LOAD']) {
-            header('Location: ' . Walleye::getDomain() . $URL . $data_query);
+        if ($appOptions['PRINT_APP_INFO_ON_LOAD'] == false) {
+            header('Location: ' . Walleye::getInstance()->getDomain() . $URL . $data_query);
         }
         else {
-            Console::log('Redirect: ' . Walleye::getDomain() . $URL . $data_query);
+            //Console::log('Redirect: ' . Walleye::getDomain() . $URL . $data_query);
         }
         exit();
     }
 
     /**
-     * Changes the header to be text/xml. This is used for the api
-     * @final
+     * Changes the header to be text/xml
      * @access protected
      * @return void
      */
     final protected function useXmlHeader()
     {
-        header("Content-Type: text/xml");
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Content-Type: text/xml');
     }
 
     /**
-     * Render a template through a basic php include
+     * Changes the header to be application/json
+     * @access protected
+     * @return void
+     */
+    final protected function useJsonHeader()
+    {
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Content-Type: application/json');
+    }
+
+    /**
+     * Use this function to add javascript to the views
+     *
+     * Just pass the location from httpdocs/js/
+     *
+     * @param string $loc
+     */
+    final protected function addJS($loc)
+    {
+        if (file_exists($script = Walleye::getInstance()->getServerBaseDir() . 'httpdocs/js/' . $loc)) {
+            $scripts = $this->values['js'];
+            $scripts[] = $script;
+            $this->values['js'] = $scripts;
+        }
+        else {
+            Console::logError('Passed a javascript that cannot be found: ' . $loc);
+        }
+    }
+
+    /**
+     * Render a view through a basic php include
      *
      * ex. view('home/index.php', array('title'=>'Title'));
      *
@@ -221,12 +278,14 @@ abstract class Controller
      */
     protected function view($view, $values = array())
     {
-        if ( ! Walleye::isProduction()) {
+        if (Walleye::getInstance()->isProduction() == false) {
             $values['logs'] = Console::getLogs();
         }
         else {
             $values['logs'] = Console::getAlerts();
         }
-        include(Walleye::getServerBaseDir() . 'includes/app/views/' . $view);
+        include(Walleye::getInstance()->getServerBaseDir() . 'includes/app/views/' . $view);
     }
 }
+
+/* End of file */
