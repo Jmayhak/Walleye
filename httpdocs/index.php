@@ -7,25 +7,35 @@ ini_set('display_errors', 1);
 
 if (floatval(phpversion()) < 5.3) { exit('PHP 5.3 or greater is required for Walleye to function.' . "\n"); }
 
-// Be sure to configure the app in walleye.config.php
-require('../includes/core/walleye.php');
+require(realpath(dirname(__FILE__) . '/../') . '/includes/core/walleye.php');
 
-$appOptions = \Walleye\Config::getAppOptions();
+// get app options
+require(realpath(dirname(__FILE__) . '/../') . '/includes/app/app.php');
 
-// perform checks on config file to make sure app can run
-if ($appOptions['BASE'] == '') { exit('Please define the BASE directory' . "\n"); }
-if ($appOptions['ENVIRONMENT'] == \Walleye\Config::TESTING) { exit('Change the Environment from TESTING. TESTING should only be used for unit tests.' . "\n"); }
-if ($appOptions['ENVIRONMENT'] == \Walleye\Config::DEVELOPMENT && $appOptions['DEV_DOMAIN'] == '') { exit('Please define the DEV_DOMAIN.' . "\n"); }
-if ($appOptions['ENVIRONMENT'] == \Walleye\Config::PRODUCTION && $appOptions['PROD_DOMAIN'] == '') { exit('Please define the PROD_DOMAIN.' . "\n"); }
+// get db credentials
+require(realpath(dirname(__FILE__) . '/../') . '/includes/app/db.php');
+
+// get routes
+require(realpath(dirname(__FILE__) . '/../') . '/includes/app/routes.php');
+
+// perform checks to make sure app can run
+if ($appOptions['ENVIRONMENT'] == \Walleye\Walleye::TESTING) { exit('Change the Environment from TESTING. TESTING should only be used for unit tests.' . "\n"); }
+if ($appOptions['ENVIRONMENT'] != \Walleye\Walleye::DEVELOPMENT) { if ($appOptions['ENVIRONMENT'] != \Walleye\Walleye::PRODUCTION) { exit('Please define the ENVIRONMENT with either \Walleye\Walleye::PRODUCTION or \Walleye\Walleye::DEVELOPMENT.'); } }
 if ( ! is_bool($appOptions['LOG_ERRORS'])) { exit('LOG_ERRORS must be a boolean.' . "\n"); }
 if ( ! is_numeric($appOptions['SESSION_KEY_EXPIRE_TIME'])) { exit('SESSION_KEY_EXPIRE_TIME should be set AND be numeric' . "\n"); }
 if ( ! is_bool($appOptions['PRINT_APP_INFO_ON_LOAD'])) { exit('PRINT_APP_INFO_ON_LOAD must be a boolean.' . "\n"); }
+if (array_key_exists('default', $routes) === FALSE) { exit('Please define a default route.'); }
 
-if ($appOptions['ENVIRONMENT'] == \Walleye\Config::PRODUCTION) {
+if ($appOptions['ENVIRONMENT'] == \Walleye\Walleye::PRODUCTION) {
     // Turn off all error reporting
     ini_set('display_errors', 0);
 }
 
+// include all libraries below
+require(realpath(dirname(__FILE__) . '/../') . '/includes/core/libraries/fpdf.php');
+
 // run the application
-$app = \Walleye\Walleye::getInstance();
+$app = \Walleye\Walleye::getInstance($appOptions, $routes, $dbOptions);
 $app->run();
+
+/* End of file */

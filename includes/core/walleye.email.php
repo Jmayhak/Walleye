@@ -51,7 +51,7 @@ class Email
     public function __construct($to, $subject, $message)
     {
         $this->to = $to;
-        $appOptions = Config::getAppOptions();
+        $appOptions = Walleye::getInstance()->getAppOptions();
         $this->from = (isset($appOptions['REPLY-TO_EMAIL'])) ? $appOptions['REPLY-TO_EMAIL'] : '';
         $this->subject = $subject;
         $this->message = $message;
@@ -71,13 +71,11 @@ class Email
     public static function withTemplate($to, $subject, $template, $values = array())
     {
         if (empty($values)) {
-            //$template = file_get_contents(Walleye::getServerBaseDir() . 'includes/app/views/email/' . $template);
-            $template = file_get_contents(realpath(dirname(__FILE__) . '/../app/views/email/' . $template));
+            $template = file_get_contents(Walleye::getInstance()->getServerBaseDir() . 'includes/app/views/email/' . $template);
         }
         else {
             foreach ($values as $tag => $value) {
-                //$template = preg_replace('/(#\{' . $tag . '\}?)/m', $value, file_get_contents(Walleye::getServerBaseDir() . 'includes/app/views/email/' . $template));
-                $template = preg_replace('/(#\{' . $tag . '\}?)/m', $value, file_get_contents(realpath(dirname(__FILE__) . '/../app/views/email/' . $template)));
+                $template = preg_replace('/(#\{' . $tag . '\}?)/m', $value, file_get_contents(Walleye::getInstance()->getServerBaseDir() . 'includes/app/views/email/' . $template));
             }
         }
         $instance = new \Walleye\Email($to, $subject, $template);
@@ -139,3 +137,5 @@ class Email
         return $this->headers;
     }
 }
+
+/* End of file */

@@ -56,7 +56,7 @@ class Console
             'file' => $file,
             'line' => $line
         );
-        $options = Config::getAppOptions();
+        $options = Walleye::getInstance()->getAppOptions();
         if ($store && $options['LOG_ERRORS']) {
             $log_id = self::storeLog($logItem);
             if ($log_id) {
@@ -187,3 +187,5 @@ class Console
         return 0;
     }
 }
+
+/* End of file */

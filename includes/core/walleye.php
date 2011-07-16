@@ -2,7 +2,6 @@
 
 namespace Walleye;
 
-require('walleye.config.php');
 require('walleye.console.php');
 require('walleye.functions.php');
 require('walleye.database.php');
@@ -10,17 +9,17 @@ require('walleye.model.php');
 require('walleye.controller.php');
 require('walleye.user.php');
 require('walleye.email.php');
+require('walleye.table.php');
 
 /**
  * walleye.php
  *
  * Handles the basic routing of URLs to their proper controller.
  *
- * @final
- * @author	Jonathan Mayhak <Jmayhak@gmail.com>
- * @package	Walleye
+ * @author Jonathan Mayhak <Jmayhak@gmail.com>
+ * @package Walleye
  */
-final class Walleye
+class Walleye
 {
 
     /**
@@ -46,28 +45,26 @@ final class Walleye
 
     /**
      * The base directory address given in the config array
-     * @see core/walleye.config.php
+     *
      * @var string
-     * @static
      * @access private
      */
-    private static $server_base_dir;
+    private $serverBaseDir;
 
     /**
      * The domain name of this app
-     * @see core/walleye.config.php
+     *
      * @var string
-     * @static
      * @access private
      */
-    private static $domain;
+    private $domain;
 
     /**
      * The environment the application is running in
      * @var string
      * @access private
      */
-    private static $environment;
+    private $environment;
 
     /**
      * All of the application options given in the config array
@@ -84,26 +81,26 @@ final class Walleye
      * @access private
      */
     private $dbOptions = array();
-    
+
     /**
      * The time this application started in microseconds
-     * 
+     *
      * @var string
      * @access private
      */
     private $startTime;
-    
+
     /**
      * The time this application finished in microseconds
-     * 
+     *
      * @var string
      * @access private
      */
     private $endTime;
-    
+
     /**
      * The amount of time it took for this application to complete in a readable format
-     * 
+     *
      * @var string
      * @access private
      */
@@ -116,25 +113,25 @@ final class Walleye
      * @access private
      */
     private $routes = array();
-    
-    
+
+
     /**
      * The route that is selected from the routes array
-     * 
+     *
      * @var string
      * @access private
      */
     private $route = array();
-    
-    
+
+
     /**
      * The handler called by the application
-     * 
+     *
      * @var array
      * @access private
      */
     private $handler = array();
-    
+
     /**
      * The logs the app created
      *
@@ -142,181 +139,171 @@ final class Walleye
      * @access private
      */
     private $logs = array();
-    
-    
+
+    /**
+     * The api key from google for loading jquery and jquery ui
+     *
+     * @var string
+     * @access private
+     */
+    private $google_api_key = '';
+
+    /**
+     * The user id to use for unit testing
+     */
+    private $testingUserId = 0;
+
     /**
      * The queries that the app has logged
-     * 
+     *
      * @var array
      * @access private
      */
     private $queries = array();
 
     /**
-     * Starts the session, stores the post or get data, and the path given in the url
+     * The peak memory used on this page load
+     *
+     * @var string
      */
-    private function __construct()
+    private $peak_memory_usage;
+
+    const PRODUCTION = 'production';
+
+    const DEVELOPMENT = 'development';
+
+    const TESTING = 'testing';
+
+    /**
+     * Starts the session, stores the post or get data, and the path given in the url
+     *
+     * @param array $appOptions
+     * @param array $routes
+     * @param array $dbOptions
+     */
+    private function __construct($appOptions, $routes, $dbOptions = array())
     {
         $this->startTime = EXECUTION_TIME_START;
-        
-        $appOptions = Config::getAppOptions();
-        $dbOptions = Config::getDbOptions();
+        $this->routes = (empty($routes) == false) ? $routes
+                : array('default' => '\App\Controllers\Site');
+        $this->serverBaseDir = realpath(dirname(__FILE__) . '/../../') . '/';
 
-        if ($appOptions['ENVIRONMENT'] == Config::PRODUCTION) {
-            self::$environment = Config::PRODUCTION;
+        $this->appOptions = array(
+            'ENVIRONMENT' => (isset($appOptions['ENVIRONMENT']) == true)
+                    ? $appOptions['ENVIRONMENT'] : \Walleye\Walleye::PRODUCTION,
+            'LOG_ERRORS' => (isset($appOptions['LOG_ERRORS']) == true)
+                    ? $appOptions['LOG_ERRORS'] : true,
+            'REG_KEY_EXPIRE_TIME' => (isset($appOptions['REG_KEY_EXPIRE_TIME']) == true)
+                    ? $appOptions['REG_KEY_EXPIRE_TIME'] : '7',
+            'SESSION_KEY_EXPIRE_TIME' => (isset($appOptions['SESSION_KEY_EXPIRE_TIME']) == true)
+                    ? $appOptions['SESSION_KEY_EXPIRE_TIME'] : '1',
+            'EMAIL_FROM' => (isset($appOptions['EMAIL_FROM']) == true)
+                    ? $appOptions['EMAIL_FROM'] : 'no-reply',
+            'PRINT_APP_INFO_ON_LOAD' => (isset($appOptions['PRINT_APP_INFO_ON_LOAD']) == true)
+                    ? $appOptions['PRINT_APP_INFO_ON_LOAD'] : false,
+            'VERSION' => (isset($appOptions['VERSION']) == true)
+                    ? $appOptions['VERSION'] : '',
+            'GOOGLE_API_KEY' => (isset($appOptions['GOOGLE_API_KEY']) == true)
+                    ? $appOptions['GOOGLE_API_KEY'] : ''
+        );
 
-            session_start();
-            
-            $this->dbOptions = array(
-                'ENGINE'	=> $dbOptions['PROD_ENGINE'],
-                'SERVER'	=> $dbOptions['PROD_SERVER'],
-                'USER'		=> $dbOptions['PROD_USER'],
-                'PASS'		=> $dbOptions['PROD_PASS'],
-                'DATABASE'	=> $dbOptions['PROD_DATABASE'],
-                'PORT'		=> $dbOptions['PROD_PORT']
-            );
-            
-            $this->appOptions = array(
-        	    'BASE'						=>	$appOptions['BASE'],
-        	    'DOMAIN'					=>	$appOptions['PROD_DOMAIN'],
-        	    'ENVIRONMENT'				=>	$appOptions['ENVIRONMENT'],
-        	    'LOG_ERRORS'				=>	$appOptions['LOG_ERRORS'],
-        	    'REG_KEY_EXPIRE_TIME'		=>	$appOptions['REG_KEY_EXPIRE_TIME'],
-                'SESSION_KEY_EXPIRE_TIME'	=>	$appOptions['SESSION_KEY_EXPIRE_TIME'],
-                'EMAIL_FROM'				=>	$appOptions['EMAIL_FROM'],
-                'PRINT_APP_INFO_ON_LOAD'	=>	$appOptions['PRINT_APP_INFO_ON_LOAD']
-            );
-            
-            $this->data = $this->getDataFromUrl($_SERVER["REQUEST_URI"]);
-            
-            $url_array = explode('?', $_SERVER["REQUEST_URI"]); 
-            $this->url = $url_array[0];
-            
-            $this->routes = \Walleye\Config::getRoutes();
-            
-            if (isset($this->appOptions['BASE'])) {
-                self::$server_base_dir = $this->appOptions['BASE'];
-            }
-            
-            if (isset($this->appOptions['DOMAIN'])) {
-                self::$domain = $this->appOptions['DOMAIN'];
-            }
-        }
-        else if ($appOptions['ENVIRONMENT'] == Config::DEVELOPMENT) {
-            self::$environment = Config::DEVELOPMENT;
+        $this->dbOptions = (empty($dbOptions) == false) ? array(
+            'ENGINE' => (isset($dbOptions['ENGINE']) == true)
+                    ? $dbOptions['ENGINE'] : 'mysql',
+            'SERVER' => (isset($dbOptions['SERVER']) == true)
+                    ? $dbOptions['SERVER'] : '127.0.0.1',
+            'USER' => (isset($dbOptions['USER']) == true) ? $dbOptions['USER']
+                    : '',
+            'PASS' => (isset($dbOptions['PASS']) == true) ? $dbOptions['PASS']
+                    : '',
+            'DATABASE' => (isset($dbOptions['DATABASE']) == true)
+                    ? $dbOptions['DATABASE'] : '',
+            'PORT' => (isset($dbOptions['PORT']) == true) ? $dbOptions['PORT']
+                    : '3306',
+            'SALT' => (isset($dbOptions['SALT']) == true) ? $dbOptions['SALT']
+                    : ''
+        ) : array();
+
+        // set environment specifics
+        if ($this->appOptions['ENVIRONMENT'] == Walleye::PRODUCTION || $this->appOptions['ENVIRONMENT'] == Walleye::DEVELOPMENT) {
+            $this->environment = ($this->appOptions['ENVIRONMENT'] == Walleye::PRODUCTION)
+                    ? Walleye::PRODUCTION : Walleye::DEVELOPMENT;
 
             session_start();
-            
-            $this->dbOptions = array(
-                'ENGINE'	=> $dbOptions['DEV_ENGINE'],
-                'SERVER'	=> $dbOptions['DEV_SERVER'],
-                'USER'		=> $dbOptions['DEV_USER'],
-                'PASS'		=> $dbOptions['DEV_PASS'],
-                'DATABASE'	=> $dbOptions['DEV_DATABASE'],
-                'PORT'		=> $dbOptions['DEV_PORT']
-            );
-            
-            $this->appOptions = array(
-        	    'BASE'						=>	$appOptions['BASE'],
-        	    'DOMAIN'					=>	$appOptions['DEV_DOMAIN'],
-        	    'ENVIRONMENT'				=>	$appOptions['ENVIRONMENT'],
-        	    'LOG_ERRORS'				=>	$appOptions['LOG_ERRORS'],
-        	    'REG_KEY_EXPIRE_TIME'		=>	$appOptions['REG_KEY_EXPIRE_TIME'],
-                'SESSION_KEY_EXPIRE_TIME'	=>	$appOptions['SESSION_KEY_EXPIRE_TIME'],
-                'EMAIL_FROM'				=>	$appOptions['EMAIL_FROM'],
-                'PRINT_APP_INFO_ON_LOAD'	=>	$appOptions['PRINT_APP_INFO_ON_LOAD']
-            );
-            
+
+            $this->appOptions['DOMAIN'] = 'http://' . $_SERVER['HTTP_HOST'] . '/';
             $this->data = $this->getDataFromUrl($_SERVER["REQUEST_URI"]);
-            
+            $this->domain = $this->appOptions['DOMAIN'];
+            $this->google_api_key = $this->appOptions['GOOGLE_API_KEY'];
+
             $url_array = explode('?', $_SERVER["REQUEST_URI"]);
             $this->url = $url_array[0];
-            
-            $this->routes = \Walleye\Config::getRoutes();
-            
-            if (isset($this->appOptions['BASE'])) {
-                self::$server_base_dir = $this->appOptions['BASE'];
-            }
-            if (isset($this->appOptions['DOMAIN'])) {
-                self::$domain = $this->appOptions['DOMAIN'];
-            }
         }
         else {
-            self::$environment = Config::TESTING;
-            
-            $this->appOptions = array(
-        	    'BASE'						=>	$appOptions['BASE'],
-        	    'ENVIRONMENT'				=>	$appOptions['ENVIRONMENT'],
-        	    'LOG_ERRORS'				=>	$appOptions['LOG_ERRORS'],
-        	    'REG_KEY_EXPIRE_TIME'		=>	$appOptions['REG_KEY_EXPIRE_TIME'],
-                'SESSION_KEY_EXPIRE_TIME'	=>	$appOptions['SESSION_KEY_EXPIRE_TIME'],
-                'EMAIL_FROM'				=>	$appOptions['EMAIL_FROM'],
-                'PRINT_APP_INFO_ON_LOAD'	=>	$appOptions['PRINT_APP_INFO_ON_LOAD']
-            );
-            
-            $this->dbOptions = array(
-                'ENGINE'	=> $dbOptions['TEST_ENGINE'],
-                'SERVER'	=> $dbOptions['TEST_SERVER'],
-                'USER'		=> $dbOptions['TEST_USER'],
-                'PASS'		=> $dbOptions['TEST_PASS'],
-                'DATABASE'	=> $dbOptions['TEST_DATABASE'],
-                'PORT'		=> $dbOptions['TEST_PORT']
-            );
-            
-            $this->routes = \Walleye\Config::getRoutes();
-            
-            if (isset($this->appOptions['BASE'])) {
-                self::$server_base_dir = $this->appOptions['BASE'];
-            }
+            $this->environment = Walleye::TESTING;
+            $this->testingUserId = $this->appOptions['TESTING_USER_ID'];
         }
     }
-    
+
+    /**
+     * Print out the walleye object
+     */
     public function __destruct()
-    {   
-        $this->logs = Console::getLogs();
-        
-        $this->queries = Console::getQueries();
-    
-        // log the time the application took to execute
-        $start_time = $this->startTime;
-        $end_time = $this->endTime = microtime();
-        
-        $start_time_array = explode(' ', $start_time);
-        $end_time_array = explode(' ', $end_time);
-        
-        $time = ( ( $end_time_array[1] + $end_time_array[0] ) - ( $start_time_array[1] + $start_time_array[0] ) ) * 1000;
-        
-        // make time readable
-        $ret = $time;
-		$formatter = 0;
-		$formats = array('ms', 's', 'm');
-		if($time >= 1000 && $time < 60000) {
-			$formatter = 1;
-			$ret = ($time / 1000);
-		}
-		if($time >= 60000) {
-			$formatter = 2;
-			$ret = ($time / 1000) / 60;
-		}
-		$this->executionTime = $ret = number_format($ret,3,'.','') . ' ' . $formats[$formatter];
-		
-		if ($this->appOptions['PRINT_APP_INFO_ON_LOAD'] == true && ! $this->isProduction() && ! $this->isTesting()) {
-		    echo '<pre>';
-		    print_r($this);
-		    echo '</pre>';
-		}
+    {
+        if ($this->appOptions['PRINT_APP_INFO_ON_LOAD'] == true && $this->isProduction() == false && $this->isTesting() == false) {
+            $this->logs = Console::getLogs();
+
+            $this->queries = Console::getQueries();
+
+            // log the time the application took to execute
+            $start_time = $this->startTime;
+            $end_time = $this->endTime = microtime();
+
+            $start_time_array = explode(' ', $start_time);
+            $end_time_array = explode(' ', $end_time);
+
+            $time = (($end_time_array[1] + $end_time_array[0]) - ($start_time_array[1] + $start_time_array[0])) * 1000;
+
+            // make time readable
+            $ret = $time;
+            $formatter = 0;
+            $formats = array('ms', 's', 'm');
+            if ($time >= 1000 && $time < 60000) {
+                $formatter = 1;
+                $ret = ($time / 1000);
+            }
+            if ($time >= 60000) {
+                $formatter = 2;
+                $ret = ($time / 1000) / 60;
+            }
+            $this->executionTime = $ret = number_format($ret, 3, '.', '') . ' ' . $formats[$formatter];
+
+            function convert($size)
+            {
+                $unit = array('b', 'kb', 'mb', 'gb', 'tb', 'pb');
+                return @round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . ' ' . $unit[$i];
+            }
+
+            $this->peak_memory_usage = convert(memory_get_peak_usage(true));
+
+            print_object($this);
+        }
+
     }
 
     /**
      * Makes sure Walleye is handled as a singleton. This function will give you
      * the instance of Walleye.
      *
+     * @param array $appOptions
+     * @param array $routes
+     * @param array $dbOptions
      * @return Walleye
      */
-    public static function getInstance()
+    public static function getInstance($appOptions = array(), $routes = array(), $dbOptions = array())
     {
         if (!self::$me) {
-            self::$me = new Walleye();
+            self::$me = new Walleye($appOptions, $routes, $dbOptions);
         }
         return self::$me;
     }
@@ -418,24 +405,24 @@ final class Walleye
      *
      * @return string
      */
-    public static function getServerBaseDir()
+    public function getServerBaseDir()
     {
-        return self::$server_base_dir;
+        return $this->serverBaseDir;
     }
 
     /**
      * Gives the domain of this app
      * @return string
      */
-    public static function getDomain()
+    public function getDomain()
     {
-        return self::$domain;
+        return $this->domain;
     }
-    
-    
+
+
     /**
      * Returns the database options set for this environment.
-     * 
+     *
      * @access public
      * @return array
      */
@@ -443,11 +430,11 @@ final class Walleye
     {
         return $this->dbOptions;
     }
-    
-    
+
+
     /**
      * Returns the app options set for this environment
-     * 
+     *
      * @access public
      * @return array
      */
@@ -459,9 +446,9 @@ final class Walleye
     /**
      * @return boolean
      */
-    public static function isProduction()
+    public function isProduction()
     {
-        if (self::$environment == Config::PRODUCTION) {
+        if ($this->environment == Walleye::PRODUCTION) {
             return true;
         }
         return false;
@@ -470,9 +457,9 @@ final class Walleye
     /**
      * @return boolean
      */
-    public static function isTesting()
+    public function isTesting()
     {
-        if (self::$environment == Config::TESTING) {
+        if ($this->environment == Walleye::TESTING) {
             return true;
         }
         return false;
@@ -481,12 +468,51 @@ final class Walleye
     /**
      * @return boolean
      */
-    public static function isDevelopment()
+    public function isDevelopment()
     {
-        if (self::$environment == Config::DEVELOPMENT) {
+        if ($this->environment == Walleye::DEVELOPMENT) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * @return void
+     */
+    public function setTestingUserId($id)
+    {
+        if ($this->isTesting()) {
+            $this->testingUserId = $id;
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function getTestingUserId()
+    {
+        $testing_user_id = 0;
+        if ($this->isTesting()) {
+            $testing_user_id = $this->testingUserId;
+        }
+        return $testing_user_id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion()
+    {
+        $appOptions = $this->getAppOptions();
+        return $appOptions['VERSION'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getGoogleApiKey()
+    {
+        return $this->google_api_key;
     }
 
     /**

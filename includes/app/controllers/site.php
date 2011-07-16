@@ -46,4 +46,4 @@ class Site extends \Walleye\Controller {
     }
 }
 
-?>
+/* End of file */

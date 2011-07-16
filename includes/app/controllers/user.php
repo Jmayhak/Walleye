@@ -63,3 +63,5 @@ class User extends \Walleye\Controller {
         }
     }
 }
+
+/* End of file */

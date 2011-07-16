@@ -9,3 +9,5 @@ class User extends \Walleye\User
 {
 
 }
+
+/* End of file */

@@ -33,3 +33,5 @@ class Api extends \Walleye\Controller
         $this->view($view);
     }
 }
+
+/* End of file */
