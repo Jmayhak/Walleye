@@ -7,6 +7,10 @@ namespace Walleye;
  */
 class UserTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var User
+     */
+    protected $object;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
