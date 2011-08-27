@@ -175,6 +175,7 @@ abstract class Controller
      */
     protected function error_404($view = '404.php', $values = array())
     {
+		header("HTTP/1.0 404 Not Found");
         $this->view($view, $values);
     }
 
