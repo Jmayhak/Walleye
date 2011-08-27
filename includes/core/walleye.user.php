@@ -75,7 +75,7 @@ class User implements Model
      */
     public function __construct($id)
     {
-        $db = new Database();
+        $db = Database::getInstance();
         $get_user_stmt = $db->prepare('SELECT id, username, first_name, last_name, date_created FROM Users WHERE id = ?');
         $get_user_stmt->bind_param('i', $id);
         $get_user_stmt->execute();
@@ -117,7 +117,7 @@ class User implements Model
     {
         $instance = null;
         if (isset($_SESSION[User::USER_SESSION])) {
-            $db = new Database();
+            $db = Database::getInstance();
 
             // get the session in the db
             $get_session_id_stmt = $db->prepare('SELECT id FROM Sessions WHERE session_key = ?');
@@ -165,7 +165,7 @@ class User implements Model
     {
         $instance = null;
 
-        $db = new Database();
+        $db = Database::getInstance();
         $get_user_id_stmt = $db->prepare('SELECT id FROM Users WHERE username = ? AND password = ?');
         $get_user_id_stmt->bind_param('ss', $username, $password);
         $get_user_id_stmt->execute();

@@ -177,7 +177,7 @@ class Console
      */
     private static function storeLog($logItem)
     {
-        $db = new Database();
+        $db = Database::getInstance();
         $insert_log_stmt = $db->prepare('INSERT INTO Logs (user_id, type, line, file, message) VALUES (?, ?, ?, ?, ?)');
         $user_id = (is_null(User::getLoggedUser())) ? 0 : User::getLoggedUser()->getId();
         $insert_log_stmt->bind_param('issss', $user_id, $logItem['type'], $logItem['line'], $logItem['file'], $logItem['message']);
