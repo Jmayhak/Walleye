@@ -31,9 +31,6 @@ if ($appOptions['ENVIRONMENT'] == \Walleye\Walleye::PRODUCTION) {
     ini_set('display_errors', 0);
 }
 
-// include all libraries below
-require(realpath(dirname(__FILE__) . '/../') . '/includes/core/libraries/fpdf.php');
-
 // run the application
 $app = \Walleye\Walleye::getInstance($appOptions, $routes, $dbOptions);
 $app->run();
